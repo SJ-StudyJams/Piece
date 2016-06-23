@@ -10,6 +10,8 @@ studyJams 的第二阶段项目
 
 使用[Google Map API](https://developers.google.com/maps/)
 
+![PS](/design/piece.jpg)
+
 ## 目前阶段
 
 组队中...
