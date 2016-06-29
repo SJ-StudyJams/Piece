@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Piece</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="try_luck">试试手气</string>
+    <string name="nearby">附近有</string>
+    <string name="pieces_km">Pieces (km)</string>
+    <string name="pieces_num">99+</string>
 </resources>
