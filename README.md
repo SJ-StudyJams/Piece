@@ -12,7 +12,9 @@ studyJams 的第二阶段项目
 
 PS设计图：
 
-![PS](/design/piece.jpg)
+![Piece](screenshot/piece.jpg)
+
+![Piece-map](screenshot/piece-map.jpg)
 
 ## 目前阶段
 
