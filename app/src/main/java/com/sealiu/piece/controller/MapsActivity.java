@@ -1,4 +1,4 @@
-package com.sealiu.piece;
+package com.sealiu.piece.controller;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -15,6 +15,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.sealiu.piece.R;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 

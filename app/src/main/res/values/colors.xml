@@ -13,4 +13,6 @@
     <color name="locationBg">#e1e1e1</color>
 
     <color name="textOrIcon">#FFFFFF</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>
