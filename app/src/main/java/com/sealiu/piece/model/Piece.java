@@ -27,8 +27,8 @@ public class Piece extends BmobObject {
     private Date createdTime;
     //浏览次数
     private Double viewCount;
-    //    点赞功能
-//    private Double clickLike;
+    //点赞功能
+    //private Double clickLike;
     //可见性
     private Boolean visibility;
 
