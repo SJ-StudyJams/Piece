@@ -55,6 +55,8 @@ public class RegisterActivity extends AppCompatActivity
         EditText repeatPwdET = (EditText) findViewById(R.id.repeat_pwd);
         Log.i(TAG, "Pwd//Repeat" + pwdET.getText().toString() + "//" + repeatPwdET.getText().toString());
 
-        startActivity(new Intent(RegisterActivity.this, MapsActivity.class));
+        Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

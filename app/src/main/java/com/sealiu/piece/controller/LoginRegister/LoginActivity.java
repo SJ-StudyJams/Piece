@@ -31,7 +31,10 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onSubmitLoginBtnClick() {
-        startActivity(new Intent(LoginActivity.this, MapsActivity.class));
+
+        Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
