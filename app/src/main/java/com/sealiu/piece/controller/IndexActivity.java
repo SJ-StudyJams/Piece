@@ -10,6 +10,8 @@ import android.view.View;
 
 import com.sealiu.piece.R;
 
+import cn.bmob.v3.Bmob;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
@@ -89,6 +91,8 @@ public class IndexActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // 初始化BmobSDK
+        Bmob.initialize(this, "cc31d2e7036aa868bb7ed4401c1354fe");
         setContentView(R.layout.activity_index);
 
         mVisible = true;

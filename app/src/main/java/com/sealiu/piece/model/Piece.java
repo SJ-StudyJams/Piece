@@ -2,11 +2,13 @@ package com.sealiu.piece.model;
 
 import java.util.Date;
 
+import cn.bmob.v3.BmobObject;
+
 /**
  * Created by liuyang
  * on 2016/7/1.
  */
-public class Piece {
+public class Piece extends BmobObject {
     private Integer id;
     //作者(外键)
     private Integer authorID;
