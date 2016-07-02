@@ -31,9 +31,9 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onSubmitLoginBtnClick() {
-
         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
         startActivity(intent);
+
         finish();
     }
 
