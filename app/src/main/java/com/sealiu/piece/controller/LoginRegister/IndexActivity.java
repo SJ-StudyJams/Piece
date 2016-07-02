@@ -1,6 +1,7 @@
-package com.sealiu.piece.controller;
+package com.sealiu.piece.controller.LoginRegister;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
@@ -111,7 +112,20 @@ public class IndexActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.register_button).setOnTouchListener(mDelayHideTouchListener);
+        // findViewById(R.id.register_button).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.register_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(IndexActivity.this, RegisterActivity.class));
+            }
+        });
+
+        findViewById(R.id.login_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(IndexActivity.this, LoginActivity.class));
+            }
+        });
     }
 
     @Override
