@@ -9,14 +9,21 @@ import android.support.v7.app.AppCompatActivity;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.MapsActivity;
 
+import cn.bmob.v3.Bmob;
+
 public class LoginActivity extends AppCompatActivity
         implements LoginFragment.Listener {
 
+    private static final String TAG = "LoginActivity";
     private FragmentManager fm = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 初始化BmobSDK
+        Bmob.initialize(this, "cc31d2e7036aa868bb7ed4401c1354fe");
+
         setContentView(R.layout.activity_login);
 
         Fragment fragment = fm.findFragmentById(R.id.content_frame);

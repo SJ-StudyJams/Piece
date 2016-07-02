@@ -14,22 +14,18 @@ import cn.bmob.v3.listener.SaveListener;
  */
 public class UserServiceImpl implements UserService {
     @Override
-    public boolean login() {
-        User bu = new User();
-        bu.setName("sendi");
-        bu.setPassword("123456");
-        bu.setEmail("sendi@163.com");
-        //注意：不能用save方法进行注册
-        bu.signUp(new SaveListener<User>() {
+    public String signUp(final User user) {
+
+        user.signUp(new SaveListener<User>() {
             @Override
-            public void done(User s, BmobException e) {
-                if(e==null){
-                    Log.e("User register","注册成功:" +s.toString());
-                }else{
-                    Log.e("User register",e.toString());
+            public void done(User user, BmobException e) {
+                if (e == null) {
+                    Log.i("UserServiceImpl", "注册成功:" + user.toString());
+                } else {
+                    Log.i("UserServiceImpl", e.toString());
                 }
             }
         });
-        return false;
+        return user.getObjectId();
     }
 }
