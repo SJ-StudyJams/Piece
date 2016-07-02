@@ -7,5 +7,8 @@ import com.sealiu.piece.service.UserService;
  * on 2016/7/1.
  */
 public class UserServiceImpl implements UserService {
-    // 实现 UserService 中的方法
+    @Override
+    public boolean login() {
+        return false;
+    }
 }

@@ -6,4 +6,5 @@ package com.sealiu.piece.service;
  */
 public interface UserService {
     // 操作 User 的接口
+    public boolean login();
 }
