@@ -3,7 +3,6 @@ package com.sealiu.piece.controller.User;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.icu.util.Calendar;
-import android.icu.util.ChineseCalendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -57,7 +56,8 @@ public class EditActivity extends AppCompatActivity {
                     public void onDateSet(DatePicker datePicker, int year, int monthOfYear,
                                           int dayOfMonth) {
                         EditText setBirth = (EditText) findViewById(R.id.user_birth);
-                        String birth = year + "-" + monthOfYear
+                        int month = monthOfYear + 1;
+                        String birth = year + "-" + month
                                 + "-" + dayOfMonth;
                         setBirth.setText(birth);
                     }
