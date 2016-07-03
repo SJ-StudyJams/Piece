@@ -34,4 +34,7 @@
     <string name="repeat_pwd">再次输入</string>
     <string name="complete_register">完成注册</string>
     <string name="third_part_login">第三方登录</string>
+    <string name="setting_menu_title">设置</string>
+    <string name="user_menu_title">个人中心</string>
+    <string name="edit_user_info">个人信息</string>
 </resources>
