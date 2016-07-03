@@ -65,7 +65,11 @@
 
         <activity
             android:name=".controller.User.EditActivity"
-            android:label="@string/edit_user_info" />
+            android:label="@string/edit_user_info" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.User.UserActivity"/>
+        </activity>
     </application>
 
 </manifest>
