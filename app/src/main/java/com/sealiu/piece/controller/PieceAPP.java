@@ -23,7 +23,7 @@ public class PieceAPP extends android.support.multidex.MultiDexApplication{
         Bmob.initialize(this, Constants.BMOB_APP_ID);
 
         // 初始化短信SDK
-        BmobSMS.initialize(this, Constants.SMS_APP_ID);
+        BmobSMS.initialize(this, Constants.BMOB_APP_ID);
     }
     public static Context getContext() {
         return context;
