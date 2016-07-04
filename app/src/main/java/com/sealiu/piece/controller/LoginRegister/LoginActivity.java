@@ -47,7 +47,10 @@ public class LoginActivity extends AppCompatActivity
     @Override
     public void onThirdPartLoginBtnClick() {
         Fragment fragment = new ThirdPartFragment();
-        fm.beginTransaction().replace(R.id.content_frame, fragment, null).commit();
+        fm.beginTransaction()
+                .replace(R.id.content_frame, fragment, "ThirdPart")
+                .addToBackStack("ThirdPart")
+                .commit();
     }
 }
 

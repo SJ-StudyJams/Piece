@@ -51,7 +51,8 @@ public class RegisterActivity extends AppCompatActivity
         // 替换 RegisterOneFragment
         Fragment fragment = new RegisterTwoFragment();
         fm.beginTransaction()
-                .replace(R.id.content_frame, fragment, null)
+                .replace(R.id.content_frame, fragment, "RegisterTwo")
+                .addToBackStack("RegisterTwo")
                 .commit();
     }
 
