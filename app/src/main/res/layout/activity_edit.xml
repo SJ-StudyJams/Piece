@@ -78,6 +78,7 @@
                     android:hint="生日"
                     android:text="1993-11-19"
                     android:focusable="false"
+                    android:cursorVisible="false"
                     android:imeOptions="actionUnspecified" />
             </android.support.design.widget.TextInputLayout>
 

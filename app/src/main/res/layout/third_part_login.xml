@@ -9,4 +9,29 @@
         android:layout_height="wrap_content"
         android:textSize="24sp"
         android:text="@string/third_part_login" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:gravity="center_horizontal">
+        <Button
+            android:id="@+id/btn_qq"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:background="@drawable/icon_tencent"
+            android:clickable="true"
+            android:textSize="16sp" />
+        <Button
+            android:id="@+id/btn_weixin"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:background="@drawable/icon_wechat"
+            android:clickable="true"
+            android:textSize="16sp" />
+    </LinearLayout>
+
 </LinearLayout>
