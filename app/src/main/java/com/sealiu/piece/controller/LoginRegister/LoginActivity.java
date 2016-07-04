@@ -22,7 +22,7 @@ public class LoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         // 初始化BmobSDK
-        Bmob.initialize(this, Constants.BMOB_APPID);
+        Bmob.initialize(this, Constants.BMOB_APP_ID);
 
         setContentView(R.layout.activity_login);
 
