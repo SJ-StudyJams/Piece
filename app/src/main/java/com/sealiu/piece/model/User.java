@@ -9,6 +9,7 @@ import cn.bmob.v3.BmobUser;
 public class User extends BmobUser {
 
     //第三方登录qq返回值
+    
     private String qq;
     //第三方登录微信返回值
     private String wechat;
