@@ -12,11 +12,11 @@
         android:orientation="horizontal">
 
         <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1"
-            android:background="@android:color/darker_gray"
-            android:layout_gravity="center_vertical" />
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1"
+        android:background="@android:color/darker_gray"
+        android:layout_gravity="center_vertical" />
 
         <TextView
             android:layout_width="wrap_content"
