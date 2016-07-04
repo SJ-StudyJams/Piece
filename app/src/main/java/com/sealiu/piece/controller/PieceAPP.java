@@ -2,6 +2,8 @@ package com.sealiu.piece.controller;
 
 import android.content.Context;
 
+import com.sealiu.piece.controller.LoginRegister.Constants;
+
 import cn.bmob.sms.BmobSMS;
 import cn.bmob.v3.Bmob;
 
@@ -18,10 +20,10 @@ public class PieceAPP extends android.support.multidex.MultiDexApplication{
         app = this;
         context = getApplicationContext();
         // 初始化BmobSDK
-        Bmob.initialize(this, "cc31d2e7036aa868bb7ed4401c1354fe");
+        Bmob.initialize(this, Constants.BMOB_APP_ID);
 
         // 初始化短信SDK
-        BmobSMS.initialize(this, "cc31d2e7036aa868bb7ed4401c1354fe");
+        BmobSMS.initialize(this, Constants.BMOB_APP_ID);
     }
     public static Context getContext() {
         return context;
