@@ -9,8 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.MapsActivity;
 
-import cn.bmob.v3.Bmob;
-
 public class LoginActivity extends AppCompatActivity
         implements LoginFragment.Listener {
 
@@ -20,9 +18,6 @@ public class LoginActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // 初始化BmobSDK
-        Bmob.initialize(this, Constants.BMOB_APP_ID);
 
         setContentView(R.layout.activity_login);
 

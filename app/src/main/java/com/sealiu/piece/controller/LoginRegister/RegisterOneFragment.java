@@ -19,10 +19,11 @@ import com.sealiu.piece.service.Common.Sms;
  * on 2016/7/2.
  */
 public class RegisterOneFragment extends Fragment {
+    private static final String TAG = "RegisterOneFragment";
     /*
-    手机号正确 ---> flag = 1
-    邮箱正确 ---> flag = 2
-     */
+        手机号正确 ---> flag = 1
+        邮箱正确 ---> flag = 2
+         */
     private int flag = 0;
     private String phoneNumber = "";
 
@@ -49,6 +50,7 @@ public class RegisterOneFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.register_one, container, false);
+
         Button nextBtn = (Button) view.findViewById(R.id.reg_next_button);
         final EditText regPhoneOrEmailET = (EditText) view.findViewById(R.id.reg_phone_or_email);
         final EditText validatingCodeET = (EditText) view.findViewById(R.id.validating_code);
@@ -96,11 +98,10 @@ public class RegisterOneFragment extends Fragment {
                     case 1:
                         // 发送短信验证码
                         phoneNumber = phoneOrEmail.substring(phoneOrEmail.length() - 11, phoneOrEmail.length());
-                        // Snackbar.make(view, phoneNumber, Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                         Sms.sendSMSCode(getActivity(), phoneNumber);
                         break;
                     case 2:
-                        // 发送邮箱验证码
+                        // 发送邮箱验证码(后台自动发送)，不需要立即验证
                         validatingCodeET.setText("验证邮件已发送，注册后请及时验证邮箱！");
                         validatingCodeET.setFocusable(false);
                         validatingCodeET.setClickable(false);
@@ -120,16 +121,28 @@ public class RegisterOneFragment extends Fragment {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (flag == 0) {
+                    Snackbar.make(view, "请先验证邮箱/手机号", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+                    return;
+                }
+
                 // 手机号注册，验证码不能为空，且要通过验证
                 if (flag == 1) {
-                    EditText validatingCodeET = (EditText) view.findViewById(R.id.validating_code);
+
                     String code = validatingCodeET.getText().toString();
+
                     if (code.equals("")) {
                         Snackbar.make(view, "验证码不能为空", Snackbar.LENGTH_SHORT)
                                 .setAction("Action", null).show();
                         return;
                     } else if (!phoneNumber.equals("")) {
-                        Sms.verifySMSCode(getActivity(), phoneNumber, code);
+                        if (!Sms.verifySMSCode(getActivity(), phoneNumber, code)) {
+                            validatingCodeET.setText("");
+                            Snackbar.make(view, "验证码不正确", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+                            return;
+                        }
                     }
                 }
 
