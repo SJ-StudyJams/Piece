@@ -9,6 +9,10 @@ import android.view.View;
 
 import com.sealiu.piece.R;
 
+/**
+ * 展示用户发送过的小纸条（类似朋友圈）
+ * 目前只提供点击用户头像进入查看页面，小纸条展示放到Piece模块中开发
+ */
 public class UserActivity extends AppCompatActivity {
 
     @Override
