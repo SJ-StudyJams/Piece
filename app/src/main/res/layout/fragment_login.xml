@@ -16,8 +16,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/prompt_phone_or_email"
             android:maxLines="1"
-            android:singleLine="true"
-            android:inputType="phone" />
+            android:singleLine="true" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -28,7 +27,7 @@
         android:focusableInTouchMode="true">
 
         <EditText
-            android:id="@+id/password"
+            android:id="@+id/login_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/prompt_password"

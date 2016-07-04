@@ -1,5 +1,6 @@
 package com.sealiu.piece.service.Impl;
 
+
 import android.util.Log;
 
 import com.sealiu.piece.model.User;
@@ -21,6 +22,22 @@ public class UserServiceImpl implements UserService {
             public void done(User user, BmobException e) {
                 if (e == null) {
                     Log.i("UserServiceImpl", "注册成功:" + user.toString());
+                } else {
+                    Log.i("UserServiceImpl", e.toString());
+                }
+            }
+        });
+        return user.getObjectId();
+    }
+
+    @Override
+    public String login(User user) {
+
+        user.login(new SaveListener<User>() {
+            @Override
+            public void done(User user, BmobException e) {
+                if(e == null){
+                    Log.i("UserServiceImpl","用户登陆成功");
                 } else {
                     Log.i("UserServiceImpl", e.toString());
                 }

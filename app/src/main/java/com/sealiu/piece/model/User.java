@@ -59,5 +59,4 @@ public class User extends BmobUser {
     public void setType(Integer type) {
         this.type = type;
     }
-
 }
