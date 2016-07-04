@@ -40,18 +40,23 @@ public class Sms {
      * @param phoneNumber 接收短信手机号（11位）
      * @param code        验证码
      */
-    public static void verifySMSCode(Context context, String phoneNumber, String code) {
+    public static boolean verifySMSCode(Context context, String phoneNumber, String code) {
+        final boolean[] result = new boolean[1];
         BmobSMS.verifySmsCode(context, phoneNumber, code, new VerifySMSCodeListener() {
             @Override
             public void done(BmobException e) {
                 // TODO Auto-generated method stub
                 if (e == null) {
+                    // 好奇怪！这里只能写成数组？
+                    result[0] = true;
                     Log.i("bmob", "验证通过");
                 } else {
+                    result[0] = false;
                     Log.i("bmob", "验证失败：code =" + e.getErrorCode() + ",msg = " + e.getLocalizedMessage());
                 }
             }
         });
+        return result[0];
     }
 
 }

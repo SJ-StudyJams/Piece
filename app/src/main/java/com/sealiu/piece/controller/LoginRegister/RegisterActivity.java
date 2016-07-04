@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.EditText;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.MapsActivity;
@@ -26,8 +25,6 @@ public class RegisterActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
 
         setContentView(R.layout.activity_register);
 
@@ -69,20 +66,17 @@ public class RegisterActivity extends AppCompatActivity
         user.setUsername(phoneOrEmail);
     }
 
+    // 完成注册
     @Override
-    public void onCompleteRegisterBtnClick() {
+    public void onCompleteRegisterBtnClick(String encodedPwd) {
 
-        EditText pwdET = (EditText) findViewById(R.id.reg_password);
-        EditText repeatPwdET = (EditText) findViewById(R.id.repeat_pwd);
-        Log.i(TAG, "Pwd//Repeat" + pwdET.getText().toString() + "//" + repeatPwdET.getText().toString());
-
-        user.setPassword(pwdET.getText().toString());
-        user.setBio("有效驱蚊，保护家人");
+        user.setPassword(encodedPwd);
 
         UserService userService = new UserServiceImpl();
         String objectId = userService.signUp(user);
-        // objectId 为null
-        // Log.i(TAG, objectId);
+        if (objectId == null) {
+            Log.e(TAG, "注册失败");
+        }
 
         Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
         startActivity(intent);
