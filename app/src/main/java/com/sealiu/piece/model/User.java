@@ -1,23 +1,13 @@
 package com.sealiu.piece.model;
 
-import java.util.Date;
-
-import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.BmobUser;
 
 /**
  * Created by liuyang
  * on 2016/7/1.
  */
-public class User extends BmobObject {
-    private Integer id;
-    //昵称
-    private String name;
-    //邮箱
-    private String email;
-    //手机号
-    private Integer phone;
-    //密码
-    private String password;
+public class User extends BmobUser {
+
     //第三方登录qq返回值
     private String qq;
     //第三方登录微信返回值
@@ -28,48 +18,6 @@ public class User extends BmobObject {
     private String bio;
     //用户类型
     private Integer type;
-    //注册时间
-    private Date regTime;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Integer getPhone() {
-        return phone;
-    }
-
-    public void setPhone(Integer phone) {
-        this.phone = phone;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getQq() {
         return qq;
@@ -111,11 +59,4 @@ public class User extends BmobObject {
         this.type = type;
     }
 
-    public Date getRegTime() {
-        return regTime;
-    }
-
-    public void setRegTime(Date regTime) {
-        this.regTime = regTime;
-    }
 }
