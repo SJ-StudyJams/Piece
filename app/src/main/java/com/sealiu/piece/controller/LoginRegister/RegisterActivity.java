@@ -47,7 +47,7 @@ public class RegisterActivity extends AppCompatActivity
     @Override
     public void onNextBtnClick() {
 
-        EditText phoneET = (EditText) findViewById(R.id.reg_phone);
+        EditText phoneET = (EditText) findViewById(R.id.reg_phone_or_email);
         EditText validatingCodeET = (EditText) findViewById(R.id.validating_code);
 
         Log.i(TAG, "Phone//Code" + phoneET.getText().toString() + "//" + validatingCodeET.getText().toString());
@@ -63,6 +63,12 @@ public class RegisterActivity extends AppCompatActivity
         fm.beginTransaction()
                 .replace(R.id.content_frame, fragment, null)
                 .commit();
+    }
+
+    // 点击获取验证码
+    @Override
+    public void onFetchCodeBtnClick() {
+
     }
 
     @Override
