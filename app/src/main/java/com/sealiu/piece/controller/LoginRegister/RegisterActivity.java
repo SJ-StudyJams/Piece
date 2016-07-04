@@ -30,7 +30,7 @@ public class RegisterActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         // 初始化BmobSDK
-        Bmob.initialize(this, "cc31d2e7036aa868bb7ed4401c1354fe");
+        Bmob.initialize(this, Constants.BMOB_APPID);
 
         setContentView(R.layout.activity_register);
 
