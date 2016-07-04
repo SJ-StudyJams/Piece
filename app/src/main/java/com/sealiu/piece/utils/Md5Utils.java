@@ -3,7 +3,8 @@ package com.sealiu.piece.utils;
 import java.security.MessageDigest;
 
 /**
- * Created by vince on 2016-07-04.
+ * Created by vince
+ * on 2016-07-04.
  */
 public class Md5Utils {
     /**
@@ -12,7 +13,7 @@ public class Md5Utils {
      */
     public static String encode(String str) {
         String res = "";
-        String s = "";
+        String s;
         try {
             MessageDigest md = MessageDigest.getInstance("md5");
             //MD5 加密后的字节数组
