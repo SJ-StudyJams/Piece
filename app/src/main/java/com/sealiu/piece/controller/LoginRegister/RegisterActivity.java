@@ -14,8 +14,6 @@ import com.sealiu.piece.model.User;
 import com.sealiu.piece.service.Impl.UserServiceImpl;
 import com.sealiu.piece.service.UserService;
 
-import cn.bmob.v3.Bmob;
-
 public class RegisterActivity extends AppCompatActivity
         implements RegisterOneFragment.NextStepListener,
         RegisterTwoFragment.CompleteRegisterListener {
@@ -29,8 +27,7 @@ public class RegisterActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 初始化BmobSDK
-        Bmob.initialize(this, "cc31d2e7036aa868bb7ed4401c1354fe");
+
 
         setContentView(R.layout.activity_register);
 
