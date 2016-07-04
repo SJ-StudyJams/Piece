@@ -14,5 +14,8 @@ public class Constants {
      */
     public static final String QQ_APP_ID ="1105440739";
 
-
+    /**
+     *  此为的APP_ID
+     */
+    public static String SMS_APP_ID = "cc31d2e7036aa868bb7ed4401c1354fe";
 }
