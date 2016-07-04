@@ -14,8 +14,6 @@ import com.sealiu.piece.model.User;
 import com.sealiu.piece.service.Impl.UserServiceImpl;
 import com.sealiu.piece.service.UserService;
 
-import cn.bmob.v3.Bmob;
-
 public class RegisterActivity extends AppCompatActivity
         implements RegisterOneFragment.NextStepListener,
         RegisterTwoFragment.CompleteRegisterListener {
@@ -29,8 +27,7 @@ public class RegisterActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 初始化BmobSDK
-        Bmob.initialize(this, "cc31d2e7036aa868bb7ed4401c1354fe");
+
 
         setContentView(R.layout.activity_register);
 
@@ -47,7 +44,7 @@ public class RegisterActivity extends AppCompatActivity
     @Override
     public void onNextBtnClick() {
 
-        EditText phoneET = (EditText) findViewById(R.id.reg_phone);
+        EditText phoneET = (EditText) findViewById(R.id.reg_phone_or_email);
         EditText validatingCodeET = (EditText) findViewById(R.id.validating_code);
 
         Log.i(TAG, "Phone//Code" + phoneET.getText().toString() + "//" + validatingCodeET.getText().toString());
@@ -63,6 +60,12 @@ public class RegisterActivity extends AppCompatActivity
         fm.beginTransaction()
                 .replace(R.id.content_frame, fragment, null)
                 .commit();
+    }
+
+    // 点击获取验证码
+    @Override
+    public void onFetchCodeBtnClick() {
+
     }
 
     @Override

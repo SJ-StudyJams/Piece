@@ -7,19 +7,16 @@ android {
     /**兼容Android6.0系统所需，如果这句话报错，可在dependencies标签下使用compile 'cn.bmob.android:http-legacy:1.0'**/
     useLibrary 'org.apache.http.legacy'
 
-
     defaultConfig {
         applicationId "com.sealiu.piece"
         minSdkVersion 15
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
+
+        // Enabling multidex support.
         multiDexEnabled true
     }
-    dexOptions {
-        javaMaxHeapSize "2048m"
-    }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -38,7 +35,7 @@ dependencies {
     compile 'com.android.support:design:24.0.0'
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'com.google.android.gms:play-services-appindexing:9.2.0'
-    compile 'com.android.support:multidex:1.0.0'
+    compile 'com.android.support:multidex:1.0.1'
 
     //以下SDK开发者请根据需要自行选择
     //bmob-sdk：Bmob的android sdk包，包含了Bmob的数据存储、文件等服务，以下是最新的bmob-sdk:
