@@ -137,12 +137,14 @@ public class RegisterOneFragment extends Fragment {
                                 .setAction("Action", null).show();
                         return;
                     } else if (!phoneNumber.equals("")) {
-                        if (!Sms.verifySMSCode(getActivity(), phoneNumber, code)) {
-                            validatingCodeET.setText("");
-                            Snackbar.make(view, "验证码不正确", Snackbar.LENGTH_SHORT)
-                                    .setAction("Action", null).show();
-                            return;
-                        }
+                        //这里有些问题。
+                        Sms.verifySMSCode(getActivity(), phoneNumber, code);
+//                        if (!Sms.verifySMSCode(getActivity(), phoneNumber, code)) {
+//                            validatingCodeET.setText("");
+//                            Snackbar.make(view, "验证码不正确", Snackbar.LENGTH_SHORT)
+//                                    .setAction("Action", null).show();
+//                            return;
+//                        }
                     }
                 }
 
