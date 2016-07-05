@@ -10,6 +10,4 @@ public interface UserService {
     // 注册
     String signUp(User user);
 
-    //登陆
-    String login(User user);
 }

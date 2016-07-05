@@ -43,16 +43,6 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onSubmitLoginBtnClick() {
-
-        //user.setUsername(username);
-        //String password = Md5Utils.encode(pwd);
-        //user.setPassword(password);
-
-        //UserService userService = new UserServiceImpl();
-        //String objectId = userService.login(user);
-        //if (objectId == null) {
-        //    Log.e(TAG, "登陆失败");
-        //}
         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
         startActivity(intent);
         finish();

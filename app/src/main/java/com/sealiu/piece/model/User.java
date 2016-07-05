@@ -20,6 +20,14 @@ public class User extends BmobUser {
     //用户类型
     private Integer type;
 
+    private long time;
+    //性别
+    private boolean sex;
+    //密码
+    private String pwd;
+    //生日
+    private String birth;
+
     public String getQq() {
         return qq;
     }
@@ -58,5 +66,37 @@ public class User extends BmobUser {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setSex(boolean sex) {
+        this.sex = sex;
+    }
+
+    public boolean isSex() {
+        return sex;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
+    public String getBirth() {
+        return birth;
+    }
+
+    public void setBirth(String birth) {
+        this.birth = birth;
     }
 }

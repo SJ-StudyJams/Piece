@@ -30,19 +30,4 @@ public class UserServiceImpl implements UserService {
         return user.getObjectId();
     }
 
-    @Override
-    public String login(User user) {
-
-        user.login(new SaveListener<User>() {
-            @Override
-            public void done(User user, BmobException e) {
-                if(e == null){
-                    Log.i("UserServiceImpl","用户登陆成功");
-                } else {
-                    Log.i("UserServiceImpl", e.toString());
-                }
-            }
-        });
-        return user.getObjectId();
-    }
 }
