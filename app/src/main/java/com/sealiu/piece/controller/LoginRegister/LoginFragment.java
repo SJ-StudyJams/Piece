@@ -23,7 +23,8 @@ import com.sealiu.piece.utils.SPUtils;
 public class LoginFragment extends Fragment {
 
     private EditText mEt_user;
-    private EditText mEt_pasword;
+    private EditText mEt_password;
+    private View mView;
 
     public interface Listener {
         void onSubmitLoginBtnClick();
@@ -36,14 +37,16 @@ public class LoginFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        mView = inflater.inflate(R.layout.fragment_login, container, false);
+        //初始化视图
+        initView();
         //初始化数据
         inintData();
 
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
-
-        Button thirdPartLoginBtn = (Button) view.findViewById(R.id.third_part_login_btn);
-        Button backRegisterBtn = (Button) view.findViewById(R.id.back_register_button);
-        Button submitLoginBtn = (Button) view.findViewById(R.id.submit_login_btn);
+        Button thirdPartLoginBtn = (Button) mView.findViewById(R.id.third_part_login_btn);
+        Button backRegisterBtn = (Button) mView.findViewById(R.id.back_register_button);
+        Button submitLoginBtn = (Button) mView.findViewById(R.id.submit_login_btn);
 
         thirdPartLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,26 +68,38 @@ public class LoginFragment extends Fragment {
         submitLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mEt_user = (EditText) view.findViewById(R.id.login_phone_or_email);
-                mEt_pasword = (EditText) view.findViewById(R.id.password);
+
+                //判断是否为空
+                String user_name = mEt_user.getText().toString().trim();
+                String user_password = mEt_password.getText().toString().trim();
+
+                if (TextUtils.isEmpty(user_name) || TextUtils.isEmpty(user_password)) {
+                    Toast.makeText(getContext(), "用户名或者密码不能为空", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 //保存用户名
                 SPUtils.putString(getContext(), MyConstaints.NAME, mEt_user.getText().toString().trim());
                 //保存加密后的密码
-                if(TextUtils.isEmpty(mEt_user.getText())||TextUtils.isEmpty(mEt_pasword.getText())){
-                    Toast.makeText(getContext(),"用户名或者密码不能为空",Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                SPUtils.putString(getContext(),MyConstaints.PASSWORD, Md5Utils.encode(mEt_pasword.getText().toString().trim()));
+                //18658710313
+                //123456
+                SPUtils.putString(getContext(), MyConstaints.PASSWORD, Md5Utils.encode(mEt_password.getText().toString().trim()));
                 Listener listener = (Listener) getActivity();
                 listener.onSubmitLoginBtnClick();
             }
         });
 
-        return view;
+        return mView;
+    }
+
+    private void initView() {
+        mEt_user = (EditText) mView.findViewById(R.id.login_phone_or_email);
+        mEt_password = (EditText) mView.findViewById(R.id.password);
     }
 
     private void inintData() {
-        //获取用户名
-        mEt_user.setText(SPUtils.getString(getContext(),MyConstaints.NAME,""));
+        //获取本地用户名
+          mEt_user.setText(SPUtils.getString(getContext(), MyConstaints.NAME, ""));
+
+
     }
 }
