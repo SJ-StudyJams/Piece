@@ -18,6 +18,7 @@ import android.widget.EditText;
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.Md5Utils;
+import com.sealiu.piece.utils.SPUtils;
 
 
 import cn.bmob.v3.exception.BmobException;
@@ -121,6 +122,7 @@ public class LoginFragment extends Fragment {
                                 editor.putBoolean("remember_password", true);
                                 editor.putString("userName", username);              //用户名
                                 editor.putString("password", pwd);            //密码
+                                SPUtils.putBoolean(getActivity(),"isLogin",true);
                                 Log.i(TAG, "方法一");
                             } else {
                                 editor.clear();
