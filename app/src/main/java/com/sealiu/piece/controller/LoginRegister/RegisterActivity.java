@@ -1,5 +1,6 @@
 package com.sealiu.piece.controller.LoginRegister;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,8 +11,9 @@ import android.util.Log;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.MapsActivity;
 import com.sealiu.piece.model.User;
-import com.sealiu.piece.service.Impl.UserServiceImpl;
-import com.sealiu.piece.service.UserService;
+
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
 
 public class RegisterActivity extends AppCompatActivity
         implements RegisterOneFragment.NextStepListener,
@@ -20,7 +22,7 @@ public class RegisterActivity extends AppCompatActivity
     private static final String TAG = "RegisterActivity";
     private FragmentManager fm = getSupportFragmentManager();
 
-    private User user = new User();
+    private final User user = new User();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,14 +75,25 @@ public class RegisterActivity extends AppCompatActivity
 
         user.setPassword(encodedPwd);
 
-        UserService userService = new UserServiceImpl();
-        String objectId = userService.signUp(user);
-        if (objectId == null) {
-            Log.e(TAG, "注册失败");
-        }
+        // 注册
+        final ProgressDialog progress = new ProgressDialog(RegisterActivity.this);
+        progress.setMessage("正在登录中...");
+        progress.setCanceledOnTouchOutside(false);
+        progress.show();
 
-        Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
-        startActivity(intent);
-        finish();
+        user.signUp(new SaveListener<User>() {
+            @Override
+            public void done(User user, BmobException e) {
+                progress.dismiss();
+                if (e == null) {
+                    Log.i(TAG, "注册成功:" + user.toString());
+                    Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Log.i(TAG, e.toString());
+                }
+            }
+        });
     }
 }

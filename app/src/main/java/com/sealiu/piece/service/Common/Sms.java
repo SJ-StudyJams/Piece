@@ -16,11 +16,14 @@ import cn.bmob.sms.listener.VerifySMSCodeListener;
  * Created by liuyang
  * on 2016/7/4.
  */
+
+/**
+ * 不再使用，先留着吧
+ */
 public class Sms {
 
     // 发送的验证码短信ID
     public Integer smsId;
-
     // 短信的错误码（默认为：0，没错）
     // 另外这个错误码，包括发送短信和验证验证码
     // 其他错误码：http://docs.bmob.cn/sms/Android/g_errorcode/doc/index.html
@@ -30,7 +33,6 @@ public class Sms {
     // index0：smsState（短信状态） :SUCCESS（发送成功）、FAIL（发送失败）、SENDING(发送中)。
     // index1：verifyState（验证状态）:true(已验证)、false(未验证)。
     public List<String> statusList;
-
     /**
      * 发送短信验证码
      *
@@ -106,5 +108,6 @@ public class Sms {
         });
         return errorCode;
     }
+
 
 }
