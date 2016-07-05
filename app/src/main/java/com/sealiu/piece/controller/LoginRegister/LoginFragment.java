@@ -1,10 +1,11 @@
 package com.sealiu.piece.controller.LoginRegister;
 
+
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,18 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.controller.PieceAPP;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.Md5Utils;
 
-import cn.bmob.v3.BmobUser;
+
 import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.LogInListener;
 import cn.bmob.v3.listener.SaveListener;
 
 /**
@@ -32,6 +29,7 @@ import cn.bmob.v3.listener.SaveListener;
  */
 public class LoginFragment extends Fragment {
 
+    private View view;
     private EditText et_account,et_pwd;
     private User user = new User();
     private CheckBox cb_RememberPwd;
@@ -60,7 +58,7 @@ public class LoginFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
+        view = inflater.inflate(R.layout.fragment_login, container, false);
 
         et_account = (EditText) view.findViewById(R.id.login_phone_or_email);
         et_pwd = (EditText) view.findViewById(R.id.login_password);
@@ -98,14 +96,16 @@ public class LoginFragment extends Fragment {
 
         submitLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 username = et_account.getText().toString().trim();
                 pwd = et_pwd.getText().toString().trim();
                 if(username.equals("")){
-                    toast("请输入注册手机号或邮箱");
+                    Snackbar.make(view, "请输入注册邮箱或手机号", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
                     return;
                 } else if(pwd.equals("")){
-                    toast("请输入你的密码");
+                    Snackbar.make(view, "请输入密码", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
                     return;
                 }
                 user.setUsername(username);
@@ -127,6 +127,8 @@ public class LoginFragment extends Fragment {
                             }
                         } else {
                             editor.clear();
+                            Snackbar.make(view, "用户名或密码错误", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
                             Log.i(TAG, e.toString());
                         }
                         editor.apply();
@@ -136,9 +138,5 @@ public class LoginFragment extends Fragment {
         });
 
         return view;
-    }
-
-    private void toast(String msg){
-        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
     }
 }
