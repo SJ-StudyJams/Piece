@@ -34,6 +34,18 @@ public class Constants {
     // 非法短信内容
     public static final int SMS_CONTENT_ILLEGAL = 10013;
 
+    /**
+     *  User本地信息常量
+     */
+
     // User信息本体保存文件
     public static final String SP_FILE_NAME = "userInfo";
+    //用户名
+    public static final String SP_USERNAME = "username";
+    //密码（未加密）
+    public static final String SP_PASSWORD = "password";
+    //登陆与否
+    public static final String SP_IS_LOGIN = "isLogin";
+    //记住密码
+    public static final String SP_IS_REMEMBER = "isRemember";
 }

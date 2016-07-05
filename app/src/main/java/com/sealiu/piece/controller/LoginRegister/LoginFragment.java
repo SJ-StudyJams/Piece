@@ -14,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
@@ -53,10 +54,10 @@ public class LoginFragment extends Fragment {
         et_account = (EditText) view.findViewById(R.id.login_phone_or_email);
         et_pwd = (EditText) view.findViewById(R.id.login_password);
         cb_RememberPwd = (CheckBox) view.findViewById(R.id.is_remember_password);
-        isRememberPwd = SPUtils.getBoolean(getActivity(), "rememberPwd", false);
+        isRememberPwd = SPUtils.getBoolean(getActivity(), Constants.SP_IS_REMEMBER, false);
         if (isRememberPwd) {
-            username = SPUtils.getString(getActivity(),"username", null);
-            password = SPUtils.getString(getActivity(), "password", null);
+            username = SPUtils.getString(getActivity(), Constants.SP_USERNAME, null);
+            password = SPUtils.getString(getActivity(), Constants.SP_PASSWORD, null);
             et_account.setText(username);
             et_pwd.setText(password);
             cb_RememberPwd.setChecked(true);
@@ -86,8 +87,8 @@ public class LoginFragment extends Fragment {
         submitLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                username = et_account.getText().toString();
-                pwd = et_pwd.getText().toString();
+                username = et_account.getText().toString().trim();
+                pwd = et_pwd.getText().toString().trim();
                 if(username.equals("")){
                     Snackbar.make(view, "请输入注册邮箱或手机号", Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
@@ -107,9 +108,10 @@ public class LoginFragment extends Fragment {
                             Listener listener = (Listener) getActivity();
                             listener.onSubmitLoginBtnClick();
                             if (cb_RememberPwd.isChecked()) {
-                                SPUtils.putBoolean(getActivity(), "rememberPwd", true);
-                                SPUtils.putString(getActivity(), "username", username);
-                                SPUtils.putString(getActivity(), "password", pwd);
+                                SPUtils.putBoolean(getActivity(), Constants.SP_IS_REMEMBER, true);
+                                SPUtils.putString(getActivity(), Constants.SP_USERNAME, username);
+                                SPUtils.putString(getActivity(), Constants.SP_PASSWORD, pwd);
+                                SPUtils.putBoolean(getActivity(),"isLogin",true);
                             } else {
                                 SPUtils.clear(getActivity());
                             }
