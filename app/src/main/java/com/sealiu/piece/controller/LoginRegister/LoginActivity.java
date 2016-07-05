@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.MapsActivity;
+import com.sealiu.piece.utils.SPUtils;
 
 public class LoginActivity extends AppCompatActivity
         implements LoginFragment.Listener {
@@ -21,15 +22,20 @@ public class LoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_login);
+        Boolean isLogin = SPUtils.getBoolean(this,"isLogin",false);
+        if (isLogin) {
+            onSubmitLoginBtnClick();
+        } else {
+            Fragment fragment = fm.findFragmentById(R.id.content_frame);
 
-        Fragment fragment = fm.findFragmentById(R.id.content_frame);
-
-        if (fragment == null) {
-            fragment = new LoginFragment();
-            fm.beginTransaction()
-                    .add(R.id.content_frame, fragment, null)
-                    .commit();
+            if (fragment == null) {
+                fragment = new LoginFragment();
+                fm.beginTransaction()
+                        .add(R.id.content_frame, fragment, null)
+                        .commit();
+            }
         }
+
     }
 
     @Override
