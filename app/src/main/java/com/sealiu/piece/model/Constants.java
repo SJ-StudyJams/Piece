@@ -1,4 +1,4 @@
-package com.sealiu.piece.controller.LoginRegister;
+package com.sealiu.piece.model;
 
 /**
  * Created by art2cat on 7/4/2016.
@@ -33,4 +33,7 @@ public class Constants {
     public static final int CREDIT_INFO_MUST_VERIFY_OK = 10012;
     // 非法短信内容
     public static final int SMS_CONTENT_ILLEGAL = 10013;
+
+    // User信息本体保存文件
+    public static final String SP_FILE_NAME = "userInfo";
 }
