@@ -20,13 +20,13 @@ import cn.bmob.sms.exception.BmobException;
 import cn.bmob.sms.listener.RequestSMSCodeListener;
 import cn.bmob.sms.listener.VerifySMSCodeListener;
 
-import static com.sealiu.piece.controller.LoginRegister.Constants.CODE_ERROR;
-import static com.sealiu.piece.controller.LoginRegister.Constants.CREDIT_INFO_MUST_VERIFY_OK;
-import static com.sealiu.piece.controller.LoginRegister.Constants.LOGIN_DATA_REQUIRED;
-import static com.sealiu.piece.controller.LoginRegister.Constants.MOBILE_PHONE_NUMBER_ALREADY_TAKEN;
-import static com.sealiu.piece.controller.LoginRegister.Constants.MOBILE_SEND_MESSAGE_LIMITED;
-import static com.sealiu.piece.controller.LoginRegister.Constants.NO_REMAINING_NUMBER_FOR_SEND_MESSAGES;
-import static com.sealiu.piece.controller.LoginRegister.Constants.SMS_CONTENT_ILLEGAL;
+import static com.sealiu.piece.model.Constants.CODE_ERROR;
+import static com.sealiu.piece.model.Constants.CREDIT_INFO_MUST_VERIFY_OK;
+import static com.sealiu.piece.model.Constants.LOGIN_DATA_REQUIRED;
+import static com.sealiu.piece.model.Constants.MOBILE_PHONE_NUMBER_ALREADY_TAKEN;
+import static com.sealiu.piece.model.Constants.MOBILE_SEND_MESSAGE_LIMITED;
+import static com.sealiu.piece.model.Constants.NO_REMAINING_NUMBER_FOR_SEND_MESSAGES;
+import static com.sealiu.piece.model.Constants.SMS_CONTENT_ILLEGAL;
 
 /**
  * Created by liuyang

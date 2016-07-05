@@ -1,6 +1,7 @@
 package com.sealiu.piece.controller.LoginRegister;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -18,7 +19,6 @@ import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
-
 
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -101,9 +101,16 @@ public class LoginFragment extends Fragment {
                 user.setUsername(username);
                 password = Md5Utils.encode(pwd);
                 user.setPassword(password);
+
+                // ProgressDialog
+                final ProgressDialog progress = new ProgressDialog(getActivity());
+                progress.setMessage("正在登录中...");
+                progress.setCanceledOnTouchOutside(false);
+                progress.show();
                 user.login(new SaveListener<User>() {
                     @Override
                     public void done(User user, BmobException e) {
+                        progress.dismiss();
                         if(e == null){
                             Listener listener = (Listener) getActivity();
                             listener.onSubmitLoginBtnClick();
