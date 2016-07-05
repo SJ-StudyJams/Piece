@@ -1,4 +1,4 @@
-package com.sealiu.piece.controller.LoginRegister;
+package com.sealiu.piece.model;
 
 /**
  * Created by art2cat on 7/4/2016.
@@ -13,5 +13,10 @@ public class Constants {
      * 此为腾讯官方提供给开发者用于测试的APP_ID，个人开发者需要去QQ互联官网为自己的应用申请对应的AppId
      */
     public static final String QQ_APP_ID ="1105440739";
+
+    /**
+     * User信息配置保存文件名
+     */
+    public static final String SP_FILE_NAME = "userInfo";
 
 }

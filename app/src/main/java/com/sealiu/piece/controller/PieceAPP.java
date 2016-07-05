@@ -2,7 +2,7 @@ package com.sealiu.piece.controller;
 
 import android.content.Context;
 
-import com.sealiu.piece.controller.LoginRegister.Constants;
+import com.sealiu.piece.model.Constants;
 
 import cn.bmob.sms.BmobSMS;
 import cn.bmob.v3.Bmob;
