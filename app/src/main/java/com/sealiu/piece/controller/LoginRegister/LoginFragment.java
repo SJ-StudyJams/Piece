@@ -30,7 +30,7 @@ import cn.bmob.v3.listener.SaveListener;
 public class LoginFragment extends Fragment {
 
     private View view;
-    private EditText et_account,et_pwd;
+    private EditText et_account, et_pwd;
     private User user = new User();
     private CheckBox cb_RememberPwd;
     private boolean isRememberPwd;
@@ -89,11 +89,11 @@ public class LoginFragment extends Fragment {
             public void onClick(final View view) {
                 username = et_account.getText().toString().trim();
                 pwd = et_pwd.getText().toString().trim();
-                if(username.equals("")){
+                if (username.equals("")) {
                     Snackbar.make(view, "请输入注册邮箱或手机号", Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                     return;
-                } else if(pwd.equals("")){
+                } else if (pwd.equals("")) {
                     Snackbar.make(view, "请输入密码", Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                     return;
@@ -109,24 +109,30 @@ public class LoginFragment extends Fragment {
                 progress.show();
                 user.login(new SaveListener<User>() {
                     @Override
-                    public void done(User user, BmobException e) {
-                        progress.dismiss();
-                        if(e == null){
+                    public void done(User u, BmobException e) {
+                        if (e == null) {
                             Listener listener = (Listener) getActivity();
                             listener.onSubmitLoginBtnClick();
+
+                            Log.i(TAG, "登录成功，objectId：" + u.getObjectId());
+
+                            SPUtils.putString(getActivity(), Constants.SP_USERNAME, username);
+                            SPUtils.putBoolean(getActivity(), Constants.SP_IS_LOGIN, true);
+
+                            // 是否记住密码
                             if (cb_RememberPwd.isChecked()) {
                                 SPUtils.putBoolean(getActivity(), Constants.SP_IS_REMEMBER, true);
-                                SPUtils.putString(getActivity(), Constants.SP_USERNAME, username);
                                 SPUtils.putString(getActivity(), Constants.SP_PASSWORD, pwd);
-                                SPUtils.putBoolean(getActivity(),"isLogin",true);
                             } else {
                                 SPUtils.clear(getActivity());
                             }
+                            progress.dismiss();
                         } else {
                             SPUtils.clear(getActivity());
                             Snackbar.make(view, "用户名或密码错误", Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
                             Log.e(TAG, e.toString());
+                            progress.dismiss();
                         }
                     }
                 });

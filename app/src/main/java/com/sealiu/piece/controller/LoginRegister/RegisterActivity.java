@@ -15,7 +15,9 @@ import android.util.Log;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.MapsActivity;
+import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
+import com.sealiu.piece.utils.SPUtils;
 
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -137,14 +139,22 @@ public class RegisterActivity extends AppCompatActivity
         user.signUp(new SaveListener<User>() {
             @Override
             public void done(User user, BmobException e) {
-                progress.dismiss();
                 if (e == null) {
                     Log.i(TAG, "注册成功:" + user.toString());
+
+                    // 保存SP
+                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_IS_LOGIN, true);
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_USER_OBJECT_ID, user.getObjectId());
+                    progress.dismiss();
+
                     Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
+                    // 清除SP
+                    SPUtils.clear(RegisterActivity.this);
                     Log.i(TAG, e.toString());
+                    progress.dismiss();
                 }
             }
         });

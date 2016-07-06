@@ -48,4 +48,7 @@ public class Constants {
     public static final String SP_IS_LOGIN = "isLogin";
     //记住密码
     public static final String SP_IS_REMEMBER = "isRemember";
+
+    //_user objectId
+    public static final String SP_USER_OBJECT_ID = "userObjectId";
 }
