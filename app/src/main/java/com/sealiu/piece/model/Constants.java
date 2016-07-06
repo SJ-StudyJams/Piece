@@ -48,4 +48,12 @@ public class Constants {
     public static final String SP_IS_LOGIN = "isLogin";
     //记住密码
     public static final String SP_IS_REMEMBER = "isRemember";
+    //生日
+    public static final String SP_BIRTH = "birth";
+    //性别
+    public static final String SP_SEX = "sex";
+    //昵称
+    public static final String SP_NICKNAME = "nickname";
+    //个人简介
+    public static final String SP_BIO = "bio";
 }

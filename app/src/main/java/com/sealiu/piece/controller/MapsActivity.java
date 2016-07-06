@@ -20,7 +20,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.LoginRegister.LoginActivity;
 import com.sealiu.piece.controller.User.UserActivity;
+import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.utils.SPUtils;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -102,6 +105,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             case R.id.user_menu_title:
                 startActivity(new Intent(MapsActivity.this, UserActivity.class));
+                break;
+            case R.id.switch_menu_title:
+                SPUtils.putBoolean(this, Constants.SP_IS_LOGIN, false);
+                startActivity(new Intent(MapsActivity.this, LoginActivity.class));
                 break;
             default:
                 break;

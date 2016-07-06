@@ -37,7 +37,6 @@ public class SPUtils {
                 Constants.SP_FILE_NAME, Context.MODE_PRIVATE);
 
         return sp.getBoolean(key, defValue);
-
     }
 
     public static void clear(Context context) {

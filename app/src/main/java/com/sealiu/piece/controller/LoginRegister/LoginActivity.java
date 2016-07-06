@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.MapsActivity;
+import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.utils.SPUtils;
 
 public class LoginActivity extends AppCompatActivity
@@ -22,7 +23,7 @@ public class LoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_login);
-        Boolean isLogin = SPUtils.getBoolean(this,"isLogin",false);
+        Boolean isLogin = SPUtils.getBoolean(this, Constants.SP_IS_LOGIN, false);
         if (isLogin) {
             onSubmitLoginBtnClick();
         } else {

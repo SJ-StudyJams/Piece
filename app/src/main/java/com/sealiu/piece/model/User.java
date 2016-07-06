@@ -9,7 +9,6 @@ import cn.bmob.v3.BmobUser;
 public class User extends BmobUser {
 
     //第三方登录qq返回值
-    
     private String qq;
     //第三方登录微信返回值
     private String wechat;
@@ -19,7 +18,7 @@ public class User extends BmobUser {
     private String bio;
     //用户类型
     private Integer type;
-
+    //登陆时间
     private long time;
     //性别
     private boolean sex;
@@ -27,6 +26,8 @@ public class User extends BmobUser {
     private String pwd;
     //生日
     private String birth;
+    //昵称
+    private String nickname;
 
     public String getQq() {
         return qq;
@@ -98,5 +99,13 @@ public class User extends BmobUser {
 
     public void setBirth(String birth) {
         this.birth = birth;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 }

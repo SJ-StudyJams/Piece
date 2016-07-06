@@ -111,7 +111,7 @@ public class LoginFragment extends Fragment {
                                 SPUtils.putBoolean(getActivity(), Constants.SP_IS_REMEMBER, true);
                                 SPUtils.putString(getActivity(), Constants.SP_USERNAME, username);
                                 SPUtils.putString(getActivity(), Constants.SP_PASSWORD, pwd);
-                                SPUtils.putBoolean(getActivity(),"isLogin",true);
+                                SPUtils.putBoolean(getActivity(),Constants.SP_IS_LOGIN, true);
                             } else {
                                 SPUtils.clear(getActivity());
                             }
