@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,6 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.LoginRegister.LoginActivity;
+import com.sealiu.piece.controller.User.SettingsActivity;
 import com.sealiu.piece.controller.User.UserActivity;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.utils.SPUtils;
@@ -100,8 +100,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         switch (item.getItemId()) {
             case R.id.settings_menu_title:
-                Toast.makeText(MapsActivity.this, "Replace with your own action", Toast.LENGTH_SHORT)
-                        .show();
+                startActivity(new Intent(MapsActivity.this, SettingsActivity.class));
                 break;
             case R.id.user_menu_title:
                 startActivity(new Intent(MapsActivity.this, UserActivity.class));

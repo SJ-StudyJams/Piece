@@ -57,11 +57,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".controller.LoginRegister.RegisterActivity" />
-
         <activity
             android:name=".controller.MapsActivity"
             android:label="@string/app_name" />
-
         <activity
             android:name=".controller.User.UserActivity"
             android:theme="@style/AppTheme">
@@ -69,14 +67,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".controller.MapsActivity" />
         </activity>
-
         <activity
             android:name=".controller.User.EditActivity"
-            android:label="@string/edit_user_info" >
+            android:label="@string/edit_user_info">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.User.UserActivity"/>
+                android:value=".controller.User.UserActivity" />
         </activity>
+        <activity
+            android:name=".controller.User.SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>
