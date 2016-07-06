@@ -13,7 +13,6 @@
             android:id="@+id/edit_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="昵称"
-            android:text="username" />
+            android:hint="昵称"/>
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>

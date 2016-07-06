@@ -74,7 +74,7 @@ public class EditActivity extends AppCompatActivity implements
         if (birth == null) {
             birthET.setText("点击设置");
         } else {
-            birthET.setText(bio);
+            birthET.setText(birth);
         }
 
         //修改昵称
