@@ -9,11 +9,18 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.User;
+
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * 展示用户的个人信息（头像，昵称，简介）
@@ -22,6 +29,12 @@ import com.sealiu.piece.R;
 public class EditActivity extends AppCompatActivity implements
         EditNameFragment.EditNameDialogListener,
         EditBioFragment.EditBioDialogListener {
+
+    private User user = new User();
+    private BmobUser user1 = BmobUser.getCurrentUser();
+    private EditText usernameET, bioET, birthET;
+    private static final String TAG = "EditActivity";
+    private String objectId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +46,36 @@ public class EditActivity extends AppCompatActivity implements
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.edit_user_info);
+
+
+        objectId = user1.getObjectId();
+
+        usernameET = (EditText) findViewById(R.id.user_name);
+        String nickname = (String) User.getObjectByKey(Constants.SP_NICKNAME);
+        Log.i(TAG, "昵称为：" + nickname);
+        if (nickname == null) {
+            usernameET.setText("点击设置");
+        } else {
+            usernameET.setText(nickname);
+        }
+
+        bioET = (EditText) findViewById(R.id.user_bio);
+        String bio = (String) User.getObjectByKey(Constants.SP_BIO);
+        Log.i(TAG, "个人简介：" + bio);
+        if (bio == null) {
+            bioET.setText("点击设置");
+        } else {
+            bioET.setText(bio);
+        }
+
+        birthET = (EditText) findViewById(R.id.user_birth);
+        String birth = (String) User.getObjectByKey(Constants.SP_BIRTH);
+        Log.i(TAG, "生日：" + birth);
+        if (birth == null) {
+            birthET.setText("点击设置");
+        } else {
+            birthET.setText(bio);
+        }
 
         //修改昵称
         findViewById(R.id.user_name).setOnClickListener(new View.OnClickListener() {
@@ -64,11 +107,21 @@ public class EditActivity extends AppCompatActivity implements
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int monthOfYear,
                                           int dayOfMonth) {
-                        EditText setBirth = (EditText) findViewById(R.id.user_birth);
                         int month = monthOfYear + 1;
                         String birth = year + "-" + month
                                 + "-" + dayOfMonth;
-                        setBirth.setText(birth);
+                        user.setBirth(birth);
+                        user.update(user1.getObjectId(), new UpdateListener() {
+                            @Override
+                            public void done(BmobException e) {
+                                if(e == null){
+                                    Log.i(TAG, "更新用户信息成功");
+                                }else{
+                                    Log.i(TAG, "更新用户信息失败:" + e.getMessage());
+                                }
+                            }
+                        });
+                        birthET.setText(birth);
                     }
                 }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar
                         .get(Calendar.DAY_OF_MONTH)).show();
@@ -91,7 +144,18 @@ public class EditActivity extends AppCompatActivity implements
     // 修改昵称对话框（确定修改）
     @Override
     public void onEditNameDialogPositiveClick(DialogFragment dialog, String name) {
-        EditText usernameET = (EditText) findViewById(R.id.user_name);
+        user.setNickname(name);
+        Log.i(TAG, "id" + objectId);
+        user.update(user1.getObjectId(), new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e == null){
+                    Log.i(TAG, "更新用户信息成功");
+                }else{
+                    Log.i(TAG, "更新用户信息失败:" + e.getMessage());
+                }
+            }
+        });
         usernameET.setText(name);
         //执行username更新操作\
     }
@@ -105,7 +169,17 @@ public class EditActivity extends AppCompatActivity implements
     // 修改个人简介对话框（确定修改）
     @Override
     public void onEditBioDialogPositiveClick(DialogFragment dialog, String bio) {
-        EditText bioET = (EditText) findViewById(R.id.user_bio);
+        user.setBio(bio);
+        user.update(user1.getObjectId(), new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e == null){
+                    Log.i(TAG, "更新用户信息成功");
+                }else{
+                    Log.i(TAG, "更新用户信息失败:" + e.getMessage());
+                }
+            }
+        });
         bioET.setText(bio);
     }
 
