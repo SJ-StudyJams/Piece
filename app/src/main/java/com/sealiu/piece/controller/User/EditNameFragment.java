@@ -15,12 +15,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.User;
 
 /**
  * Created by liuyang
  * on 2016/7/4.
  */
 public class EditNameFragment extends DialogFragment {
+    private String nickname;
+    private TextView nameTV;
 
     public interface EditNameDialogListener {
         void onEditNameDialogPositiveClick(DialogFragment dialog, String name);
@@ -70,11 +74,16 @@ public class EditNameFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_edit_name, null);
         builder.setView(view);
 
+        nickname = (String) User.getObjectByKey(Constants.SP_NICKNAME);
+        Log.i("test", "nickname" + nickname);
+
+        nameTV = (TextView) view.findViewById(R.id.edit_username);
+        nameTV.setText(nickname);
+
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                TextView nameTV = (TextView) view.findViewById(R.id.edit_username);
                 if (nameTV != null) {
                     String name = nameTV.getText().toString();
                     Log.i("EditNameFrag", name);

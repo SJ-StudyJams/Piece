@@ -15,12 +15,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.User;
+
+
 
 /**
  * Created by liuyang
  * on 2016/7/4.
  */
 public class EditBioFragment extends DialogFragment {
+    private String bio;
+    private TextView bioTV;
+
     public interface EditBioDialogListener {
         void onEditBioDialogPositiveClick(DialogFragment dialog, String name);
 
@@ -69,11 +76,15 @@ public class EditBioFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_edit_bio, null);
         builder.setView(view);
 
+        bio = (String) User.getObjectByKey(Constants.SP_BIO);
+        Log.i("test", "bio" + bio);
+
+        bioTV = (TextView) view.findViewById(R.id.edit_bio);
+        bioTV.setText(bio);
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                TextView bioTV = (TextView) view.findViewById(R.id.edit_bio);
                 if (bioTV != null) {
                     String bio = bioTV.getText().toString();
                     Log.i("EditFrag", bio);
