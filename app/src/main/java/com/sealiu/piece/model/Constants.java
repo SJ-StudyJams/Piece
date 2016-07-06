@@ -44,8 +44,6 @@ public class Constants {
     public static final String SP_USERNAME = "username";
     //密码（未加密）
     public static final String SP_PASSWORD = "password";
-    //登陆与否
-    public static final String SP_IS_LOGIN = "isLogin";
     //记住密码
     public static final String SP_IS_REMEMBER = "isRemember";
     //生日
@@ -56,7 +54,6 @@ public class Constants {
     public static final String SP_NICKNAME = "nickname";
     //个人简介
     public static final String SP_BIO = "bio";
-
     //登陆与否
     public static final String SP_IS_LOGIN = "isLogin";
     //自动登录
