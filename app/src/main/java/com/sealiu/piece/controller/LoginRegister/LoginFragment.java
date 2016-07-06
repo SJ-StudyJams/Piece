@@ -83,10 +83,10 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        isRememberPwd = SPUtils.getBoolean(getActivity(), Constants.SP_IS_REMEMBER, false);
+        isRememberPwd = SPUtils.getBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_REMEMBER, false);
         if (isRememberPwd) {
-            username = SPUtils.getString(getActivity(), Constants.SP_USERNAME, null);
-            password = SPUtils.getString(getActivity(), Constants.SP_PASSWORD, null);
+            username = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, null);
+            password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
             et_account.setText(username);
             et_pwd.setText(password);
             cb_RememberPwd.setChecked(true);
@@ -145,26 +145,27 @@ public class LoginFragment extends Fragment {
 
                             Log.i(TAG, "登录成功，objectId：" + u.getObjectId());
 
-                            SPUtils.putString(getActivity(), Constants.SP_USERNAME, username);
-                            SPUtils.putBoolean(getActivity(), Constants.SP_IS_LOGIN, true);
-                            SPUtils.putString(getActivity(), Constants.SP_USER_OBJECT_ID, u.getObjectId());
+                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, username);
+                            SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
+                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
 
                             //是否自动登录
                             if (cb_AutoLogin.isChecked()) {
-                                SPUtils.putBoolean(getActivity(), Constants.SP_IS_AUTO_LOGIN, true);
-                                SPUtils.putBoolean(getActivity(), Constants.SP_IS_REMEMBER, true);
-                                SPUtils.putString(getActivity(), Constants.SP_PASSWORD, pwd);
+                                SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, true);
+                                SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_REMEMBER, true);
+
+                                SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
                             } else if (cb_RememberPwd.isChecked()) {
                                 // 是否记住密码
-                                SPUtils.putBoolean(getActivity(), Constants.SP_IS_REMEMBER, true);
-                                SPUtils.putString(getActivity(), Constants.SP_PASSWORD, pwd);
+                                SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_REMEMBER, true);
+                                SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
                             } else {
-                                SPUtils.clear(getActivity());
+                                SPUtils.clear(getActivity(), Constants.SP_FILE_NAME);
                             }
 
                             progress.dismiss();
                         } else {
-                            SPUtils.clear(getActivity());
+                            SPUtils.clear(getActivity(), Constants.SP_FILE_NAME);
                             Snackbar.make(view, "用户名或密码错误", Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
                             Log.e(TAG, e.toString());

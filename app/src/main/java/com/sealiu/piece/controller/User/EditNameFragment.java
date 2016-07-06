@@ -17,6 +17,9 @@ import android.widget.TextView;
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
+import com.sealiu.piece.utils.SPUtils;
+
+import cn.bmob.v3.BmobUser;
 
 /**
  * Created by liuyang
@@ -25,6 +28,7 @@ import com.sealiu.piece.model.User;
 public class EditNameFragment extends DialogFragment {
     private String nickname;
     private TextView nameTV;
+    private BmobUser user1 = BmobUser.getCurrentUser();
 
     public interface EditNameDialogListener {
         void onEditNameDialogPositiveClick(DialogFragment dialog, String name);
@@ -74,7 +78,8 @@ public class EditNameFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_edit_name, null);
         builder.setView(view);
 
-        nickname = (String) User.getObjectByKey(Constants.SP_NICKNAME);
+        String objectId = user1.getObjectId();
+        nickname = SPUtils.getString(getActivity(), objectId, Constants.SP_NICKNAME, null);
         Log.i("test", "nickname" + nickname);
 
         nameTV = (TextView) view.findViewById(R.id.edit_username);

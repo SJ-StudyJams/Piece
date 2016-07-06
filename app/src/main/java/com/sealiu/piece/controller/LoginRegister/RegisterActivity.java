@@ -144,13 +144,13 @@ public class RegisterActivity extends AppCompatActivity
                     Log.i(TAG, "注册成功:" + user.toString());
 
                     // 保存SP
-                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_IS_LOGIN, true);
+                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
                     // 注册成功后默认下次自动登录
-                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_IS_AUTO_LOGIN, true);
-                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_IS_REMEMBER, true);
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_USERNAME, user.getUsername());
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_PASSWORD, pwd);
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_USER_OBJECT_ID, user.getObjectId());
+                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, true);
+                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_REMEMBER, true);
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, user.getUsername());
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, user.getObjectId());
                     progress.dismiss();
 
                     Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
@@ -158,7 +158,7 @@ public class RegisterActivity extends AppCompatActivity
                     finish();
                 } else {
                     // 清除SP
-                    SPUtils.clear(RegisterActivity.this);
+                    SPUtils.clear(RegisterActivity.this, Constants.SP_FILE_NAME);
                     Log.i(TAG, e.toString());
                     progress.dismiss();
                 }
