@@ -56,4 +56,11 @@ public class Constants {
     public static final String SP_NICKNAME = "nickname";
     //个人简介
     public static final String SP_BIO = "bio";
+
+    //登陆与否
+    public static final String SP_IS_LOGIN = "isLogin";
+    //自动登录
+    public static final String SP_IS_AUTO_LOGIN = "isAutoLogin";
+    //_user objectId
+    public static final String SP_USER_OBJECT_ID = "userObjectId";
 }
