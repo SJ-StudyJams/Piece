@@ -1,6 +1,7 @@
 package com.sealiu.piece.controller.LoginRegister;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.MapsActivity;
+import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.utils.SPUtils;
 
 public class LoginActivity extends AppCompatActivity
@@ -21,19 +23,28 @@ public class LoginActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_login);
-        Boolean isLogin = SPUtils.getBoolean(this,"isLogin",false);
-        if (isLogin) {
+        // 如果自动登录
+        final ProgressDialog progress = new ProgressDialog(LoginActivity.this);
+        progress.setMessage("正在登录中...");
+        progress.setCanceledOnTouchOutside(false);
+        progress.show();
+        if (SPUtils.getBoolean(LoginActivity.this, Constants.SP_IS_AUTO_LOGIN, false)
+                && SPUtils.getString(LoginActivity.this, Constants.SP_USER_OBJECT_ID, null) != null) {
+            //上次登录时选择了自动登录，并且用户的 objectId 不为空；则自动登录
+            progress.dismiss();
             onSubmitLoginBtnClick();
-        } else {
-            Fragment fragment = fm.findFragmentById(R.id.content_frame);
+        }
+        progress.dismiss();
 
-            if (fragment == null) {
-                fragment = new LoginFragment();
-                fm.beginTransaction()
-                        .add(R.id.content_frame, fragment, null)
-                        .commit();
-            }
+        setContentView(R.layout.activity_login);
+
+        Fragment fragment = fm.findFragmentById(R.id.content_frame);
+
+        if (fragment == null) {
+            fragment = new LoginFragment();
+            fm.beginTransaction()
+                    .add(R.id.content_frame, fragment, null)
+                    .commit();
         }
 
     }

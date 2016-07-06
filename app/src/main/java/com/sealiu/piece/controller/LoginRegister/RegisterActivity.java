@@ -144,6 +144,8 @@ public class RegisterActivity extends AppCompatActivity
 
                     // 保存SP
                     SPUtils.putBoolean(RegisterActivity.this, Constants.SP_IS_LOGIN, true);
+                    // 注册成功后记住用户名
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_USERNAME, user.getUsername());
                     SPUtils.putString(RegisterActivity.this, Constants.SP_USER_OBJECT_ID, user.getObjectId());
                     progress.dismiss();
 

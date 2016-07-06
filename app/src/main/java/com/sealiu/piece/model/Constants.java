@@ -44,11 +44,13 @@ public class Constants {
     public static final String SP_USERNAME = "username";
     //密码（未加密）
     public static final String SP_PASSWORD = "password";
-    //登陆与否
-    public static final String SP_IS_LOGIN = "isLogin";
     //记住密码
     public static final String SP_IS_REMEMBER = "isRemember";
 
+    //登陆与否
+    public static final String SP_IS_LOGIN = "isLogin";
+    //自动登录
+    public static final String SP_IS_AUTO_LOGIN = "isAutoLogin";
     //_user objectId
     public static final String SP_USER_OBJECT_ID = "userObjectId";
 }
