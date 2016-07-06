@@ -49,7 +49,7 @@ public class Constants {
     //生日
     public static final String SP_BIRTH = "birth";
     //性别
-    public static final String SP_SEX = "sex";
+    public static final String SP_SEX = "user_sex";
     //昵称
     public static final String SP_NICKNAME = "nickname";
     //个人简介
