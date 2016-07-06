@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.utils.Md5Utils;
 
 /**
  * Created by liuyang
@@ -72,7 +71,7 @@ public class RegisterTwoFragment extends Fragment {
                     return;
                 }
 
-                listener.onCompleteRegisterBtnClick(Md5Utils.encode(repeatPwd));
+                listener.onCompleteRegisterBtnClick(repeatPwd);
             }
         });
 

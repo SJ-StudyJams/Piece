@@ -17,6 +17,7 @@ import com.sealiu.piece.R;
 import com.sealiu.piece.controller.MapsActivity;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
+import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
 
 import cn.bmob.v3.exception.BmobException;
@@ -126,9 +127,9 @@ public class RegisterActivity extends AppCompatActivity
 
     // 完成注册
     @Override
-    public void onCompleteRegisterBtnClick(String encodedPwd) {
+    public void onCompleteRegisterBtnClick(final String pwd) {
 
-        user.setPassword(encodedPwd);
+        user.setPassword(Md5Utils.encode(pwd));
 
         // 注册
         final ProgressDialog progress = new ProgressDialog(RegisterActivity.this);
@@ -144,8 +145,11 @@ public class RegisterActivity extends AppCompatActivity
 
                     // 保存SP
                     SPUtils.putBoolean(RegisterActivity.this, Constants.SP_IS_LOGIN, true);
-                    // 注册成功后记住用户名
+                    // 注册成功后默认下次自动登录
+                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_IS_AUTO_LOGIN, true);
+                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_IS_REMEMBER, true);
                     SPUtils.putString(RegisterActivity.this, Constants.SP_USERNAME, user.getUsername());
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_PASSWORD, pwd);
                     SPUtils.putString(RegisterActivity.this, Constants.SP_USER_OBJECT_ID, user.getObjectId());
                     progress.dismiss();
 
