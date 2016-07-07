@@ -75,11 +75,25 @@
                 android:value=".controller.User.UserActivity" />
         </activity>
         <activity
-            android:name=".controller.MyPreferenceActivity"
+            android:name=".controller.Settings.MyPreferenceActivity"
             android:label="@string/setting_menu_title">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".controller.MapsActivity" />
+        </activity>
+        <activity
+            android:name=".controller.Settings.AboutActivity"
+            android:label="@string/pref_about_title">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.Settings.MyPreferenceActivity" />
+        </activity>
+        <activity
+            android:name=".controller.Settings.FeedbackActivity"
+            android:label="@string/pref_feedback_title">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.Settings.MyPreferenceActivity" />
         </activity>
     </application>
 

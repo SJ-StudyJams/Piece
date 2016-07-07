@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.LoginRegister.LoginActivity;
+import com.sealiu.piece.controller.Settings.MyPreferenceActivity;
 import com.sealiu.piece.controller.User.UserActivity;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.utils.SPUtils;
@@ -115,7 +116,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         switch (item.getItemId()) {
             case R.id.settings_menu_title:
-                startActivity(new Intent(MapsActivity.this, MyPreferenceActivity.class));
+                startActivityForResult(new Intent(MapsActivity.this, MyPreferenceActivity.class), 1);
                 break;
             case R.id.user_menu_title:
                 startActivity(new Intent(MapsActivity.this, UserActivity.class));

@@ -16,7 +16,9 @@
             android:title="@string/pref_ringtone"
             android:dependency="pref_notification_voice_key"
             android:defaultValue="content://settings/system/notification_sound"
-            android:ringtoneType="notification" />
+            android:ringtoneType="notification"
+            android:showDefault="true"
+            android:showSilent="true" />
 
         <SwitchPreference
             android:key="pref_vibrate_key"
@@ -45,13 +47,21 @@
             android:key="pref_about_key"
             android:icon="@drawable/ic_info_outline_black_24dp"
             android:title="@string/pref_about_title"
-            android:defaultValue="true" />
+            android:defaultValue="true">
+            <intent
+                android:targetPackage="com.sealiu.piece"
+                android:targetClass="com.sealiu.piece.controller.Settings.AboutActivity" />
+        </Preference>
 
         <Preference
             android:key="pref_feedback_key"
             android:icon="@drawable/ic_announcement_black_24dp"
             android:title="@string/pref_feedback_title"
-            android:defaultValue="true" />
+            android:defaultValue="true">
+            <intent
+                android:targetPackage="com.sealiu.piece"
+                android:targetClass="com.sealiu.piece.controller.Settings.FeedbackActivity" />
+        </Preference>
 
         <Preference
             android:key="pref_logout_key"
