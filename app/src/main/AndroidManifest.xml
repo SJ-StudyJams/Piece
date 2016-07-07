@@ -75,8 +75,12 @@
                 android:value=".controller.User.UserActivity" />
         </activity>
         <activity
-            android:name=".controller.User.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:name=".controller.MyPreferenceActivity"
+            android:label="@string/setting_menu_title">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.MapsActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -100,4 +100,16 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="change_pwd">更改密码</string>
+    <string name="pref_notification">提醒</string>
+    <string name="pref_piece_nearby_title">附近的Piece信息</string>
+    <string name="pref_piece_nearby_summary">选择接受附近的Piece消息的类别</string>
+    <string name="pref_piece_token_title">Piece被拾走提醒</string>
+    <string name="pref_notification_voice">提示音</string>
+    <string name="pref_ringtone">铃声</string>
+    <string name="pref_vibrate_title">振动</string>
+    <string name="pref_vibrate_summary">有消息提醒时振动</string>
+    <string name="pref_other">其他</string>
+    <string name="pref_about_title">关于</string>
+    <string name="pref_feedback_title">反馈</string>
+    <string name="pref_logout_title">退出登录</string>
 </resources>
