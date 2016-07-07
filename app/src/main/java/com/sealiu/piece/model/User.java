@@ -21,13 +21,18 @@ public class User extends BmobUser {
     //登陆时间
     private long time;
     //性别
-    private boolean sex;
+    private String user_sex;
     //密码
     private String pwd;
     //生日
     private String birth;
     //昵称
     private String nickname;
+
+    @Override
+    public String getObjectId() {
+        return super.getObjectId();
+    }
 
     public String getQq() {
         return qq;
@@ -77,12 +82,11 @@ public class User extends BmobUser {
         return time;
     }
 
-    public void setSex(boolean sex) {
-        this.sex = sex;
+    public String getUser_sex() {
+        return user_sex;
     }
-
-    public boolean isSex() {
-        return sex;
+    public void setUser_sex(String user_sex) {
+        this.user_sex = user_sex;
     }
 
     public String getPwd() {
@@ -108,4 +112,6 @@ public class User extends BmobUser {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
+
+
 }

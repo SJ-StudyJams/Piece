@@ -8,21 +8,29 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.utils.SPUtils;
 
+import cn.bmob.v3.BmobUser;
 
 /**
- * Created by liuyang
- * on 2016/7/4.
+ * Created by art2cat on 7/6/2016.
  */
-public class EditPhoneFragment extends DialogFragment {
+public class EditPhoneFragment extends DialogFragment{
+    private String phone, password;
+    private TextView phoneTV, passwordTV;
+    private BmobUser user1 = BmobUser.getCurrentUser();
 
     public interface EditPhoneDialogListener {
-        void onEditPhoneDialogPositiveClick(DialogFragment dialog);
+        void onEditPhoneDialogPositiveClick(DialogFragment dialog, String phone);
 
         void onEditPhoneDialogNegativeClick(DialogFragment dialog);
     }
@@ -68,21 +76,54 @@ public class EditPhoneFragment extends DialogFragment {
         // Pass null as the parent view because its going in the dialog layout
         final View view = inflater.inflate(R.layout.dialog_edit_phone, null);
         builder.setView(view);
-        final EditPhoneDialogListener listener = (EditPhoneDialogListener) getActivity();
+
+        String objectId = user1.getObjectId();
+        
+        phone = SPUtils.getString(getActivity(), objectId, Constants.SP_PHONE_NUMBER, null);
+        password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
+        Log.i("test", "password" + password);
+        Log.i("test", "phone" + phone);
+
+        phoneTV = (TextView) view.findViewById(R.id.edit_user_phone);
+        passwordTV = (TextView) view.findViewById(R.id.edit_user_phone_password);
+        phoneTV.setText(phone);
 
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
 
-                listener.onEditPhoneDialogPositiveClick(EditPhoneFragment.this);
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+
+                String password1 = passwordTV.getText().toString();
+                //String password2 = (String) User.getObjectByKey("password");
+                String password2 = "123456";
+
+                if (password1.equals(password)) {
+                    if (phoneTV != null) {
+                        String phone = phoneTV.getText().toString();
+                        EditPhoneDialogListener listener = (EditPhoneDialogListener) getActivity();
+                        listener.onEditPhoneDialogPositiveClick(
+                                EditPhoneFragment.this,
+                                phone
+                        );
+                    }
+                } else {
+                    onStart();
+                    Toast.makeText(getActivity(), "密码不正确", Toast.LENGTH_SHORT).show();
+                }
+
+
+
+
             }
         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+            public void onClick(DialogInterface dialog, int id) {
+                EditPhoneDialogListener listener = (EditPhoneDialogListener) getActivity();
                 listener.onEditPhoneDialogNegativeClick(EditPhoneFragment.this);
             }
-        }).setTitle("绑定/修改手机号");
-        return builder.create();
+        });
 
+        return builder.create();
     }
+
 }

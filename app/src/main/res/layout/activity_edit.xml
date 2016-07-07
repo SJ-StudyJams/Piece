@@ -54,7 +54,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="昵称"
-                        android:text="点击设置" />
+                        android:text=""
+                        android:inputType="none"
+                        android:editable="false"
+                        android:clickable="true" />
                 </android.support.design.widget.TextInputLayout>
 
                 <TextView
@@ -67,24 +70,28 @@
                     android:textSize="12sp" />
 
                 <RadioGroup
+                    android:id="@+id/user_sex"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:orientation="horizontal">
 
                     <android.support.v7.widget.AppCompatRadioButton
+                        android:id="@+id/user_sex_male"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="8dp"
                         android:text="男" />
 
                     <android.support.v7.widget.AppCompatRadioButton
+                        android:id="@+id/user_sex_female"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="8dp"
                         android:text="女" />
 
                     <android.support.v7.widget.AppCompatRadioButton
+                        android:id="@+id/user_sex_secret"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="保密" />
@@ -99,8 +106,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="个人简介"
-                        android:inputType="textMultiLine"
-                        android:text="点击设置" />
+                        android:text=""
+                        android:inputType="none"
+                        android:editable="false"
+                        android:clickable="true" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -132,7 +141,7 @@
                             android:clickable="false"
                             android:focusable="false"
                             android:hint="手机号"
-                            android:text="18538390217" />
+                            android:text="" />
                     </android.support.design.widget.TextInputLayout>
 
                     <ImageView

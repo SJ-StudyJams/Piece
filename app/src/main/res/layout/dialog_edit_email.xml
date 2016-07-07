@@ -1,37 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingTop="16dp">
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingRight="16dp"
-        android:paddingLeft="16dp"
-        android:paddingTop="8dp">
+        android:padding="16dp">
 
         <EditText
-            android:id="@+id/edit_email"
+            android:id="@+id/edit_user_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="邮箱"
-            android:inputType="textEmailAddress" />
+            android:text=""
+            android:inputType="textEmailAddress"/>
     </android.support.design.widget.TextInputLayout>
+
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingRight="16dp"
-        android:paddingLeft="16dp"
-        android:paddingTop="8dp">
-
+        android:padding="16dp">
         <EditText
-            android:id="@+id/edit_check_pwd"
+            android:id="@+id/edit_user_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="输入密码"
-            android:inputType="textPassword" />
+            android:hint="输入密码验证"
+            android:inputType="textPassword"/>
+
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>
