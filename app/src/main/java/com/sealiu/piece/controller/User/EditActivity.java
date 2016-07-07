@@ -28,10 +28,11 @@ import cn.bmob.v3.BmobUser;
  */
 public class EditActivity extends AppCompatActivity implements
         EditNameFragment.EditNameDialogListener,
-        EditBioFragment.EditBioDialogListener, EditPhoneFragment.EditPhoneDialogListener, View.OnClickListener {
+        EditBioFragment.EditBioDialogListener, EditPhoneFragment.EditPhoneDialogListener,
+        EditEmailFragment.EditEmailDialogListener, View.OnClickListener {
 
     private User user;
-    private EditText usernameET, bioET, birthET, phoneET;
+    private EditText usernameET, bioET, birthET, phoneET, emailET;
     private static final String TAG = "EditActivity";
     private String objectId;
 
@@ -40,7 +41,9 @@ public class EditActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
         user = new User();
+        //获取当前用户
         BmobUser user1 = User.getCurrentUser();
+        //获取objectId
         objectId = user1.getObjectId();
         Log.i(TAG, "id:" + objectId);
         //objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null);
@@ -93,6 +96,16 @@ public class EditActivity extends AppCompatActivity implements
             phoneET.setText(phone);
         }
 
+        //显示邮箱
+        emailET = (EditText) findViewById(R.id.user_email);
+        String email = SPUtils.getString(this, objectId, Constants.SP_EMAIL, null);
+        Log.i(TAG, "Email：" + email);
+        if (phone == null) {
+            emailET.setText("点击设置");
+        } else {
+            emailET.setText(email);
+        }
+
         //修改昵称
         findViewById(R.id.user_name).setOnClickListener(this);
 
@@ -142,7 +155,7 @@ public class EditActivity extends AppCompatActivity implements
         phoneET.setOnClickListener(this);
 
         //修改邮箱
-        findViewById(R.id.user_email).setOnClickListener(this);
+        emailET.setOnClickListener(this);
 
     }
 
@@ -184,7 +197,8 @@ public class EditActivity extends AppCompatActivity implements
                         .show(getSupportFragmentManager(), "Edit_Phone");
                 break;
             case R.id.user_email:
-                //
+                new EditEmailFragment()
+                        .show(getSupportFragmentManager(), "Edit_Email");
                 break;
         }
     }
@@ -224,6 +238,17 @@ public class EditActivity extends AppCompatActivity implements
 
     @Override
     public void onEditPhoneDialogNegativeClick(DialogFragment dialog) {
+
+    }
+
+    @Override
+    public void onEditEmailDialogPositiveClick(DialogFragment dialog, String email) {
+        SPUtils.putString(this, objectId, Constants.SP_EMAIL, email);
+        emailET.setText(email);
+    }
+
+    @Override
+    public void onEditEmailDialogNegativeClick(DialogFragment dialog) {
 
     }
 
