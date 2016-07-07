@@ -28,8 +28,8 @@ public class LoginActivity extends AppCompatActivity
         progress.setMessage("正在登录中...");
         progress.setCanceledOnTouchOutside(false);
         progress.show();
-        if (SPUtils.getBoolean(LoginActivity.this, Constants.SP_IS_AUTO_LOGIN, false)
-                && SPUtils.getString(LoginActivity.this, Constants.SP_USER_OBJECT_ID, null) != null) {
+        if (SPUtils.getBoolean(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false)
+                && SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null) != null) {
             //上次登录时选择了自动登录，并且用户的 objectId 不为空；则自动登录
             progress.dismiss();
             onSubmitLoginBtnClick();

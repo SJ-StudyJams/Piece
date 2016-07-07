@@ -60,4 +60,12 @@ public class Constants {
     public static final String SP_IS_AUTO_LOGIN = "isAutoLogin";
     //_user objectId
     public static final String SP_USER_OBJECT_ID = "userObjectId";
+    //Email
+    public static final String SP_EMAIL = "email";
+    //手机号
+    public static final String SP_PHONE_NUMBER = "mobilePhoneNumber";
+    //上传成功与否
+    public static final String SP_IS_UPLOAD = "isUpload";
+
+
 }
