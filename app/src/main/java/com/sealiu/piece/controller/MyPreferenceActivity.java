@@ -28,7 +28,7 @@ public class MyPreferenceActivity extends AppCompatActivity {
         }
 
         getFragmentManager().beginTransaction()
-                .add(R.id.content_frame, new MyPreferenceFragment())
+                .replace(R.id.content_frame, new MyPreferenceFragment())
                 .commit();
     }
 
