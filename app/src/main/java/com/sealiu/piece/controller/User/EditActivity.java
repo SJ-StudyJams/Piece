@@ -28,7 +28,10 @@ import cn.bmob.v3.listener.UpdateListener;
  */
 public class EditActivity extends AppCompatActivity implements
         EditNameFragment.EditNameDialogListener,
-        EditBioFragment.EditBioDialogListener {
+        EditBioFragment.EditBioDialogListener,
+        EditEmailFragment.EditEmailDialogListener,
+        EditPhoneFragment.EditPhoneDialogListener,
+        EditPwdFragment.EditPwdDialogListener {
 
     private User user = new User();
     private BmobUser user1 = BmobUser.getCurrentUser();
@@ -138,6 +141,26 @@ public class EditActivity extends AppCompatActivity implements
             }
         });
 
+        findViewById(R.id.user_email).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new EditEmailFragment().show(getSupportFragmentManager(), "Edit_Email");
+            }
+        });
+
+        findViewById(R.id.user_phone).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new EditPhoneFragment().show(getSupportFragmentManager(), "Edit_Phone");
+            }
+        });
+
+        findViewById(R.id.user_pwd).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new EditPwdFragment().show(getSupportFragmentManager(), "Edit_Pwd");
+            }
+        });
 
     }
 
@@ -186,6 +209,36 @@ public class EditActivity extends AppCompatActivity implements
     // 修改个人简介对话框（取消修改）
     @Override
     public void onEditBioDialogNegativeClick(DialogFragment dialog) {
+
+    }
+
+    @Override
+    public void onEditEmailDialogPositiveClick(DialogFragment dialog) {
+
+    }
+
+    @Override
+    public void onEditEmailDialogNegativeClick(DialogFragment dialog) {
+
+    }
+
+    @Override
+    public void onEditPhoneDialogPositiveClick(DialogFragment dialog) {
+
+    }
+
+    @Override
+    public void onEditPhoneDialogNegativeClick(DialogFragment dialog) {
+
+    }
+
+    @Override
+    public void onEditPwdDialogPositiveClick(DialogFragment dialog) {
+
+    }
+
+    @Override
+    public void onEditPwdDialogNegativeClick(DialogFragment dialog) {
 
     }
 }
