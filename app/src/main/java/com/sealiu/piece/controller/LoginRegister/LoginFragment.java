@@ -35,9 +35,8 @@ public class LoginFragment extends Fragment {
     private User user = new User();
     private CheckBox cb_RememberPwd;
     private boolean isRememberPwd;
-
     private CheckBox cb_AutoLogin;
-    private String username, pwd, password;
+    private String username, pwd, encryptPassword;
     private static final String TAG = "LoginFragment";
 
 
@@ -59,8 +58,8 @@ public class LoginFragment extends Fragment {
 
         /**
          * 记住密码和自动登录的关系：
-         * 取消记住密码 --> 自动取消 自动登录
-         * 勾选自动登录 --> 自动勾选 记住密码
+         * 取消记住密码 --> 自动取消自动登录
+         * 勾选自动登录 --> 自动勾选记住密码
          */
         cb_RememberPwd = (CheckBox) view.findViewById(R.id.is_remember_password);
         cb_AutoLogin = (CheckBox) view.findViewById(R.id.is_auto_login);
@@ -86,7 +85,8 @@ public class LoginFragment extends Fragment {
         isRememberPwd = SPUtils.getBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_REMEMBER, false);
         if (isRememberPwd) {
             username = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, null);
-            password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
+            String password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
+
             et_account.setText(username);
             et_pwd.setText(password);
             cb_RememberPwd.setChecked(true);
@@ -127,9 +127,12 @@ public class LoginFragment extends Fragment {
                             .setAction("Action", null).show();
                     return;
                 }
+
                 user.setUsername(username);
-                password = Md5Utils.encode(pwd);
-                user.setPassword(password);
+                encryptPassword = Md5Utils.encode(pwd);
+                user.setPassword(encryptPassword);
+
+                Log.i(TAG, "user input pwd :" + encryptPassword);
 
                 // ProgressDialog
                 final ProgressDialog progress = new ProgressDialog(getActivity());

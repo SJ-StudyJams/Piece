@@ -29,6 +29,8 @@ public class RegisterActivity extends AppCompatActivity
 
     private static final String TAG = "RegisterActivity";
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 123;
+    private String encryptPassword;
+    private String objectId;
 
     private FragmentManager fm = getSupportFragmentManager();
 
@@ -128,9 +130,16 @@ public class RegisterActivity extends AppCompatActivity
     // 完成注册
     @Override
     public void onCompleteRegisterBtnClick(final String pwd) {
+        try {
+            encryptPassword = Md5Utils.encode(pwd);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        user.setPassword(Md5Utils.encode(pwd));
+        Log.i(TAG, "" + encryptPassword);
 
+        //User设置加密后密码
+        user.setPassword(encryptPassword);
         // 注册
         final ProgressDialog progress = new ProgressDialog(RegisterActivity.this);
         progress.setMessage("正在登录中...");
@@ -142,15 +151,13 @@ public class RegisterActivity extends AppCompatActivity
             public void done(User user, BmobException e) {
                 if (e == null) {
                     Log.i(TAG, "注册成功:" + user.toString());
-
-                    // 保存SP
-                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
+                    objectId = user.getObjectId();
                     // 注册成功后默认下次自动登录
                     SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, true);
                     SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_REMEMBER, true);
                     SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, user.getUsername());
                     SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, user.getObjectId());
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, objectId);
                     progress.dismiss();
 
                     Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);

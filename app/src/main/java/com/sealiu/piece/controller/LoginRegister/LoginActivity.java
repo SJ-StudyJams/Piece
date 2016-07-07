@@ -42,10 +42,10 @@ public class LoginActivity extends AppCompatActivity
             User user = new User();
             String username = SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, null);
             String pwd = SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
-            String password = Md5Utils.encode(pwd);
+            //String password = Md5Utils.encode(pwd);
 
             user.setUsername(username);
-            user.setPassword(password);
+            user.setPassword(pwd);
             user.login(new SaveListener<User>() {
                 @Override
                 public void done(User user, BmobException e) {
@@ -53,6 +53,17 @@ public class LoginActivity extends AppCompatActivity
                         onSubmitLoginBtnClick();
                     } else {
                         SPUtils.clear(LoginActivity.this, Constants.SP_FILE_NAME);
+
+                        setContentView(R.layout.activity_login);
+
+                        Fragment fragment = fm.findFragmentById(R.id.content_frame);
+
+                        if (fragment == null) {
+                            fragment = new LoginFragment();
+                            fm.beginTransaction()
+                                    .add(R.id.content_frame, fragment, null)
+                                    .commit();
+                        }
                         Toast.makeText(LoginActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
                     }
                 }

@@ -67,5 +67,39 @@ public class Constants {
     //上传成功与否
     public static final String SP_IS_UPLOAD = "isUpload";
 
+    /**
+     * 密钥内容 base64 code
+     */
 
+    //rsa_public_key
+    public static String PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFGMdDEV5C6AEwAGWD5olbyDhc\n" +
+            "IQZ4xTwMNEBJi5kBRWYaiBMzzs2sTTVzxCPE20eAAxt8I6zXqa6rQzl78g/m6n+e\n" +
+            "GRI/LlLenNgZatoj7GQGgnIPKx2HEQy22BzXaWs2AOBLX4US79hTpWY02eXKCXBd\n" +
+            "ofyEm2LH2uWPPoQqKwIDAQAB";
+
+    //rsa_private_key
+    public static String PRIVATE_KEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMUYx0MRXkLoATAA" +
+            "ZYPmiVvIOFwhBnjFPAw0QEmLmQFFZhqIEzPOzaxNNXPEI8TbR4ADG3wjrNeprqtD" +
+            "OXvyD+bqf54ZEj8uUt6c2Blq2iPsZAaCcg8rHYcRDLbYHNdpazYA4EtfhRLv2FOl" +
+            "ZjTZ5coJcF2h/ISbYsfa5Y8+hCorAgMBAAECgYEAkU8kUTjz0sXzYi1YqncDm8ww" +
+            "aRPcDpvzGlhHcTFfO4WrsjHSXmbAUaCWoOPhLxgvTZx83ff7TQCHizJDpjKfL2ZD" +
+            "WsxAJtwd37OByiI6kUNlMykOxNZycUGJ9vaXr57OEH1DDNkMkX7H9E4lb5z6bOwC" +
+            "fuDM32zh/niQtSQP65kCQQDzCB0tlx1Hh14bhk2UBJM2tux/5P4NacxITHUzWHbK" +
+            "rhR8hT23PLeUi72nP1NJ9GpIoVCws/J10ICKI8q+WKfPAkEAz50uBinog4bPV6wE" +
+            "sLg0XXTR1ac8ZaQ3uBzwCnh7m3M/0QZu1W7TQvYkm5PdLaiN3MFdk4/7EjWDaV3j" +
+            "3N6S5QJAXS+qSHXd8zRTgEhR7MSIUf13115Nj4UWoE44zjRIcFSpZEmOrXjph1rB" +
+            "oKRmYkAGlMzN7MNC36vP7aflsHC7/wJAVc1i8P8u7fSwCk64XYSzd5BJDGCiUGtu" +
+            "77Nd7SXgB924mR1sft7fhsQNWxLgDPelMX/kuZB+tgbRuaEpA+YklQJBAJh0CDaQ" +
+            "qA4fcaG0b4KKhYROOcNn1L5XPIxiDZ6QjKwyOsQX6agu0pIetIUobOT7M/HgRTFC" +
+            "pO6j8TaXggxr2mA=";
+
+    /**
+     * 此为AESKey
+     */
+    public static final String AES_KEY = "0123456789abcdef";
+
+    /**
+     * AES偏移量
+     */
+    public static final String IV_PARAMERER = "1020304050607080";
 }

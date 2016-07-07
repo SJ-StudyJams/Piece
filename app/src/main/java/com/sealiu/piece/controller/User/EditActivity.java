@@ -2,6 +2,7 @@ package com.sealiu.piece.controller.User;
 
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,11 +12,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.DatePicker;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.LoginRegister.LoginActivity;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
@@ -30,7 +32,7 @@ public class EditActivity extends AppCompatActivity implements
         EditNameFragment.EditNameDialogListener,
         EditBioFragment.EditBioDialogListener, EditPhoneFragment.EditPhoneDialogListener,
         EditEmailFragment.EditEmailDialogListener, EditBirthFragment.EditBirthDialogListener,
-        View.OnClickListener {
+        EditPwdFragment.EditPwdDialogListener, View.OnClickListener {
 
     private User user;
     private EditText usernameET, bioET, birthET, phoneET, emailET;
@@ -46,10 +48,18 @@ public class EditActivity extends AppCompatActivity implements
         BmobUser user1 = User.getCurrentUser();
         //获取objectId
         objectId = user1.getObjectId();
+        if (objectId == null) {
+            objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null);
+        }
+
         Log.i(TAG, "id:" + objectId);
         //objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null);
         UserInfoSync sync = new UserInfoSync();
-        sync.getUserInfo(this, objectId);
+        try {
+            sync.getUserInfo(this, objectId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -60,6 +70,13 @@ public class EditActivity extends AppCompatActivity implements
         //显示昵称
         usernameET = (EditText) findViewById(R.id.user_name);
         String nickname = SPUtils.getString(this, objectId, Constants.SP_NICKNAME, null);
+
+        //String nickname1 = null;
+        //if (nickname != null) {
+        //    rsaCipherStrategy.initPrivateKey(Constants.PRIVATE_KEY);
+        //    nickname1 = rsaCipherStrategy.decrypt(nickname);
+        //}
+        //Log.i(TAG, "decrypt nickname done");
         Log.i(TAG, "昵称为：" + nickname);
         if (nickname == null) {
             usernameET.setText("点击设置");
@@ -113,6 +130,7 @@ public class EditActivity extends AppCompatActivity implements
         //修改性别
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.user_sex);
         String sex = SPUtils.getString(this, objectId, Constants.SP_SEX, null);
+        Log.i(TAG, "性别：" + sex);
         if (sex != null) {
             switch (sex) {
                 case "1":
@@ -158,6 +176,10 @@ public class EditActivity extends AppCompatActivity implements
         //修改邮箱
         emailET.setOnClickListener(this);
 
+        //修改密码
+        Button button = (Button) findViewById(R.id.user_pwd);
+        button.setOnClickListener(this);
+
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -182,6 +204,9 @@ public class EditActivity extends AppCompatActivity implements
                 break;
             case R.id.user_email:
                 new EditEmailFragment().show(getSupportFragmentManager(), "Edit_Email");
+                break;
+            case R.id.user_pwd:
+                new EditPwdFragment().show(getSupportFragmentManager(), "Edit_Password");
                 break;
         }
     }
@@ -250,10 +275,28 @@ public class EditActivity extends AppCompatActivity implements
 
     }
 
+    // 修改密码对话框（确定修改）
+    @Override
+    public void onEditPwdDialogPositiveClick(DialogFragment dialog) {
+        SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
+        Intent i = new Intent(this, LoginActivity.class);
+        startActivity(i);
+    }
+
+    // 修改密码对话框（取消修改）
+    @Override
+    public void onEditPwdDialogNegativeClick(DialogFragment dialog) {
+
+    }
+
     @Override
     protected void onDestroy() {
         UserInfoSync userInfoSync = new UserInfoSync();
-        userInfoSync.upload(this, user, objectId, objectId);
+        try {
+            userInfoSync.upload(this, user, objectId, objectId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         super.onDestroy();
     }
 }

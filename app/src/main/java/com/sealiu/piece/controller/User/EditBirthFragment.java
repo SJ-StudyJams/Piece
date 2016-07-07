@@ -32,7 +32,7 @@ import cn.bmob.v3.BmobUser;
  */
 public class EditBirthFragment extends DialogFragment {
     private String birth;
-    private int yearI, monthI, dayI;
+    private int yearI, monthI, dayI, month2;
     private BmobUser user1 = BmobUser.getCurrentUser();
 
     public interface EditBirthDialogListener {
@@ -87,34 +87,42 @@ public class EditBirthFragment extends DialogFragment {
 
         final DatePicker datePicker = (DatePicker) view.findViewById(R.id.date_Picker);
         birth = SPUtils.getString(getActivity(), objectId, Constants.SP_BIRTH, null);
-        try {
-            //将字符串分割成字符串集合
-            String[] birthS = birth.split("-");
-            String year = birthS[0];
-            String month = birthS[1];
-            String day = birthS[2];
-            //将字符串转型成int
-            yearI = Integer.parseInt(year);
-            monthI = Integer.parseInt(month);
-            dayI = Integer.parseInt(day);
-            Log.i("test", "" + yearI);
-            Log.i("test", "" + monthI);
-            Log.i("test", "" + dayI);
-            int month2 = monthI - 1;
-            datePicker.init(yearI, month2, dayI, new DatePicker.OnDateChangedListener() {
-                @Override
-                public void onDateChanged(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
+        if (birth != null) {
+            try {
+                //将字符串分割成字符串集合
+                String[] birthS = birth.split("-");
+                String year = birthS[0];
+                String month = birthS[1];
+                String day = birthS[2];
 
-                    int month = monthOfYear + 1;
-                    birth = year + "-" + month + "-" + dayOfMonth;
-                    Log.i("test", birth);
-                }
+                //将字符串转型成int
+                yearI = Integer.parseInt(year);
+                monthI = Integer.parseInt(month);
+                dayI = Integer.parseInt(day);
+                Log.i("test", "" + yearI);
+                Log.i("test", "" + monthI);
+                Log.i("test", "" + dayI);
+                month2 = monthI - 1;
 
-            });
-
-        } catch (Exception e) {
+            } catch (Exception e) {
             e.printStackTrace();
+            }
+        } else {
+            yearI = 1970;
+            month2 = 6;
+            dayI = 30;
         }
+
+;
+        datePicker.init(yearI, month2, dayI, new DatePicker.OnDateChangedListener() {
+            @Override
+            public void onDateChanged(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
+
+                int month = monthOfYear + 1;
+                birth = year + "-" + month + "-" + dayOfMonth;
+                Log.i("test", birth);
+            }
+        });
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
