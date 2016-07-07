@@ -29,7 +29,8 @@ import cn.bmob.v3.BmobUser;
 public class EditActivity extends AppCompatActivity implements
         EditNameFragment.EditNameDialogListener,
         EditBioFragment.EditBioDialogListener, EditPhoneFragment.EditPhoneDialogListener,
-        EditEmailFragment.EditEmailDialogListener, View.OnClickListener {
+        EditEmailFragment.EditEmailDialogListener, EditBirthFragment.EditBirthDialogListener,
+        View.OnClickListener {
 
     private User user;
     private EditText usernameET, bioET, birthET, phoneET, emailET;
@@ -164,41 +165,23 @@ public class EditActivity extends AppCompatActivity implements
     public void onClick(View view) {
         switch (view.getId()) {
             case  R.id.user_name:
-                new EditNameFragment()
-                        .show(getSupportFragmentManager(), "Edit_Name");
+                new EditNameFragment().show(getSupportFragmentManager(), "Edit_Name");
                 break;
             case R.id.user_bio:
-                new EditBioFragment()
-                        .show(getSupportFragmentManager(), "Edit_Bio");
+                new EditBioFragment().show(getSupportFragmentManager(), "Edit_Bio");
                 break;
             case R.id.user_birth:
-                Snackbar.make(view, "birth", Snackbar.LENGTH_SHORT).setAction("Action", null)
-                        .show();
-                final Calendar calendar = Calendar.getInstance();
-                new DatePickerDialog(EditActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int year, int monthOfYear,
-                                          int dayOfMonth) {
-                        int month = monthOfYear + 1;
-                        String birth = year + "-" + month
-                                + "-" + dayOfMonth;
-                        SPUtils.putString(EditActivity.this, objectId, Constants.SP_BIRTH, birth);
-                        birthET.setText(birth);
-                    }
-                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar
-                        .get(Calendar.DAY_OF_MONTH)).show();
+                new EditBirthFragment().show(getSupportFragmentManager(), "Edit_Birth");
                 break;
             case R.id.head_picture:
                 Snackbar.make(view, "headPicture", Snackbar.LENGTH_SHORT).setAction("Action", null)
                         .show();
                 break;
             case R.id.user_phone:
-                new EditPhoneFragment()
-                        .show(getSupportFragmentManager(), "Edit_Phone");
+                new EditPhoneFragment().show(getSupportFragmentManager(), "Edit_Phone");
                 break;
             case R.id.user_email:
-                new EditEmailFragment()
-                        .show(getSupportFragmentManager(), "Edit_Email");
+                new EditEmailFragment().show(getSupportFragmentManager(), "Edit_Email");
                 break;
         }
     }
@@ -230,25 +213,40 @@ public class EditActivity extends AppCompatActivity implements
 
     }
 
+    // 修改电话对话框（确定修改）
     @Override
     public void onEditPhoneDialogPositiveClick(DialogFragment dialog, String phone) {
         SPUtils.putString(this, objectId, Constants.SP_PHONE_NUMBER, phone);
         phoneET.setText(phone);
     }
 
+    // 修改电话对话框（取消修改）
     @Override
     public void onEditPhoneDialogNegativeClick(DialogFragment dialog) {
 
     }
 
+    // 修改邮箱对话框（确定修改）
     @Override
     public void onEditEmailDialogPositiveClick(DialogFragment dialog, String email) {
         SPUtils.putString(this, objectId, Constants.SP_EMAIL, email);
         emailET.setText(email);
     }
-
+    // 修改邮箱对话框（取消修改）
     @Override
     public void onEditEmailDialogNegativeClick(DialogFragment dialog) {
+
+    }
+
+    // 修改生日对话框（确定修改）
+    public void onEditBirthDialogPositiveClick(DialogFragment dialog, String birth) {
+        SPUtils.putString(EditActivity.this, objectId, Constants.SP_BIRTH, birth);
+        birthET.setText(birth);
+
+    }
+
+    // 修改生日对话框（取消修改）
+    public void onEditBirthDialogNegativeClick(DialogFragment dialog) {
 
     }
 

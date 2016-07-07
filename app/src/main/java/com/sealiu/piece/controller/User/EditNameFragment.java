@@ -105,7 +105,7 @@ public class EditNameFragment extends DialogFragment {
                 EditNameDialogListener listener = (EditNameDialogListener) getActivity();
                 listener.onEditNameDialogNegativeClick(EditNameFragment.this);
             }
-        });
+        }).setTitle("设置昵称");
 
         return builder.create();
     }

@@ -105,7 +105,7 @@ public class EditBioFragment extends DialogFragment {
                 EditBioDialogListener listener = (EditBioDialogListener) getActivity();
                 listener.onEditBioDialogNegativeClick(EditBioFragment.this);
             }
-        });
+        }).setTitle("设置个人简介");
 
         return builder.create();
     }
