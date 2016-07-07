@@ -26,11 +26,14 @@
             android:defaultValue="true"
             android:dependency="pref_notification_voice_key" />
 
-        <Preference
+        <MultiSelectListPreference
             android:key="pref_piece_nearby_key"
             android:icon="@drawable/ic_near_me_black_24dp"
             android:title="@string/pref_piece_nearby_title"
-            android:summary="@string/pref_piece_nearby_summary" />
+            android:summary="@string/pref_piece_nearby_summary"
+            android:entries="@array/pieceCategory"
+            android:entryValues="@array/pieceCategoryValues"
+            android:defaultValue="@array/pieceCategoryValues" />
 
 
     </PreferenceCategory>
