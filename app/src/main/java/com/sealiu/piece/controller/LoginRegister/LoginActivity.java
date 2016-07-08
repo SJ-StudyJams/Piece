@@ -106,14 +106,20 @@ public class LoginActivity extends AppCompatActivity
                 .commit();
     }
 
+    /**
+     * 检查用户是否超过一个月未登陆
+     * @return login
+     */
     private boolean getLoginTime() {
         boolean login;
+        //获取当前时间
         long timeNow = System.currentTimeMillis();
         Log.i(TAG, "now:" + timeNow);
+        //获取用户上次登录时间
         long timePre = SPUtils.getLong(this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, 0);
-        //long timePre = (long)User.getObjectByKey(Constants.SP_LOGIN_TIME);
         Log.i(TAG, "pre:" + timePre);
-        if(timeNow - timePre > 604800000){
+        //当用户本次登陆时间大于上次登录时间一个月
+        if(timeNow - timePre > 2592000){
             SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
             //SPUtils.putLong(this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, timeNow);
             login = false;
