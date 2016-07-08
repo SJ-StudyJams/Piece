@@ -121,6 +121,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.user_menu_title:
                 startActivity(new Intent(MapsActivity.this, UserActivity.class));
                 break;
+            case R.id.switch_menu_title:
+                SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
+                SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
+                startActivity(new Intent(MapsActivity.this, LoginActivity.class));
+                finish();
+                break;
             default:
                 break;
         }
