@@ -11,8 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import com.sealiu.piece.R;
@@ -33,9 +31,6 @@ public class LoginFragment extends Fragment {
     private View view;
     private EditText et_account, et_pwd;
     private User user = new User();
-    private CheckBox cb_RememberPwd;
-    private boolean isRememberPwd;
-    private CheckBox cb_AutoLogin;
     private String username, pwd, encryptPassword;
     private static final String TAG = "LoginFragment";
 

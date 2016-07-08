@@ -26,7 +26,6 @@ import cn.bmob.v3.BmobUser;
 public class EditBirthFragment extends DialogFragment {
     private String birth;
     private int yearI, monthI, dayI, month2;
-    private BmobUser user1 = BmobUser.getCurrentUser();
 
     public interface EditBirthDialogListener {
         void onEditBirthDialogPositiveClick(DialogFragment dialog, String birth);
@@ -71,15 +70,13 @@ public class EditBirthFragment extends DialogFragment {
         // Get the layout inflater
         final LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        String objectId = user1.getObjectId();
-
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         final View view = inflater.inflate(R.layout.dialog_edit_birth, null);
         builder.setView(view);
 
         final DatePicker datePicker = (DatePicker) view.findViewById(R.id.date_Picker);
-        birth = SPUtils.getString(getActivity(), objectId, Constants.SP_BIRTH, null);
+        birth = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_BIRTH, null);
         if (birth != null) {
             try {
                 //将字符串分割成字符串集合

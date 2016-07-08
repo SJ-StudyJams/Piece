@@ -49,4 +49,9 @@
             android:hint="再次输入新密码"
             android:inputType="textPassword" />
     </android.support.design.widget.TextInputLayout>
+    <Button
+        android:id="@+id/change_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="确定"/>
 </LinearLayout>

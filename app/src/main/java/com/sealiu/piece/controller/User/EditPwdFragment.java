@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
@@ -34,6 +36,7 @@ public class EditPwdFragment extends DialogFragment {
     private EditText old_pwd_ET, new_pwd_ET, repeat_pwd_ET;
     private String old_pwd, new_pwd, repeat_pwd;
     private String encryptOldPassword, encryptNewPassword;
+    private Button change_Password;
     private static final String TAG = "EditPwdFragment";
     //private User user = new User();
     private BmobUser user = new BmobUser();
@@ -89,13 +92,10 @@ public class EditPwdFragment extends DialogFragment {
         old_pwd_ET = (EditText) view.findViewById(R.id.edit_old_pwd);
         new_pwd_ET = (EditText) view.findViewById(R.id.edit_new_pwd);
         repeat_pwd_ET = (EditText) view.findViewById(R.id.edit_repeat_new_pwd);
-
-
-        final EditPwdDialogListener listener = (EditPwdDialogListener) getActivity();
-
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        change_Password = (Button) view.findViewById(R.id.change_password);
+        change_Password.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+            public void onClick(View view) {
 
                 old_pwd = old_pwd_ET.getText().toString();
                 Log.i(TAG, "old password:" + old_pwd);
@@ -106,36 +106,51 @@ public class EditPwdFragment extends DialogFragment {
 
                 final String password = SPUtils.getString(getContext(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
 
-                if (new_pwd.equals(repeat_pwd)) {
-                    try {
-                        encryptOldPassword = Md5Utils.encode(old_pwd);
-                        encryptNewPassword = Md5Utils.encode(new_pwd);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
                 if (password.equals(old_pwd)) {
+                    if (new_pwd.equals(repeat_pwd)) {
+                        try {
+                            encryptOldPassword = Md5Utils.encode(old_pwd);
+                            encryptNewPassword = Md5Utils.encode(new_pwd);
+                            BmobUser.updateCurrentUserPassword(encryptOldPassword, encryptNewPassword, new UpdateListener() {
+                                @Override
+                                public void done(BmobException e) {
+                                    if (e == null) {
+                                        if (new_pwd != null) {
+                                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, new_pwd);
+                                            Log.i(TAG, "password update");
+                                        }
+                                    } else {
+                                        Log.e(TAG, e.toString());
+                                    }
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "两次密码输入不一致！", Toast.LENGTH_SHORT).show();
+                        old_pwd_ET.setText("");
+                        new_pwd_ET.setText("");
+                        repeat_pwd_ET.setText("");
+                    }
                     Log.i(TAG, "old password equals");
                 } else {
+                    Toast.makeText(getActivity(), "原密码错误！", Toast.LENGTH_SHORT).show();
+                    old_pwd_ET.setText("");
+                    new_pwd_ET.setText("");
+                    repeat_pwd_ET.setText("");
                     Log.i(TAG, "old password not equals" + ",local:" + password + ",input:" + old_pwd);
                 }
+            }
+        });
 
-                BmobUser.updateCurrentUserPassword(encryptOldPassword, encryptNewPassword, new UpdateListener() {
-                    @Override
-                    public void done(BmobException e) {
-                        if (e == null) {
-                            //if (new_pwd != null) {
-                            //    SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, new_pwd);
-                            //    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
-                            //}
-                            listener.onEditPwdDialogPositiveClick(EditPwdFragment.this);
-                            Log.i(TAG, "password update");
-                        } else {
-                            Log.e(TAG, e.toString());
-                        }
-                    }
-                });
+
+        final EditPwdDialogListener listener = (EditPwdDialogListener) getActivity();
+
+        builder.setPositiveButton("退出登录", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                listener.onEditPwdDialogPositiveClick(EditPwdFragment.this);
 
             }
         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {

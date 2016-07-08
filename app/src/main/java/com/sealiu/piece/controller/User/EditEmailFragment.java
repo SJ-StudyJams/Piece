@@ -29,7 +29,6 @@ import cn.bmob.v3.BmobUser;
 public class EditEmailFragment extends DialogFragment {
     private String email, password;
     private TextView emailTV, passwordTV;
-    private BmobUser user1 = BmobUser.getCurrentUser();
 
     public interface EditEmailDialogListener {
         void onEditEmailDialogPositiveClick(DialogFragment dialog, String email);
@@ -79,9 +78,7 @@ public class EditEmailFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_edit_email, null);
         builder.setView(view);
 
-        String objectId = user1.getObjectId();
-
-        email = SPUtils.getString(getActivity(), objectId, Constants.SP_EMAIL, null);
+        email = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_EMAIL, null);
         password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
         Log.i("test", "password" + password);
         Log.i("test", "Email" + email);
