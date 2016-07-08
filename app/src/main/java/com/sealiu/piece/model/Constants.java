@@ -64,8 +64,8 @@ public class Constants {
     public static final String SP_EMAIL = "email";
     //手机号
     public static final String SP_PHONE_NUMBER = "mobilePhoneNumber";
-    //上传成功与否
-    public static final String SP_IS_UPLOAD = "isUpload";
+    //登录时间
+    public static final String SP_LOGIN_TIME = "time";
 
     /**
      * RSA密钥内容 base64 code

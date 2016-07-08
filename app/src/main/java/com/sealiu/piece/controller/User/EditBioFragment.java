@@ -29,7 +29,6 @@ import cn.bmob.v3.BmobUser;
 public class EditBioFragment extends DialogFragment {
     private String bio;
     private TextView bioTV;
-    private BmobUser user1 = BmobUser.getCurrentUser();
 
     public interface EditBioDialogListener {
         void onEditBioDialogPositiveClick(DialogFragment dialog, String name);
@@ -79,8 +78,7 @@ public class EditBioFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_edit_bio, null);
         builder.setView(view);
 
-        String objectId = user1.getObjectId();
-        bio = SPUtils.getString(getActivity(), objectId, Constants.SP_BIO, null);
+        bio = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_BIO, null);
         Log.i("test", "bio" + bio);
 
         bioTV = (TextView) view.findViewById(R.id.edit_bio);

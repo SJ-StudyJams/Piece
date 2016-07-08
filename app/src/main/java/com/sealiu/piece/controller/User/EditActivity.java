@@ -1,9 +1,7 @@
 package com.sealiu.piece.controller.User;
 
 import android.annotation.TargetApi;
-import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -69,7 +67,7 @@ public class EditActivity extends AppCompatActivity implements
 
         //显示昵称
         usernameET = (EditText) findViewById(R.id.user_name);
-        String nickname = SPUtils.getString(this, objectId, Constants.SP_NICKNAME, null);
+        String nickname = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, null);
 
         //String nickname1 = null;
         //if (nickname != null) {
@@ -96,7 +94,7 @@ public class EditActivity extends AppCompatActivity implements
 
         //显示生日
         birthET = (EditText) findViewById(R.id.user_birth);
-        String birth = SPUtils.getString(this, objectId, Constants.SP_BIRTH, null);
+        String birth = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, null);
         Log.i(TAG, "生日：" + birth);
         if (birth == null) {
             birthET.setText("点击设置");
@@ -106,7 +104,7 @@ public class EditActivity extends AppCompatActivity implements
 
         //显示手机号
         phoneET = (EditText) findViewById(R.id.user_phone);
-        String phone = SPUtils.getString(this, objectId, Constants.SP_PHONE_NUMBER, null);
+        String phone = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, null);
         Log.i(TAG, "手机号：" + phone);
         if (phone == null) {
             phoneET.setText("点击设置");
@@ -116,7 +114,7 @@ public class EditActivity extends AppCompatActivity implements
 
         //显示邮箱
         emailET = (EditText) findViewById(R.id.user_email);
-        String email = SPUtils.getString(this, objectId, Constants.SP_EMAIL, null);
+        String email = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, null);
         Log.i(TAG, "Email：" + email);
         if (phone == null) {
             emailET.setText("点击设置");
@@ -129,7 +127,7 @@ public class EditActivity extends AppCompatActivity implements
 
         //修改性别
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.user_sex);
-        String sex = SPUtils.getString(this, objectId, Constants.SP_SEX, null);
+        String sex = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_SEX, null);
         Log.i(TAG, "性别：" + sex);
         if (sex != null) {
             switch (sex) {
@@ -149,13 +147,13 @@ public class EditActivity extends AppCompatActivity implements
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.user_sex_male:
-                        SPUtils.putString(EditActivity.this, objectId, Constants.SP_SEX, "1");
+                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "1");
                         break;
                     case R.id.user_sex_female:
-                        SPUtils.putString(EditActivity.this, objectId, Constants.SP_SEX, "2");
+                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "2");
                         break;
                     case R.id.user_sex_secret:
-                        SPUtils.putString(EditActivity.this, objectId, Constants.SP_SEX, "3");
+                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "3");
                         break;
                 }
             }
@@ -214,7 +212,7 @@ public class EditActivity extends AppCompatActivity implements
     // 修改昵称对话框（确定修改）
     @Override
     public void onEditNameDialogPositiveClick(DialogFragment dialog, String name) {
-        SPUtils.putString(this, objectId, Constants.SP_NICKNAME, name);
+        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, name);
         usernameET.setText(name);
         //执行username更新操作\
     }
@@ -228,7 +226,7 @@ public class EditActivity extends AppCompatActivity implements
     // 修改个人简介对话框（确定修改）
     @Override
     public void onEditBioDialogPositiveClick(DialogFragment dialog, String bio) {
-        SPUtils.putString(this, objectId, Constants.SP_BIO, bio);
+        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_BIO, bio);
         bioET.setText(bio);
     }
 
@@ -241,7 +239,7 @@ public class EditActivity extends AppCompatActivity implements
     // 修改电话对话框（确定修改）
     @Override
     public void onEditPhoneDialogPositiveClick(DialogFragment dialog, String phone) {
-        SPUtils.putString(this, objectId, Constants.SP_PHONE_NUMBER, phone);
+        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, phone);
         phoneET.setText(phone);
     }
 
@@ -254,7 +252,7 @@ public class EditActivity extends AppCompatActivity implements
     // 修改邮箱对话框（确定修改）
     @Override
     public void onEditEmailDialogPositiveClick(DialogFragment dialog, String email) {
-        SPUtils.putString(this, objectId, Constants.SP_EMAIL, email);
+        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, email);
         emailET.setText(email);
     }
     // 修改邮箱对话框（取消修改）
@@ -265,7 +263,7 @@ public class EditActivity extends AppCompatActivity implements
 
     // 修改生日对话框（确定修改）
     public void onEditBirthDialogPositiveClick(DialogFragment dialog, String birth) {
-        SPUtils.putString(EditActivity.this, objectId, Constants.SP_BIRTH, birth);
+        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birth);
         birthET.setText(birth);
 
     }
@@ -293,7 +291,7 @@ public class EditActivity extends AppCompatActivity implements
     protected void onDestroy() {
         UserInfoSync userInfoSync = new UserInfoSync();
         try {
-            userInfoSync.upload(this, user, objectId, objectId);
+            userInfoSync.upload(this, user, objectId, Constants.SP_FILE_NAME);
         } catch (Exception e) {
             e.printStackTrace();
         }

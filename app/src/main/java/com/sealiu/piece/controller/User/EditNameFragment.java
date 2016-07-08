@@ -28,7 +28,6 @@ import cn.bmob.v3.BmobUser;
 public class EditNameFragment extends DialogFragment {
     private String nickname;
     private TextView nameTV;
-    private BmobUser user1 = BmobUser.getCurrentUser();
 
     public interface EditNameDialogListener {
         void onEditNameDialogPositiveClick(DialogFragment dialog, String name);
@@ -78,8 +77,7 @@ public class EditNameFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_edit_name, null);
         builder.setView(view);
 
-        String objectId = user1.getObjectId();
-        nickname = SPUtils.getString(getActivity(), objectId, Constants.SP_NICKNAME, null);
+        nickname = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_NICKNAME, null);
         Log.i("test", "nickname" + nickname);
 
         nameTV = (TextView) view.findViewById(R.id.edit_username);

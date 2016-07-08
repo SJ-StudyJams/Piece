@@ -7,8 +7,8 @@ import android.util.Log;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.AESUtils;
-import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
+
 
 
 import cn.bmob.v3.exception.BmobException;
@@ -18,10 +18,12 @@ import cn.bmob.v3.listener.UpdateListener;
  * Created by art2cat on 7/6/2016.
  */
 public class UserInfoSync {
-    private String nickname, password, bio, sex, birth, email, phone_number;
+    private String nickname,  bio, sex, birth, email, phone_number;
     private String nickname1, bio1, sex1, birth1, email1, phone_number1;
     private String nicknameE, bioE, sexE, birthE, emailE, phone_numberE;
     private String nicknameD, bioD, sexD, birthD, emailD, phone_numberD;
+    private double time1;
+    private long time;
     private static final String TAG = "UserInfoSync";
 
     /**
@@ -39,10 +41,11 @@ public class UserInfoSync {
         birth = SPUtils.getString(context, filename, Constants.SP_BIRTH, null);
         email = SPUtils.getString(context, filename, Constants.SP_EMAIL, null);
         phone_number = SPUtils.getString(context, filename, Constants.SP_PHONE_NUMBER, null);
-
+        long timeNow = System.currentTimeMillis();
+        SPUtils.putLong(context, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, timeNow);
+        Log.i(TAG, "pre:" + timeNow);
         encodeNickname();
         encodeBio();
-        encodeSex();
         encodeBirth();
         encodeEmail();
         encodePhoneNumber();
@@ -50,9 +53,10 @@ public class UserInfoSync {
         user.setNickname(nicknameE);
         user.setBio(bioE);
         user.setBirth(birthE);
-        user.setUser_sex(sexE);
+        user.setUser_sex(sex);
         user.setEmail(emailE);
         user.setMobilePhoneNumber(phone_numberE);
+        user.setTime(timeNow);
         user.update(objectId, new UpdateListener() {
             @Override
             public void done(BmobException e) {
@@ -72,25 +76,43 @@ public class UserInfoSync {
      */
     public void getUserInfo(Context context, String filename) throws Exception {
         nickname1 = (String) User.getObjectByKey(Constants.SP_NICKNAME);
+
+        Log.i(TAG, "get nickname" + nickname1);
         bio1 = (String) User.getObjectByKey(Constants.SP_BIO);
+
+        Log.i(TAG, "get bio" + bio1);
         sex1 = (String) User.getObjectByKey(Constants.SP_SEX);
+
+        Log.i(TAG, "get sex" + sex1);
         birth1 = (String) User.getObjectByKey(Constants.SP_BIRTH);
+
+        Log.i(TAG, "get birth"+ birth1);
         email1 = (String) User.getObjectByKey(Constants.SP_EMAIL);
+
+        Log.i(TAG, "get email" + email1);
         phone_number1 = (String) User.getObjectByKey(Constants.SP_PHONE_NUMBER);
+
+        time1 = (double) User.getObjectByKey(Constants.SP_LOGIN_TIME);
+        Log.i(TAG, "get time1:" + time1);
+        time = Double.valueOf(time1).longValue();
+        Log.i(TAG, "get time:" + time);
+
 
         decodeNickname();
         decodeBio();
-        decodeSex();
         decodeBirth();
         decodeEmail();
         decodePhoneNumber();
 
         SPUtils.putString(context, filename, Constants.SP_NICKNAME, nicknameD);
         SPUtils.putString(context, filename, Constants.SP_BIO, bioD);
-        SPUtils.putString(context, filename, Constants.SP_SEX, sexD);
+        SPUtils.putString(context, filename, Constants.SP_SEX, sex1);
         SPUtils.putString(context, filename, Constants.SP_BIRTH, birthD);
         SPUtils.putString(context, filename, Constants.SP_EMAIL, emailD);
         SPUtils.putString(context, filename, Constants.SP_PHONE_NUMBER, phone_numberD);
+        SPUtils.putLong(context, filename, Constants.SP_LOGIN_TIME, time);
+
+        Log.i(TAG, "get userinfo");
     }
 
     private void encodeNickname() throws Exception {

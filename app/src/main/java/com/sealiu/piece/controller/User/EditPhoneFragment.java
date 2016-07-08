@@ -19,7 +19,6 @@ import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.utils.SPUtils;
 
-import cn.bmob.v3.BmobUser;
 
 /**
  * Created by art2cat on 7/6/2016.
@@ -27,7 +26,6 @@ import cn.bmob.v3.BmobUser;
 public class EditPhoneFragment extends DialogFragment{
     private String phone, password;
     private TextView phoneTV, passwordTV;
-    private BmobUser user1 = BmobUser.getCurrentUser();
 
     public interface EditPhoneDialogListener {
         void onEditPhoneDialogPositiveClick(DialogFragment dialog, String phone);
@@ -76,10 +74,8 @@ public class EditPhoneFragment extends DialogFragment{
         // Pass null as the parent view because its going in the dialog layout
         final View view = inflater.inflate(R.layout.dialog_edit_phone, null);
         builder.setView(view);
-
-        String objectId = user1.getObjectId();
         
-        phone = SPUtils.getString(getActivity(), objectId, Constants.SP_PHONE_NUMBER, null);
+        phone = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, null);
         password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
         Log.i("test", "password" + password);
         Log.i("test", "phone" + phone);

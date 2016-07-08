@@ -4,11 +4,10 @@ package com.sealiu.piece.controller.LoginRegister;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.sealiu.piece.R;
@@ -36,7 +35,8 @@ public class LoginActivity extends AppCompatActivity
         progress.setMessage("正在登录中...");
         progress.setCanceledOnTouchOutside(false);
         progress.show();
-        if (SPUtils.getBoolean(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false)
+        //检查是否长时间未登录
+        if (getLoginTime() && SPUtils.getBoolean(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false)
                 && SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null) != null) {
             //上次登录时选择了自动登录，并且用户的 objectId 不为空；则自动登录
             User user = new User();
@@ -47,35 +47,34 @@ public class LoginActivity extends AppCompatActivity
             user.setUsername(username);
             user.setPassword(password);
             user.login(new SaveListener<User>() {
-                @Override
-                public void done(User user, BmobException e) {
-                    if (e == null) {
-                        onSubmitLoginBtnClick();
-                    } else {
-                        SPUtils.clear(LoginActivity.this, Constants.SP_FILE_NAME);
+                    @Override
+                    public void done(User user, BmobException e) {
+                        if (e == null) {
 
-                        setContentView(R.layout.activity_login);
+                            onSubmitLoginBtnClick();
+                        } else {
+                            SPUtils.clear(LoginActivity.this, Constants.SP_FILE_NAME);
 
-                        Fragment fragment = fm.findFragmentById(R.id.content_frame);
+                            setContentView(R.layout.activity_login);
 
-                        if (fragment == null) {
-                            fragment = new LoginFragment();
-                            fm.beginTransaction()
-                                    .add(R.id.content_frame, fragment, null)
-                                    .commit();
+                            Fragment fragment = fm.findFragmentById(R.id.content_frame);
+
+                            if (fragment == null) {
+                                fragment = new LoginFragment();
+                                fm.beginTransaction()
+                                        .add(R.id.content_frame, fragment, null)
+                                        .commit();
+                            }
+                            Toast.makeText(LoginActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(LoginActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
                     }
-                }
-            });
+                });
+
             progress.dismiss();
         } else {
             progress.dismiss();
-
             setContentView(R.layout.activity_login);
-
             Fragment fragment = fm.findFragmentById(R.id.content_frame);
-
             if (fragment == null) {
                 fragment = new LoginFragment();
                 fm.beginTransaction()
@@ -83,6 +82,7 @@ public class LoginActivity extends AppCompatActivity
                         .commit();
             }
         }
+
     }
 
     @Override
@@ -104,6 +104,28 @@ public class LoginActivity extends AppCompatActivity
                 .replace(R.id.content_frame, fragment, "ThirdPart")
                 .addToBackStack("ThirdPart")
                 .commit();
+    }
+
+    private boolean getLoginTime() {
+        boolean login;
+        long timeNow = System.currentTimeMillis();
+        Log.i(TAG, "now:" + timeNow);
+        long timePre = SPUtils.getLong(this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, 0);
+        //long timePre = (long)User.getObjectByKey(Constants.SP_LOGIN_TIME);
+        Log.i(TAG, "pre:" + timePre);
+        if(timeNow - timePre > 604800000){
+            SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
+            //SPUtils.putLong(this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, timeNow);
+            login = false;
+        }
+        else{
+            SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, true);
+            SPUtils.putLong(this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, timeNow);
+            login = true;
+        }
+
+        Log.i(TAG, "" + login);
+        return login;
     }
 }
 
