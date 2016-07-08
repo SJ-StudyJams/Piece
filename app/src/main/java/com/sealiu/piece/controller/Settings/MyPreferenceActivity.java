@@ -10,9 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.controller.LoginRegister.LoginActivity;
-import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.utils.SPUtils;
 
 public class MyPreferenceActivity extends AppCompatActivity {
 
@@ -45,23 +42,70 @@ public class MyPreferenceActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preference);
 
+            Preference aboutPreference = findPreference("pref_about_key");
             Preference logoutPreference = findPreference("pref_logout_key");
+
+            aboutPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    getActivity().getFragmentManager().beginTransaction()
+                            .replace(R.id.content_frame, new AboutPreferenceFragment())
+                            .commit();
+                    return true;
+                }
+            });
 
             logoutPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     Log.i("Preference", String.valueOf(preference.getKey()));
-                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
-                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
 
                     // 有bug，退出到登录页面之后，点击back按钮，有回到MapsActivity ==!
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    getActivity().finish();
-                    return false;
+//                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
+//                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
+//                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                    startActivity(intent);
+//                    getActivity().finish();
+                    return true;
                 }
             });
+        }
+    }
+
+    public static class AboutPreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_about);
+
+            Preference termsPreference = findPreference("pref_terms_of_use_key");
+            Preference PrivacyPreference = findPreference("pref_privacy_policy_key");
+            Preference LicensesPreference = findPreference("pref_licenses_key");
+
+            termsPreference.setOnPreferenceClickListener(this);
+            PrivacyPreference.setOnPreferenceClickListener(this);
+            LicensesPreference.setOnPreferenceClickListener(this);
+        }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            switch (preference.getKey()) {
+                case "pref_terms_of_use_key":
+                    startActivity(new Intent(getActivity(), TermsActivity.class));
+                    break;
+                case "pref_privacy_policy_key":
+                    startActivity(new Intent(getActivity(), PrivacyActivity.class));
+                    break;
+                case "pref_licenses_key":
+                    startActivity(new Intent(getActivity(), LicensesActivity.class));
+                    break;
+                case "pref_version_key":
+                    break;
+                default:
+                    break;
+            }
+            return true;
         }
     }
 

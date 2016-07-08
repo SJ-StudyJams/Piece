@@ -116,7 +116,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         switch (item.getItemId()) {
             case R.id.settings_menu_title:
-                startActivityForResult(new Intent(MapsActivity.this, MyPreferenceActivity.class), 1);
+                startActivity(new Intent(MapsActivity.this, MyPreferenceActivity.class));
                 break;
             case R.id.user_menu_title:
                 startActivity(new Intent(MapsActivity.this, UserActivity.class));

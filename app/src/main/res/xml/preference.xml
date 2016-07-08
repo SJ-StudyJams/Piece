@@ -1,73 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="@string/pref_notification"
-        android:key="pref_notification_key">
+        android:key="pref_notification_key"
+        android:title="@string/pref_notification">
 
         <SwitchPreference
+            android:defaultValue="true"
             android:icon="@drawable/ic_notifications_none_black_24dp"
             android:key="pref_notification_voice_key"
-            android:title="@string/pref_notification_voice"
-            android:defaultValue="true" />
+            android:title="@string/pref_notification_voice" />
 
         <RingtonePreference
-            android:key="pref_ringtone_key"
-            android:icon="@drawable/ic_audiotrack_black_24dp"
-            android:title="@string/pref_ringtone"
-            android:dependency="pref_notification_voice_key"
             android:defaultValue="content://settings/system/notification_sound"
+            android:dependency="pref_notification_voice_key"
+            android:icon="@drawable/ic_audiotrack_black_24dp"
+            android:key="pref_ringtone_key"
             android:ringtoneType="notification"
             android:showDefault="true"
-            android:showSilent="true" />
+            android:showSilent="true"
+            android:title="@string/pref_ringtone" />
 
         <SwitchPreference
-            android:key="pref_vibrate_key"
-            android:icon="@drawable/ic_vibration_black_24px"
-            android:title="@string/pref_vibrate_title"
-            android:summary="@string/pref_vibrate_summary"
             android:defaultValue="true"
-            android:dependency="pref_notification_voice_key" />
+            android:dependency="pref_notification_voice_key"
+            android:icon="@drawable/ic_vibration_black_24px"
+            android:key="pref_vibrate_key"
+            android:summary="@string/pref_vibrate_summary"
+            android:title="@string/pref_vibrate_title" />
 
         <MultiSelectListPreference
-            android:key="pref_piece_nearby_key"
-            android:icon="@drawable/ic_near_me_black_24dp"
-            android:title="@string/pref_piece_nearby_title"
-            android:summary="@string/pref_piece_nearby_summary"
+            android:defaultValue="@array/pieceCategoryValues"
             android:entries="@array/pieceCategory"
             android:entryValues="@array/pieceCategoryValues"
-            android:defaultValue="@array/pieceCategoryValues" />
+            android:icon="@drawable/ic_near_me_black_24dp"
+            android:key="pref_piece_nearby_key"
+            android:summary="@string/pref_piece_nearby_summary"
+            android:title="@string/pref_piece_nearby_title" />
 
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pref_other"
-        android:key="pref_privacy_key">
+        android:key="pref_privacy_key"
+        android:title="@string/pref_other">
         <Preference
-            android:key="pref_about_key"
+            android:defaultValue="true"
             android:icon="@drawable/ic_info_outline_black_24dp"
-            android:title="@string/pref_about_title"
-            android:defaultValue="true">
-            <intent
-                android:targetPackage="com.sealiu.piece"
-                android:targetClass="com.sealiu.piece.controller.Settings.AboutActivity" />
-        </Preference>
+            android:key="pref_about_key"
+            android:title="@string/pref_about_title" />
 
         <Preference
-            android:key="pref_feedback_key"
+            android:defaultValue="true"
             android:icon="@drawable/ic_announcement_black_24dp"
-            android:title="@string/pref_feedback_title"
-            android:defaultValue="true">
+            android:key="pref_feedback_key"
+            android:title="@string/pref_feedback_title">
             <intent
-                android:targetPackage="com.sealiu.piece"
-                android:targetClass="com.sealiu.piece.controller.Settings.FeedbackActivity" />
+                android:targetClass="com.sealiu.piece.controller.Settings.FeedbackActivity"
+                android:targetPackage="com.sealiu.piece" />
         </Preference>
 
         <Preference
-            android:key="pref_logout_key"
+            android:defaultValue="true"
             android:icon="@drawable/ic_highlight_off_black_24dp"
-            android:title="@string/pref_logout_title"
-            android:defaultValue="true" />
+            android:key="pref_logout_key"
+            android:title="@string/pref_logout_title" />
     </PreferenceCategory>
 
 </PreferenceScreen>
