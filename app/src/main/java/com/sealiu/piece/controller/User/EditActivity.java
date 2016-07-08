@@ -11,9 +11,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -62,6 +64,7 @@ public class EditActivity extends AppCompatActivity implements
     public static final int CHOOSE_PHOTO = 2;
     public static final int CROP_PHOTO = 3;
 
+    private NestedScrollView layoutScroll;
     // 头像
     private ImageView headPicture;
 
@@ -69,6 +72,9 @@ public class EditActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+
+        layoutScroll = (NestedScrollView) findViewById(R.id.scroll_view);
+
         user = new User();
         //获取当前用户
         BmobUser user1 = User.getCurrentUser();
@@ -368,6 +374,8 @@ public class EditActivity extends AppCompatActivity implements
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     if (intent.resolveActivity(getPackageManager()) != null) {
                         startActivityForResult(intent, CROP_PHOTO);
+                    } else {
+                        Snackbar.make(layoutScroll, "没有裁剪图片程序", Snackbar.LENGTH_LONG).show();
                     }
                 }
                 break;
@@ -383,6 +391,8 @@ public class EditActivity extends AppCompatActivity implements
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     if (intent.resolveActivity(getPackageManager()) != null) {
                         startActivityForResult(intent, CROP_PHOTO);
+                    } else {
+                        Snackbar.make(layoutScroll, "没有裁剪图片程序", Snackbar.LENGTH_LONG).show();
                     }
                 }
                 break;
@@ -420,6 +430,8 @@ public class EditActivity extends AppCompatActivity implements
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, TAKE_PHOTO);
+        } else {
+            Snackbar.make(layoutScroll, "没有相机程序", Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -430,6 +442,8 @@ public class EditActivity extends AppCompatActivity implements
         intent.setType("image/*");
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, CHOOSE_PHOTO);
+        } else {
+            Snackbar.make(layoutScroll, "没有相册程序", Snackbar.LENGTH_LONG).show();
         }
     }
 }
