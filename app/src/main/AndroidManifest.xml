@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- 允许联网 -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -56,13 +58,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".controller.LoginRegister.RegisterActivity" />
-
         <activity
             android:name=".controller.MapsActivity"
             android:label="@string/app_name" />
-
         <activity
             android:name=".controller.User.UserActivity"
             android:theme="@style/AppTheme">
@@ -70,7 +69,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".controller.MapsActivity" />
         </activity>
-
         <activity
             android:name=".controller.User.EditActivity"
             android:label="@string/edit_user_info">
@@ -78,7 +76,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".controller.User.UserActivity" />
         </activity>
-
         <activity
             android:name=".controller.Settings.MyPreferenceActivity"
             android:label="@string/setting_menu_title">
@@ -86,7 +83,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".controller.MapsActivity" />
         </activity>
-
         <activity
             android:name=".controller.Settings.FeedbackActivity"
             android:label="@string/pref_feedback_title">
@@ -94,20 +90,21 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".controller.Settings.MyPreferenceActivity" />
         </activity>
-
         <activity
             android:name=".controller.Settings.TermsActivity"
-            android:label="@string/pref_feedback_title">
-        </activity>
+            android:label="@string/pref_terms_of_use_title">
 
+        </activity>
         <activity
             android:name=".controller.Settings.PrivacyActivity"
-            android:label="@string/pref_feedback_title"></activity>
+            android:label="@string/pref_privacy_policy_title">
 
+        </activity>
         <activity
             android:name=".controller.Settings.LicensesActivity"
-            android:label="@string/pref_feedback_title"></activity>
+            android:label="@string/pref_licenses_title">
 
+        </activity>
     </application>
 
 </manifest>

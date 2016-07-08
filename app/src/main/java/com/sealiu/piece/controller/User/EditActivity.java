@@ -1,19 +1,27 @@
 package com.sealiu.piece.controller.User;
 
+import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.icu.util.Calendar;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 
 import com.sealiu.piece.R;
@@ -21,6 +29,10 @@ import com.sealiu.piece.controller.LoginRegister.LoginActivity;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import cn.bmob.v3.BmobUser;
 
@@ -30,14 +42,28 @@ import cn.bmob.v3.BmobUser;
  */
 public class EditActivity extends AppCompatActivity implements
         EditNameFragment.EditNameDialogListener,
-        EditBioFragment.EditBioDialogListener, EditPhoneFragment.EditPhoneDialogListener,
-        EditEmailFragment.EditEmailDialogListener, EditBirthFragment.EditBirthDialogListener,
-        EditPwdFragment.EditPwdDialogListener, View.OnClickListener {
+        EditBioFragment.EditBioDialogListener,
+        EditPhoneFragment.EditPhoneDialogListener,
+        EditEmailFragment.EditEmailDialogListener,
+        EditBirthFragment.EditBirthDialogListener,
+        EditPwdFragment.EditPwdDialogListener,
+        PickPictureFragment.PickPictureListener,
+        View.OnClickListener {
 
     private User user;
     private EditText usernameET, bioET, birthET, phoneET, emailET;
     private static final String TAG = "EditActivity";
     private String objectId;
+    private static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 111;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 222;
+
+    private Uri imageUri;
+    public static final int TAKE_PHOTO = 1;
+    public static final int CHOOSE_PHOTO = 2;
+    public static final int CROP_PHOTO = 3;
+
+    // 头像
+    private ImageView headPicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,20 +89,19 @@ public class EditActivity extends AppCompatActivity implements
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(R.string.edit_user_info);
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(R.string.edit_user_info);
+        }
+
 
         //显示昵称
         usernameET = (EditText) findViewById(R.id.user_name);
         String nickname = SPUtils.getString(this, objectId, Constants.SP_NICKNAME, null);
 
-        //String nickname1 = null;
-        //if (nickname != null) {
-        //    rsaCipherStrategy.initPrivateKey(Constants.PRIVATE_KEY);
-        //    nickname1 = rsaCipherStrategy.decrypt(nickname);
-        //}
-        //Log.i(TAG, "decrypt nickname done");
         Log.i(TAG, "昵称为：" + nickname);
         if (nickname == null) {
             usernameET.setText("点击设置");
@@ -168,7 +193,8 @@ public class EditActivity extends AppCompatActivity implements
         birthET.setOnClickListener(this);
 
         //修改头像
-        findViewById(R.id.head_picture).setOnClickListener(this);
+        headPicture = (ImageView) findViewById(R.id.head_picture);
+        headPicture.setOnClickListener(this);
 
         //修改手机号
         phoneET.setOnClickListener(this);
@@ -186,7 +212,7 @@ public class EditActivity extends AppCompatActivity implements
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case  R.id.user_name:
+            case R.id.user_name:
                 new EditNameFragment().show(getSupportFragmentManager(), "Edit_Name");
                 break;
             case R.id.user_bio:
@@ -196,8 +222,8 @@ public class EditActivity extends AppCompatActivity implements
                 new EditBirthFragment().show(getSupportFragmentManager(), "Edit_Birth");
                 break;
             case R.id.head_picture:
-                Snackbar.make(view, "headPicture", Snackbar.LENGTH_SHORT).setAction("Action", null)
-                        .show();
+                PickPictureFragment ppFragment = new PickPictureFragment();
+                ppFragment.show(getSupportFragmentManager(), "Pick_Picture");
                 break;
             case R.id.user_phone:
                 new EditPhoneFragment().show(getSupportFragmentManager(), "Edit_Phone");
@@ -257,6 +283,7 @@ public class EditActivity extends AppCompatActivity implements
         SPUtils.putString(this, objectId, Constants.SP_EMAIL, email);
         emailET.setText(email);
     }
+
     // 修改邮箱对话框（取消修改）
     @Override
     public void onEditEmailDialogNegativeClick(DialogFragment dialog) {
@@ -289,6 +316,32 @@ public class EditActivity extends AppCompatActivity implements
 
     }
 
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_STORAGE);
+            }
+        }
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+            }
+        }
+    }
+
     @Override
     protected void onDestroy() {
         UserInfoSync userInfoSync = new UserInfoSync();
@@ -298,5 +351,85 @@ public class EditActivity extends AppCompatActivity implements
             e.printStackTrace();
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case TAKE_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    Intent intent = new Intent("com.android.camera.action.CROP");
+                    intent.setDataAndType(imageUri, "image/*");
+                    intent.putExtra("scale", true);
+                    intent.putExtra("crop", "true");
+                    // 裁剪框的比例，1：1
+                    intent.putExtra("aspectX", 1);
+                    intent.putExtra("aspectY", 1);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        startActivityForResult(intent, CROP_PHOTO);
+                    }
+                }
+                break;
+            case CHOOSE_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    Intent intent = new Intent("com.android.camera.action.CROP");
+                    intent.setDataAndType(data.getData(), "image/*");
+                    intent.putExtra("scale", true);
+                    intent.putExtra("crop", "true");
+                    // 裁剪框的比例，1：1
+                    intent.putExtra("aspectX", 1);
+                    intent.putExtra("aspectY", 1);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        startActivityForResult(intent, CROP_PHOTO);
+                    }
+                }
+                break;
+            case CROP_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        Bitmap bitmap = BitmapFactory
+                                .decodeStream(getContentResolver().openInputStream(imageUri));
+                        headPicture.setImageBitmap(bitmap);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onCameraClick() {
+        //启动相机
+        File outputImage = new File(Environment.getExternalStorageDirectory(), "tempImage.jpg");
+        try {
+            if (outputImage.exists()) {
+                outputImage.delete();
+            }
+            outputImage.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        imageUri = Uri.fromFile(outputImage);
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, TAKE_PHOTO);
+        }
+    }
+
+    @Override
+    public void onAlbumClick() {
+        //启动相册
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, CHOOSE_PHOTO);
+        }
     }
 }
