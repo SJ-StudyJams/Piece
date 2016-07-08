@@ -95,7 +95,7 @@ public class EditPhoneFragment extends DialogFragment{
 
                 String password1 = passwordTV.getText().toString();
                 //String password2 = (String) User.getObjectByKey("password");
-                String password2 = "123456";
+                //String password2 = "123456";
 
                 if (password1.equals(password)) {
                     if (phoneTV != null) {

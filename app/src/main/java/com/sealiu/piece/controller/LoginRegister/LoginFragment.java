@@ -56,42 +56,6 @@ public class LoginFragment extends Fragment {
         et_account = (EditText) view.findViewById(R.id.login_phone_or_email);
         et_pwd = (EditText) view.findViewById(R.id.login_password);
 
-        /**
-         * 记住密码和自动登录的关系：
-         * 取消记住密码 --> 自动取消自动登录
-         * 勾选自动登录 --> 自动勾选记住密码
-         */
-        cb_RememberPwd = (CheckBox) view.findViewById(R.id.is_remember_password);
-        cb_AutoLogin = (CheckBox) view.findViewById(R.id.is_auto_login);
-
-        cb_RememberPwd.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (!isChecked) {
-                    cb_AutoLogin.setChecked(false);
-                }
-            }
-        });
-
-        cb_AutoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked) {
-                    cb_RememberPwd.setChecked(true);
-                }
-            }
-        });
-
-        isRememberPwd = SPUtils.getBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_REMEMBER, false);
-        if (isRememberPwd) {
-            username = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, null);
-            String password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
-
-            et_account.setText(username);
-            et_pwd.setText(password);
-            cb_RememberPwd.setChecked(true);
-        }
-
         final Button thirdPartLoginBtn = (Button) view.findViewById(R.id.third_part_login_btn);
         Button backRegisterBtn = (Button) view.findViewById(R.id.back_register_button);
         Button submitLoginBtn = (Button) view.findViewById(R.id.submit_login_btn);
@@ -149,22 +113,9 @@ public class LoginFragment extends Fragment {
                             Log.i(TAG, "登录成功，objectId：" + u.getObjectId());
 
                             SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, username);
-                            SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
+                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
+                            SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, true);
                             SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
-
-                            //是否自动登录
-                            if (cb_AutoLogin.isChecked()) {
-                                SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, true);
-                                SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_REMEMBER, true);
-
-                                SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
-                            } else if (cb_RememberPwd.isChecked()) {
-                                // 是否记住密码
-                                SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_REMEMBER, true);
-                                SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
-                            } else {
-                                SPUtils.clear(getActivity(), Constants.SP_FILE_NAME);
-                            }
 
                             progress.dismiss();
                         } else {

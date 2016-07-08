@@ -10,6 +10,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.LoginRegister.LoginActivity;
+import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.utils.SPUtils;
 
 public class MyPreferenceActivity extends AppCompatActivity {
 
@@ -61,12 +64,11 @@ public class MyPreferenceActivity extends AppCompatActivity {
                     Log.i("Preference", String.valueOf(preference.getKey()));
 
                     // 有bug，退出到登录页面之后，点击back按钮，有回到MapsActivity ==!
-//                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
-//                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
-//                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                    startActivity(intent);
-//                    getActivity().finish();
+                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    getActivity().finish();
                     return true;
                 }
             });
