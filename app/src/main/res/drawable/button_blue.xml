@@ -1,0 +1,24 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--按下颜色-->
+    <item android:state_pressed="true" >
+        <shape >
+            <solid android:color="#ff9800"/>
+        </shape>
+    </item>
+    <!--松开-->
+    <item android:state_pressed="false">
+        <shape >
+            <solid android:color="#44cef6"/>
+        </shape>
+    </item>
+
+    <item android:state_selected="true">
+        <shape>
+            <solid android:color="#ff9800"/>
+        </shape>
+    </item><item android:state_selected="false">
+    <shape>
+        <solid android:color="#44cef6"/>
+    </shape>
+</item>
+</selector>

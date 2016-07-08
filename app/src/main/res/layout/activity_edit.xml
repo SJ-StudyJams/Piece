@@ -189,6 +189,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/change_pwd" />
+                <Button
+                    android:id="@+id/user_finish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_blue"
+                    android:text="@string/finish_edit" />
 
             </LinearLayout>
 

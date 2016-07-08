@@ -1,9 +1,7 @@
 package com.sealiu.piece.controller.User;
 
 import android.annotation.TargetApi;
-import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
