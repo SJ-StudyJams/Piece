@@ -42,10 +42,10 @@ public class LoginActivity extends AppCompatActivity
             User user = new User();
             String username = SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, null);
             String pwd = SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
-            //String password = Md5Utils.encode(pwd);
+            String password = Md5Utils.encode(pwd);
 
             user.setUsername(username);
-            user.setPassword(pwd);
+            user.setPassword(password);
             user.login(new SaveListener<User>() {
                 @Override
                 public void done(User user, BmobException e) {
