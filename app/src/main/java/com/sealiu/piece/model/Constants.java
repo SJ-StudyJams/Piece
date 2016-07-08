@@ -68,7 +68,7 @@ public class Constants {
     public static final String SP_IS_UPLOAD = "isUpload";
 
     /**
-     * 密钥内容 base64 code
+     * RSA密钥内容 base64 code
      */
 
     //rsa_public_key
@@ -94,12 +94,12 @@ public class Constants {
             "pO6j8TaXggxr2mA=";
 
     /**
-     * 此为AESKey
+     * 此为AESKey（可修改）
      */
     public static final String AES_KEY = "0123456789abcdef";
 
     /**
-     * AES偏移量
+     * AES偏移量 （可修改）
      */
     public static final String IV_PARAMERER = "1020304050607080";
 }
