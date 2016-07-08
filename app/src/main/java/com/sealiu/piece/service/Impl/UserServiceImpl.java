@@ -1,5 +1,6 @@
 package com.sealiu.piece.service.Impl;
 
+
 import android.util.Log;
 
 import com.sealiu.piece.model.User;
@@ -28,4 +29,5 @@ public class UserServiceImpl implements UserService {
         });
         return user.getObjectId();
     }
+
 }

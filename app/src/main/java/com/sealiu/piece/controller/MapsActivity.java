@@ -2,16 +2,18 @@ package com.sealiu.piece.controller;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,7 +22,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.LoginRegister.LoginActivity;
+import com.sealiu.piece.controller.Settings.MyPreferenceActivity;
 import com.sealiu.piece.controller.User.UserActivity;
+import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.utils.SPUtils;
+
+import java.util.Set;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -41,6 +49,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // 获取 preferenceSettings 中的值，示例：
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
+
+        Set<String> pref_piece_nearby_key = SP.getStringSet("pref_piece_nearby_key", null);
+        if (pref_piece_nearby_key != null)
+            Log.i("MapsActivity", "允许接收小纸条类型：" + pref_piece_nearby_key.toString());
+    }
 
     /**
      * Manipulates the map once available.
@@ -97,11 +116,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         switch (item.getItemId()) {
             case R.id.settings_menu_title:
-                Toast.makeText(MapsActivity.this, "Replace with your own action", Toast.LENGTH_SHORT)
-                        .show();
+                startActivity(new Intent(MapsActivity.this, MyPreferenceActivity.class));
                 break;
             case R.id.user_menu_title:
                 startActivity(new Intent(MapsActivity.this, UserActivity.class));
+                break;
+            case R.id.switch_menu_title:
+                SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
+                SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
+                startActivity(new Intent(MapsActivity.this, LoginActivity.class));
+                finish();
                 break;
             default:
                 break;

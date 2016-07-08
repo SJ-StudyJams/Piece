@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:defaultValue="true"
+        android:key="pref_terms_of_use_key"
+        android:title="@string/pref_terms_of_use_title"></Preference>
+
+    <Preference
+        android:defaultValue="true"
+        android:key="pref_privacy_policy_key"
+        android:title="@string/pref_privacy_policy_title"></Preference>
+
+    <Preference
+        android:defaultValue="true"
+        android:key="pref_licenses_key"
+        android:title="@string/pref_licenses_title"></Preference>
+
+    <Preference
+        android:defaultValue="true"
+        android:key="pref_version_key"
+        android:summary="@string/pref_version_summary"
+        android:title="@string/pref_version_title" />
+</PreferenceScreen>

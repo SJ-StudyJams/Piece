@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -17,7 +18,8 @@
             android:hint="@string/prompt_phone_or_email"
             android:maxLines="1"
             android:singleLine="true"
-            android:inputType="phone"/>
+            android:inputType="text"
+            tools:ignore="TextFields" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -28,7 +30,7 @@
         android:focusableInTouchMode="true">
 
         <EditText
-            android:id="@+id/password"
+            android:id="@+id/login_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/prompt_password"
@@ -39,6 +41,27 @@
             android:singleLine="true" />
 
     </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/is_remember_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/remember_password"
+            android:layout_marginRight="16dp" />
+
+        <CheckBox
+            android:id="@+id/is_auto_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/auto_login"
+            android:layout_marginLeft="16dp" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

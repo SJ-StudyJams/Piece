@@ -21,7 +21,8 @@ public class UserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("username");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);

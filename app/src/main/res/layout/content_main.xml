@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -15,20 +15,38 @@
         android:orientation="vertical"
         android:paddingBottom="32dp">
 
-        <Button
-            android:id="@+id/location_btn"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_marginEnd="32dp"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            android:background="@color/locationBg" />
+            android:layout_marginTop="32dp">
 
+            <TextView
+                android:id="@+id/position_info"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="8dp"
+                android:layout_gravity="center_vertical"
+                android:text="位置信息" />
+
+            <ImageButton
+                android:id="@+id/find_my_location"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                style="?android:borderlessButtonStyle"
+                android:src="@drawable/ic_person_pin_circle_black_24dp" />
+        </LinearLayout>
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
 
             android:background="@android:color/white"
             card_view:cardCornerRadius="2dp"
@@ -52,7 +70,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_weight="3"
+                        android:layout_weight="1"
                         android:layout_gravity="center_vertical">
 
                         <TextView
@@ -61,7 +79,8 @@
                             android:text="@string/nearby"
                             android:textColor="@color/primaryText"
                             android:textSize="16sp"
-                            android:layout_marginEnd="4dp" />
+                            android:layout_marginEnd="4dp"
+                            android:layout_marginRight="4dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -76,17 +95,18 @@
                             android:text="@string/pieces_km"
                             android:textColor="@color/primaryText"
                             android:textSize="16sp"
-                            android:layout_marginStart="4dp" />
+                            android:layout_marginStart="4dp"
+                            android:layout_marginLeft="4dp" />
                     </LinearLayout>
 
 
                     <Button
+                        android:id="@+id/see_all_btn"
                         style="?android:attr/buttonBarButtonStyle"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:text="@string/try_luck"
+                        android:text="@string/see_all"
                         android:textColor="@color/colorAccent"
                         android:textSize="14sp" />
 
@@ -99,13 +119,14 @@
                     android:layout_gravity="center_horizontal"
                     android:paddingBottom="16dp"
                     android:paddingEnd="16dp"
-                    android:paddingStart="16dp" />
+                    android:paddingStart="16dp"
+                    android:progress="70" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
 
     </LinearLayout>
-</ScrollView>
+</android.support.v4.widget.NestedScrollView>
 
 
 
