@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.controller.LoginRegister.LoginActivity;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
@@ -64,7 +63,7 @@ public class EditActivity extends AppCompatActivity implements
     public static final int CHOOSE_PHOTO = 2;
     public static final int CROP_PHOTO = 3;
 
-    private NestedScrollView layoutScroll;
+    public static NestedScrollView layoutScroll;
     // 头像
     private ImageView headPicture;
 
@@ -311,9 +310,6 @@ public class EditActivity extends AppCompatActivity implements
     // 修改密码对话框（确定修改）
     @Override
     public void onEditPwdDialogPositiveClick(DialogFragment dialog) {
-        SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
-        Intent i = new Intent(this, LoginActivity.class);
-        startActivity(i);
     }
 
     // 修改密码对话框（取消修改）

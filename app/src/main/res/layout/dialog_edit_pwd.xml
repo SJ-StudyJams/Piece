@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="16dp">
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -49,9 +50,5 @@
             android:hint="再次输入新密码"
             android:inputType="textPassword" />
     </android.support.design.widget.TextInputLayout>
-    <Button
-        android:id="@+id/change_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="确定"/>
+
 </LinearLayout>
