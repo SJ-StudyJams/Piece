@@ -1,13 +1,9 @@
 package com.sealiu.piece.controller.User;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.icu.util.Calendar;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -17,13 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
-import android.widget.TextView;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.utils.SPUtils;
-
-import java.util.Date;
 
 import cn.bmob.v3.BmobUser;
 
@@ -46,15 +39,15 @@ public class EditBirthFragment extends DialogFragment {
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         // Verify that the host activity implements the callback interface
         try {
             // Instantiate the NoticeDialogListener so we can send events to the host
-            eListener = (EditBirthDialogListener) activity;
+            eListener = (EditBirthDialogListener) context;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement EditBirthDialogListener");
         }
     }
@@ -105,7 +98,7 @@ public class EditBirthFragment extends DialogFragment {
                 month2 = monthI - 1;
 
             } catch (Exception e) {
-            e.printStackTrace();
+                e.printStackTrace();
             }
         } else {
             yearI = 1970;
@@ -113,7 +106,7 @@ public class EditBirthFragment extends DialogFragment {
             dayI = 30;
         }
 
-;
+        ;
         datePicker.init(yearI, month2, dayI, new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
@@ -132,13 +125,13 @@ public class EditBirthFragment extends DialogFragment {
                         birth
                 );
             }
-    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int id) {
-            EditBirthDialogListener listener = (EditBirthDialogListener) getActivity();
-            listener.onEditBirthDialogNegativeClick(EditBirthFragment.this);
-        }
-    }).setTitle("设置生日");
+        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                EditBirthDialogListener listener = (EditBirthDialogListener) getActivity();
+                listener.onEditBirthDialogNegativeClick(EditBirthFragment.this);
+            }
+        });
 
         return builder.create();
     }
