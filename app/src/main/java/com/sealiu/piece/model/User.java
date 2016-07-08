@@ -113,5 +113,4 @@ public class User extends BmobUser {
         this.nickname = nickname;
     }
 
-
 }

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
 
@@ -95,10 +96,8 @@ public class EditEmailFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
 
                 String password1 = passwordTV.getText().toString();
-                //String password2 = (String) User.getObjectByKey("password");
-                String password2 = Md5Utils.encode(password1);
 
-                if (password2.equals(password)) {
+                if (password1.equals(password)) {
                     if (emailTV != null) {
                         String email = emailTV.getText().toString();
                         EditEmailDialogListener listener = (EditEmailDialogListener) getActivity();
