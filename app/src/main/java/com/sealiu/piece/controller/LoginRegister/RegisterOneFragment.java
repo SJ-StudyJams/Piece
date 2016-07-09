@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.model.Constants;
 
 import cn.bmob.sms.BmobSMS;
 import cn.bmob.sms.exception.BmobException;
 import cn.bmob.sms.listener.RequestSMSCodeListener;
 import cn.bmob.sms.listener.VerifySMSCodeListener;
-
-import static com.sealiu.piece.model.Constants.CODE_ERROR;
-import static com.sealiu.piece.model.Constants.CREDIT_INFO_MUST_VERIFY_OK;
-import static com.sealiu.piece.model.Constants.LOGIN_DATA_REQUIRED;
-import static com.sealiu.piece.model.Constants.MOBILE_PHONE_NUMBER_ALREADY_TAKEN;
-import static com.sealiu.piece.model.Constants.MOBILE_SEND_MESSAGE_LIMITED;
-import static com.sealiu.piece.model.Constants.NO_REMAINING_NUMBER_FOR_SEND_MESSAGES;
-import static com.sealiu.piece.model.Constants.SMS_CONTENT_ILLEGAL;
 
 /**
  * Created by liuyang
@@ -140,43 +132,6 @@ public class RegisterOneFragment extends Fragment {
         return view;
     }
 
-    /**
-     * 根据错误码获取错误信息
-     *
-     * @param errorCode 错误码
-     * @return 错误信息
-     */
-    private String createErrorInfo(Integer errorCode) {
-        String errorInfo;
-        switch (errorCode) {
-            case LOGIN_DATA_REQUIRED:
-                errorInfo = "缺少登录信息";
-                break;
-            case CODE_ERROR: //验证码输入错误，code error.
-                errorInfo = "验证码不正确";
-                break;
-            case MOBILE_PHONE_NUMBER_ALREADY_TAKEN:
-                errorInfo = "手机号码已经存在";
-                break;
-            case MOBILE_SEND_MESSAGE_LIMITED:
-                errorInfo = "该手机号发送短信达到限制";
-                break;
-            case NO_REMAINING_NUMBER_FOR_SEND_MESSAGES:
-                errorInfo = "开发者账户无可用的发送短信条数";
-                break;
-            case CREDIT_INFO_MUST_VERIFY_OK:
-                errorInfo = "身份信息必须审核通过才能使用该功能";
-                break;
-            case SMS_CONTENT_ILLEGAL:
-                errorInfo = "非法短信内容";
-                break;
-            default:
-                errorInfo = "未知错误,请联系开发者";
-                break;
-        }
-        return errorInfo;
-    }
-
 
     /**
      * 识别输入的是手机号还是邮箱地址
@@ -226,12 +181,10 @@ public class RegisterOneFragment extends Fragment {
             public void done(Integer integer, BmobException e) {
                 // TODO Auto-generated method stub
                 if (e == null) {
-                    Log.i(TAG, "短信id：" + integer);
                     snackBarTips("验证码发送成功");
                     nextStepListener.onFetchCodeBtnClick(flag, phoneNumber);
                 } else {
-                    String content = "errorCode = " + e.getErrorCode() + ",errorMsg = " + e.getLocalizedMessage();
-                    Log.i(TAG, content);
+                    String content = Constants.createErrorInfo(e.getErrorCode()) + "错误码：" + e.getErrorCode();
                     snackBarTips(content);
                 }
             }
@@ -257,12 +210,10 @@ public class RegisterOneFragment extends Fragment {
                 // TODO Auto-generated method stub
                 progress.dismiss();
                 if (e == null) {
-                    Log.i(TAG, "验证通过");
                     snackBarTips("验证通过");
                     nextStepListener.onNextBtnClick(flag);
                 } else {
-                    String content = "errorCode =" + e.getErrorCode() + ",errorMsg = " + e.getLocalizedMessage();
-                    Log.i(TAG, content);
+                    String content = Constants.createErrorInfo(e.getErrorCode()) + " 错误码：" + e.getErrorCode();
                     snackBarTips(content);
                 }
             }
