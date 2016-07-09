@@ -209,4 +209,5 @@
     </string>
     <string name="capture_photo">相机拍摄</string>
     <string name="album_choose">从相册选择</string>
+    <string name="find_pwd">忘记密码？点击找回</string>
 </resources>
