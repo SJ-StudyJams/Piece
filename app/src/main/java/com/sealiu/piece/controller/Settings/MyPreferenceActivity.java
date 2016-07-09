@@ -47,7 +47,7 @@ public class MyPreferenceActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     getActivity().getFragmentManager().beginTransaction()
-                            .replace(R.id.content_frame, new AboutPreferenceFragment())
+                            .replace(R.id.content_frame, new AboutPreferenceFragment()).addToBackStack(null)
                             .commit();
                     return true;
                 }
