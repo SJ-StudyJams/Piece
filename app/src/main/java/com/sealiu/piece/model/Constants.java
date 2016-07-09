@@ -15,24 +15,44 @@ public class Constants {
     public static final String QQ_APP_ID ="1105440739";
 
     /**
-     * SMS 错误码
+     * 根据错误码获取错误信息
+     *
+     * @param errorCode 错误码
+     * @return 错误信息
      */
-
-    // 登录信息是必需的，如邮箱和密码时缺少其中一个提示此信息
-    public static final int LOGIN_DATA_REQUIRED = 109;
-    // 验证码错误
-    public static final int CODE_ERROR = 207;
-    // 该手机号码已经存在
-    public static final int MOBILE_PHONE_NUMBER_ALREADY_TAKEN = 209;
-    // 该手机号发送短信达到限制(对于一个应用来说，一天给同一手机号发送短信不能超过10条，
-    // 一小时给同一手机号发送短信不能超过5条，一分钟给同一手机号发送短信不能超过1条)
-    public static final int MOBILE_SEND_MESSAGE_LIMITED = 10010;
-    // 该账户无可用的发送短信条数
-    public static final int NO_REMAINING_NUMBER_FOR_SEND_MESSAGES = 10011;
-    // 身份信息必须审核通过才能使用该功能
-    public static final int CREDIT_INFO_MUST_VERIFY_OK = 10012;
-    // 非法短信内容
-    public static final int SMS_CONTENT_ILLEGAL = 10013;
+    public static String createErrorInfo(Integer errorCode) {
+        String errorInfo;
+        switch (errorCode) {
+            case 109:
+                errorInfo = "缺少登录信息";
+                break;
+            case 207:
+                errorInfo = "验证码不正确";
+                break;
+            case 209:
+                errorInfo = "手机号码已经存在";
+                break;
+            case 202:
+                errorInfo = "邮箱已经存在";
+                break;
+            case 10010:
+                errorInfo = "该手机号发送短信达到限制";
+                break;
+            case 10011:
+                errorInfo = "开发者账户无可用的发送短信条数";
+                break;
+            case 10012:
+                errorInfo = "身份信息必须审核通过才能使用该功能";
+                break;
+            case 10013:
+                errorInfo = "非法短信内容";
+                break;
+            default:
+                errorInfo = "未知错误,请联系开发者";
+                break;
+        }
+        return errorInfo;
+    }
 
     /**
      *  User本地信息常量
@@ -62,8 +82,12 @@ public class Constants {
     public static final String SP_USER_OBJECT_ID = "userObjectId";
     //Email
     public static final String SP_EMAIL = "email";
+    //Email 是否验证
+    public static final String SP_IS_VALID_EMAIL = "isValidEmail";
     //手机号
     public static final String SP_PHONE_NUMBER = "mobilePhoneNumber";
+    //手机号 是否验证
+    public static final String SP_IS_VALID_PHONE_NUMBER = "isValidMobilePhoneNumber";
     //登录时间
     public static final String SP_LOGIN_TIME = "time";
 
