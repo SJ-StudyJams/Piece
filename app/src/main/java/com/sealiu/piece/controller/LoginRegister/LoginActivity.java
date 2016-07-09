@@ -30,15 +30,13 @@ public class LoginActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 如果自动登录
-        final ProgressDialog progress = new ProgressDialog(LoginActivity.this);
-        progress.setMessage("正在登录中...");
-        progress.setCanceledOnTouchOutside(false);
-        progress.show();
-        //检查是否长时间未登录
-        if (getLoginTime() && SPUtils.getBoolean(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false)
-                && SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null) != null) {
-            //上次登录时选择了自动登录，并且用户的 objectId 不为空；则自动登录
+        if (!isOutOfDate() && SPUtils.getBoolean(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false)) {
+            //距上次登录没有超过1个月，且用户为登录状态，则自动登录
+            final ProgressDialog progress = new ProgressDialog(LoginActivity.this);
+            progress.setMessage("正在登录中...");
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
+
             User user = new User();
             String username = SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, null);
             String pwd = SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
@@ -50,7 +48,6 @@ public class LoginActivity extends AppCompatActivity
                     @Override
                     public void done(User user, BmobException e) {
                         if (e == null) {
-
                             onSubmitLoginBtnClick();
                         } else {
                             SPUtils.clear(LoginActivity.this, Constants.SP_FILE_NAME);
@@ -72,7 +69,7 @@ public class LoginActivity extends AppCompatActivity
 
             progress.dismiss();
         } else {
-            progress.dismiss();
+            // 需要手动登录
             setContentView(R.layout.activity_login);
             Fragment fragment = fm.findFragmentById(R.id.content_frame);
             if (fragment == null) {
@@ -83,6 +80,22 @@ public class LoginActivity extends AppCompatActivity
             }
         }
 
+    }
+
+    /**
+     * 检查自动登录是否过期
+     *
+     * @return 超过：true  没有超过：false
+     */
+    private boolean isOutOfDate() {
+        //获取当前时间
+        long timeNow = System.currentTimeMillis();
+        Log.i(TAG, "now:" + timeNow);
+        //获取用户上次登录时间
+        long timePre = SPUtils.getLong(this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, 0);
+        Log.i(TAG, "pre:" + timePre);
+        //当用户本次登陆时间大于上次登录时间一个月
+        return (timeNow - timePre > Constants.OUT_OF_DATE_LIMIT);
     }
 
     @Override
@@ -106,32 +119,5 @@ public class LoginActivity extends AppCompatActivity
                 .commit();
     }
 
-    /**
-     * 检查用户是否超过一个月未登陆
-     * @return login
-     */
-    private boolean getLoginTime() {
-        boolean login;
-        //获取当前时间
-        long timeNow = System.currentTimeMillis();
-        Log.i(TAG, "now:" + timeNow);
-        //获取用户上次登录时间
-        long timePre = SPUtils.getLong(this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, 0);
-        Log.i(TAG, "pre:" + timePre);
-        //当用户本次登陆时间大于上次登录时间一个月
-        if(timeNow - timePre > 2592000){
-            SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
-            //SPUtils.putLong(this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, timeNow);
-            login = false;
-        }
-        else{
-            SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, true);
-            SPUtils.putLong(this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, timeNow);
-            login = true;
-        }
-
-        Log.i(TAG, "" + login);
-        return login;
-    }
 }
 

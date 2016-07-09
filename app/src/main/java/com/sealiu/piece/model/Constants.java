@@ -1,7 +1,8 @@
 package com.sealiu.piece.model;
 
 /**
- * Created by art2cat on 7/4/2016.
+ * Created by art2cat
+ * on 7/4/2016.
  */
 public class Constants {
     /**
@@ -13,6 +14,10 @@ public class Constants {
      * 此为腾讯官方提供给开发者用于测试的APP_ID，个人开发者需要去QQ互联官网为自己的应用申请对应的AppId
      */
     public static final String QQ_APP_ID ="1105440739";
+
+    //自动登录过期时间(单位：s)
+    //当前设置为一个月
+    public static final long OUT_OF_DATE_LIMIT = 2592000;
 
     /**
      * 根据错误码获取错误信息
@@ -64,8 +69,6 @@ public class Constants {
     public static final String SP_USERNAME = "username";
     //密码（未加密）
     public static final String SP_PASSWORD = "password";
-    //记住密码
-    public static final String SP_IS_REMEMBER = "isRemember";
     //生日
     public static final String SP_BIRTH = "birth";
     //性别
@@ -74,10 +77,8 @@ public class Constants {
     public static final String SP_NICKNAME = "nickname";
     //个人简介
     public static final String SP_BIO = "bio";
-    //登陆与否
+    //登陆与否（开放游客身份后，可以使用这个来判断是否登录）
     public static final String SP_IS_LOGIN = "isLogin";
-    //自动登录
-    public static final String SP_IS_AUTO_LOGIN = "isAutoLogin";
     //_user objectId
     public static final String SP_USER_OBJECT_ID = "userObjectId";
     //Email

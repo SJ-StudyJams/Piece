@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.ScrollView;
 
 import com.sealiu.piece.R;
@@ -116,7 +115,7 @@ public class RegisterActivity extends AppCompatActivity
         user.setPassword(encryptPassword);
         // 注册
         final ProgressDialog progress = new ProgressDialog(RegisterActivity.this);
-        progress.setMessage("正在登录中...");
+        progress.setMessage("注册成功后自动跳转...");
         progress.setCanceledOnTouchOutside(false);
         progress.show();
 
@@ -124,17 +123,9 @@ public class RegisterActivity extends AppCompatActivity
             @Override
             public void done(User u, BmobException e) {
                 if (e == null) {
-                    Log.i(TAG, "注册成功:" + u.toString());
-                    // 注册成功后默认下次自动登录
-                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, true);
-                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_REMEMBER, true);
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, u.getEmail());
-                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, u.getEmailVerified());
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, u.getMobilePhoneNumber());
-                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, u.getMobilePhoneNumberVerified());
+                    //记录本次登录时间，设置登录标志位
+                    SPUtils.putLong(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, System.currentTimeMillis());
+                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
                     progress.dismiss();
 
                     Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
@@ -145,14 +136,7 @@ public class RegisterActivity extends AppCompatActivity
                     SPUtils.clear(RegisterActivity.this, Constants.SP_FILE_NAME);
                     Log.i(TAG, e.toString());
                     String content = Constants.createErrorInfo(e.getErrorCode()) + " 错误码：" + e.getErrorCode();
-                    Snackbar.make(scrollView, content, Snackbar.LENGTH_SHORT)
-                            .setAction("直接登录", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                                    startActivity(intent);
-                                }
-                            }).show();
+                    Snackbar.make(scrollView, content, Snackbar.LENGTH_SHORT).show();
                     progress.dismiss();
                 }
             }

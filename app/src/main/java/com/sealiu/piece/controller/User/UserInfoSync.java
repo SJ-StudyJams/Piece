@@ -16,7 +16,6 @@ import cn.bmob.v3.listener.UpdateListener;
  */
 public class UserInfoSync {
     private String nickname, bio, sex, birth, email, phone_number;
-    private boolean is_valid_email, is_valid_phone;
     private static final String TAG = "UserInfoSync";
 
     /**
@@ -34,6 +33,8 @@ public class UserInfoSync {
         email = SPUtils.getString(context, filename, Constants.SP_EMAIL, "");
         phone_number = SPUtils.getString(context, filename, Constants.SP_PHONE_NUMBER, "");
 
+        long loginTime = SPUtils.getLong(context, filename, Constants.SP_LOGIN_TIME, 0);
+
         User user = new User();
         user.setNickname(nickname);
         user.setBio(bio);
@@ -41,6 +42,7 @@ public class UserInfoSync {
         user.setUser_sex(sex);
         user.setEmail(email);
         user.setMobilePhoneNumber(phone_number);
+        user.setLoginTime(loginTime);
 
         user.update(objectId, new UpdateListener() {
             @Override
@@ -67,8 +69,8 @@ public class UserInfoSync {
         birth = (String) User.getObjectByKey(Constants.SP_BIRTH);
         email = (String) User.getObjectByKey(Constants.SP_EMAIL);
         phone_number = (String) User.getObjectByKey(Constants.SP_PHONE_NUMBER);
-        is_valid_email = (boolean) User.getObjectByKey(Constants.SP_IS_VALID_EMAIL);
-        is_valid_phone = (boolean) User.getObjectByKey(Constants.SP_IS_VALID_PHONE_NUMBER);
+        boolean is_valid_email = (boolean) User.getObjectByKey(Constants.SP_IS_VALID_EMAIL);
+        boolean is_valid_phone = (boolean) User.getObjectByKey(Constants.SP_IS_VALID_PHONE_NUMBER);
 
         SPUtils.putString(context, filename, Constants.SP_NICKNAME, nickname);
         SPUtils.putString(context, filename, Constants.SP_BIO, bio);
