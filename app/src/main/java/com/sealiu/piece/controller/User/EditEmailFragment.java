@@ -1,33 +1,29 @@
 package com.sealiu.piece.controller.User;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.model.User;
-import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
 
-import cn.bmob.v3.BmobUser;
-
 /**
- * Created by art2cat on 7/7/2016.
+ * Created by art2cat
+ * on 7/7/2016.
  */
 public class EditEmailFragment extends DialogFragment {
-    private String email, password;
+    private String emailBefore, password;
     private TextView emailTV, passwordTV;
 
     public interface EditEmailDialogListener {
@@ -41,15 +37,15 @@ public class EditEmailFragment extends DialogFragment {
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         // Verify that the host activity implements the callback interface
         try {
             // Instantiate the NoticeDialogListener so we can send events to the host
-            eListener = (EditEmailDialogListener) activity;
+            eListener = (EditEmailDialogListener) context;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement EditEmailDialogListener");
         }
     }
@@ -78,43 +74,41 @@ public class EditEmailFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_edit_email, null);
         builder.setView(view);
 
-        email = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_EMAIL, null);
+        emailBefore = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_EMAIL, null);
         password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
-        Log.i("test", "password" + password);
-        Log.i("test", "Email" + email);
 
         emailTV = (TextView) view.findViewById(R.id.edit_user_email);
         passwordTV = (TextView) view.findViewById(R.id.edit_user_password);
-        emailTV.setText(email);
 
+        final EditEmailDialogListener listener = (EditEmailDialogListener) getActivity();
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
 
-                String password1 = passwordTV.getText().toString();
+                String passwordString = passwordTV.getText().toString();
+                String emailAfter = emailTV.getText().toString();
 
-                if (password1.equals(password)) {
-                    if (emailTV != null) {
-                        String email = emailTV.getText().toString();
-                        EditEmailDialogListener listener = (EditEmailDialogListener) getActivity();
-                        listener.onEditEmailDialogPositiveClick(
-                                EditEmailFragment.this,
-                                email
-                        );
-                    }
-                } else {
-                    Toast.makeText(getActivity(), "密码不正确", Toast.LENGTH_SHORT).show();
+                if (!passwordString.equals(password)) {
+                    Snackbar.make(EditActivity.layoutScroll, "密码不正确", Snackbar.LENGTH_LONG).show();
+                    return;
                 }
 
+                if (emailBefore.equals(emailAfter)) {
+                    Snackbar.make(EditActivity.layoutScroll, "填写的邮箱和之前一致，邮箱没有修改", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
 
+                Snackbar.make(EditActivity.layoutScroll, "邮箱修改成功，激活邮件已发送", Snackbar.LENGTH_LONG).show();
 
-
+                listener.onEditEmailDialogPositiveClick(
+                        EditEmailFragment.this,
+                        emailAfter
+                );
             }
         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                EditEmailDialogListener listener = (EditEmailDialogListener) getActivity();
                 listener.onEditEmailDialogNegativeClick(EditEmailFragment.this);
             }
         });

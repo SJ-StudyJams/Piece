@@ -10,8 +10,8 @@
         android:id="@+id/edit_app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="0dp"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:elevation="0dp">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -55,11 +55,10 @@
                         android:id="@+id/user_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:clickable="true"
                         android:hint="昵称"
-                        android:text=""
-                        android:inputType="none"
-                        android:editable="false"
-                        android:clickable="true" />
+                        android:focusable="false"
+                        android:inputType="text" />
                 </android.support.design.widget.TextInputLayout>
 
                 <TextView
@@ -108,10 +107,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="个人简介"
-                        android:text=""
-                        android:inputType="none"
-                        android:editable="false"
-                        android:clickable="true" />
+                        android:focusable="false"
+                        android:inputType="textMultiLine" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -123,8 +120,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
-                        android:hint="生日"
-                        android:text="点击设置" />
+                        android:hint="生日" />
                 </android.support.design.widget.TextInputLayout>
 
                 <RelativeLayout
@@ -140,20 +136,20 @@
                             android:id="@+id/user_phone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:clickable="false"
                             android:focusable="false"
                             android:hint="手机号"
                             android:text="" />
                     </android.support.design.widget.TextInputLayout>
 
                     <ImageView
+                        android:id="@+id/phone_is_valid"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentRight="true"
                         android:paddingBottom="16dp"
                         android:src="@drawable/ic_done_green_24dp"
-                        android:visibility="visible" />
+                        android:visibility="invisible" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -169,13 +165,12 @@
                             android:id="@+id/user_email"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:clickable="false"
                             android:focusable="false"
-                            android:hint="邮箱"
-                            android:text="点击绑定" />
+                            android:hint="邮箱" />
                     </android.support.design.widget.TextInputLayout>
 
                     <ImageView
+                        android:id="@+id/email_is_valid"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"

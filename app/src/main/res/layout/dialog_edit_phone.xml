@@ -8,14 +8,15 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
         <EditText
             android:id="@+id/edit_user_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="手机号"
-            android:text="phone number"
             android:inputType="phone"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -23,7 +24,9 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
         <EditText
             android:id="@+id/edit_user_phone_password"
             android:layout_width="match_parent"

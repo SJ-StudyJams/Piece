@@ -19,7 +19,6 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,21 +50,20 @@ public class EditActivity extends AppCompatActivity implements
         PickPictureFragment.PickPictureListener,
         View.OnClickListener {
 
-    private User user;
-    private EditText usernameET, bioET, birthET, phoneET, emailET;
     private static final String TAG = "EditActivity";
+    private EditText usernameET, bioET, birthET, phoneET, emailET;
+    private ImageView headPicture, phoneIsValidIV, emailIsValidIV;
+    private RadioGroup radioGroup;
     private String objectId;
+    private Uri imageUri;
+
     private static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 111;
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 222;
-
-    private Uri imageUri;
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
     public static final int CROP_PHOTO = 3;
 
     public static NestedScrollView layoutScroll;
-    // 头像
-    private ImageView headPicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,20 +72,19 @@ public class EditActivity extends AppCompatActivity implements
 
         layoutScroll = (NestedScrollView) findViewById(R.id.scroll_view);
 
-        user = new User();
-        //获取当前用户
-        BmobUser user1 = User.getCurrentUser();
-        //获取objectId
-        objectId = user1.getObjectId();
-        if (objectId == null) {
-            objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null);
+        objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
+
+        if (objectId.equals("")) {
+            //获取当前用户
+            BmobUser bmobUser = User.getCurrentUser();
+            //获取objectId
+            objectId = bmobUser.getObjectId();
         }
 
-        Log.i(TAG, "id:" + objectId);
-        //objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null);
+        // 从bmob后台同步用户信息到sp文件中存储
         UserInfoSync sync = new UserInfoSync();
         try {
-            sync.getUserInfo(this, objectId);
+            sync.getUserInfo(this, Constants.SP_FILE_NAME);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,66 +99,80 @@ public class EditActivity extends AppCompatActivity implements
             getSupportActionBar().setTitle(R.string.edit_user_info);
         }
 
+        // 将sp文件中存储的用户信息显示出来，并设置监听
+        displayContent();
+    }
+
+    /**
+     * 显示个人资料内容，并设置监听函数修改资料
+     */
+    private void displayContent() {
+        String nickname = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, "");
+        String sex = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_SEX, "");
+        String bio = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_BIO, "");
+        String birth = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, "");
+        String phone = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, "");
+        String email = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, "");
+
+        usernameET = (EditText) findViewById(R.id.user_name);
+        radioGroup = (RadioGroup) findViewById(R.id.user_sex);
+        bioET = (EditText) findViewById(R.id.user_bio);
+        headPicture = (ImageView) findViewById(R.id.head_picture);
+        birthET = (EditText) findViewById(R.id.user_birth);
+        phoneET = (EditText) findViewById(R.id.user_phone);
+        emailET = (EditText) findViewById(R.id.user_email);
+        Button changePwdBTN = (Button) findViewById(R.id.user_pwd);
+
 
         //显示昵称
-        usernameET = (EditText) findViewById(R.id.user_name);
-        String nickname = SPUtils.getString(this, objectId, Constants.SP_NICKNAME, null);
-
-        Log.i(TAG, "昵称为：" + nickname);
-        if (nickname == null) {
+        if (nickname.equals("")) {
             usernameET.setText("点击设置");
         } else {
             usernameET.setText(nickname);
         }
 
         //显示个人简介
-        bioET = (EditText) findViewById(R.id.user_bio);
-        String bio = SPUtils.getString(this, objectId, Constants.SP_BIO, null);
-        Log.i(TAG, "个人简介：" + bio);
-        if (bio == null) {
+        if (bio.equals("")) {
             bioET.setText("点击设置");
         } else {
             bioET.setText(bio);
         }
 
         //显示生日
-        birthET = (EditText) findViewById(R.id.user_birth);
-        String birth = SPUtils.getString(this, objectId, Constants.SP_BIRTH, null);
-        Log.i(TAG, "生日：" + birth);
-        if (birth == null) {
+        if (birth.equals("")) {
             birthET.setText("点击设置");
         } else {
             birthET.setText(birth);
         }
 
         //显示手机号
-        phoneET = (EditText) findViewById(R.id.user_phone);
-        String phone = SPUtils.getString(this, objectId, Constants.SP_PHONE_NUMBER, null);
-        Log.i(TAG, "手机号：" + phone);
-        if (phone == null) {
+        if (phone.equals("")) {
             phoneET.setText("点击设置");
         } else {
             phoneET.setText(phone);
         }
 
         //显示邮箱
-        emailET = (EditText) findViewById(R.id.user_email);
-        String email = SPUtils.getString(this, objectId, Constants.SP_EMAIL, null);
-        Log.i(TAG, "Email：" + email);
-        if (phone == null) {
+        if (email.equals("")) {
             emailET.setText("点击设置");
         } else {
             emailET.setText(email);
         }
 
-        //修改昵称
-        findViewById(R.id.user_name).setOnClickListener(this);
+        //显示手机/邮箱的验证状态
+        updateVerifiedStatus();
 
-        //修改性别
-        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.user_sex);
-        String sex = SPUtils.getString(this, objectId, Constants.SP_SEX, null);
-        Log.i(TAG, "性别：" + sex);
-        if (sex != null) {
+        //修改昵称,个人简介,生日,头像,手机号,邮箱,密码
+        usernameET.setOnClickListener(this);
+        bioET.setOnClickListener(this);
+        birthET.setOnClickListener(this);
+        headPicture.setOnClickListener(this);
+        phoneET.setOnClickListener(this);
+        emailET.setOnClickListener(this);
+        changePwdBTN.setOnClickListener(this);
+
+        //显示性别
+        if (!sex.equals("")) {
             switch (sex) {
                 case "1":
                     radioGroup.check(R.id.user_sex_male);
@@ -173,47 +184,52 @@ public class EditActivity extends AppCompatActivity implements
                     radioGroup.check(R.id.user_sex_secret);
                     break;
             }
+        } else {
+            radioGroup.check(R.id.user_sex_secret);
         }
+
+        //修改性别
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.user_sex_male:
-                        SPUtils.putString(EditActivity.this, objectId, Constants.SP_SEX, "1");
+                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "1");
                         break;
                     case R.id.user_sex_female:
-                        SPUtils.putString(EditActivity.this, objectId, Constants.SP_SEX, "2");
+                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "2");
                         break;
                     case R.id.user_sex_secret:
-                        SPUtils.putString(EditActivity.this, objectId, Constants.SP_SEX, "3");
+                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "3");
                         break;
                 }
             }
         });
-
-        //修改个人简介
-        bioET.setOnClickListener(this);
-
-        //修改生日
-        birthET.setOnClickListener(this);
-
-        //修改头像
-        headPicture = (ImageView) findViewById(R.id.head_picture);
-        headPicture.setOnClickListener(this);
-
-        //修改手机号
-        phoneET.setOnClickListener(this);
-
-        //修改邮箱
-        emailET.setOnClickListener(this);
-
-        //修改密码
-        Button button = (Button) findViewById(R.id.user_pwd);
-        button.setOnClickListener(this);
-
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
+    /**
+     * 初始化手机/邮箱的验证状态
+     * 如果修改了手机/邮箱，那么是否验证就会改变
+     */
+    private void updateVerifiedStatus() {
+        boolean isValidPhone = SPUtils.getBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false);
+        boolean isValidEmail = SPUtils.getBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, false);
+
+        phoneIsValidIV = (ImageView) findViewById(R.id.phone_is_valid);
+        emailIsValidIV = (ImageView) findViewById(R.id.email_is_valid);
+
+        if (isValidPhone)
+            phoneIsValidIV.setVisibility(View.VISIBLE);
+        else
+            phoneIsValidIV.setVisibility(View.INVISIBLE);
+
+        if (isValidEmail)
+            emailIsValidIV.setVisibility(View.VISIBLE);
+        else
+            emailIsValidIV.setVisibility(View.INVISIBLE);
+    }
+
+    //实现控件的监听，打开对应的对话框
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -244,10 +260,21 @@ public class EditActivity extends AppCompatActivity implements
 
     // 修改昵称对话框（确定修改）
     @Override
-    public void onEditNameDialogPositiveClick(DialogFragment dialog, String name) {
-        SPUtils.putString(this, objectId, Constants.SP_NICKNAME, name);
-        usernameET.setText(name);
-        //执行username更新操作\
+    public void onEditNameDialogPositiveClick(DialogFragment dialog, String newNickname, final String oldNickname) {
+        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, newNickname);
+        usernameET.setText(newNickname);
+
+        Snackbar.make(layoutScroll, "昵称修改成功", Snackbar.LENGTH_LONG)
+                .setAction("撤销", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, oldNickname);
+                        if (oldNickname.equals(""))
+                            usernameET.setText("点击设置");
+                        else
+                            usernameET.setText(oldNickname);
+                    }
+                }).show();
     }
 
     // 修改昵称对话框（取消修改）
@@ -258,9 +285,21 @@ public class EditActivity extends AppCompatActivity implements
 
     // 修改个人简介对话框（确定修改）
     @Override
-    public void onEditBioDialogPositiveClick(DialogFragment dialog, String bio) {
-        SPUtils.putString(this, objectId, Constants.SP_BIO, bio);
-        bioET.setText(bio);
+    public void onEditBioDialogPositiveClick(DialogFragment dialog, String newBio, final String oldBio) {
+        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_BIO, newBio);
+        bioET.setText(newBio);
+
+        Snackbar.make(layoutScroll, "个人简介修改成功", Snackbar.LENGTH_LONG)
+                .setAction("撤销", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIO, oldBio);
+                        if (oldBio.equals(""))
+                            bioET.setText("点击设置");
+                        else
+                            bioET.setText(oldBio);
+                    }
+                }).show();
     }
 
     // 修改个人简介对话框（取消修改）
@@ -272,7 +311,10 @@ public class EditActivity extends AppCompatActivity implements
     // 修改电话对话框（确定修改）
     @Override
     public void onEditPhoneDialogPositiveClick(DialogFragment dialog, String phone) {
-        SPUtils.putString(this, objectId, Constants.SP_PHONE_NUMBER, phone);
+        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, phone);
+        SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false);
+        //改变手机号的验证状态
+        updateVerifiedStatus();
         phoneET.setText(phone);
     }
 
@@ -285,7 +327,10 @@ public class EditActivity extends AppCompatActivity implements
     // 修改邮箱对话框（确定修改）
     @Override
     public void onEditEmailDialogPositiveClick(DialogFragment dialog, String email) {
-        SPUtils.putString(this, objectId, Constants.SP_EMAIL, email);
+        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, email);
+        SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, false);
+        //改变邮箱的验证状态
+        updateVerifiedStatus();
         emailET.setText(email);
     }
 
@@ -297,7 +342,7 @@ public class EditActivity extends AppCompatActivity implements
 
     // 修改生日对话框（确定修改）
     public void onEditBirthDialogPositiveClick(DialogFragment dialog, String birth) {
-        SPUtils.putString(EditActivity.this, objectId, Constants.SP_BIRTH, birth);
+        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birth);
         birthET.setText(birth);
 
     }
@@ -317,7 +362,6 @@ public class EditActivity extends AppCompatActivity implements
     public void onEditPwdDialogNegativeClick(DialogFragment dialog) {
 
     }
-
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -348,7 +392,7 @@ public class EditActivity extends AppCompatActivity implements
     protected void onDestroy() {
         UserInfoSync userInfoSync = new UserInfoSync();
         try {
-            userInfoSync.upload(this, user, objectId, objectId);
+            userInfoSync.upload(this, objectId, Constants.SP_FILE_NAME);
         } catch (Exception e) {
             e.printStackTrace();
         }
