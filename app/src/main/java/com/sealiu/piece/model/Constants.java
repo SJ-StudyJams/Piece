@@ -83,13 +83,13 @@ public class Constants {
     //Email
     public static final String SP_EMAIL = "email";
     //Email 是否验证
-    public static final String SP_IS_VALID_EMAIL = "isValidEmail";
+    public static final String SP_IS_VALID_EMAIL = "emailVerified";
     //手机号
     public static final String SP_PHONE_NUMBER = "mobilePhoneNumber";
     //手机号 是否验证
-    public static final String SP_IS_VALID_PHONE_NUMBER = "isValidMobilePhoneNumber";
+    public static final String SP_IS_VALID_PHONE_NUMBER = "mobilePhoneNumberVerified";
     //登录时间
-    public static final String SP_LOGIN_TIME = "time";
+    public static final String SP_LOGIN_TIME = "loginTime";
 
     /**
      * RSA密钥内容 base64 code
