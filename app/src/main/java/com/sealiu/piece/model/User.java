@@ -19,7 +19,7 @@ public class User extends BmobUser {
     //用户类型
     private Integer type;
     //登陆时间
-    private long time;
+    private long loginTime;
     //性别
     private String user_sex;
     //密码
@@ -74,12 +74,12 @@ public class User extends BmobUser {
         this.type = type;
     }
 
-    public void setTime(long time) {
-        this.time = time;
+    public long getLoginTime() {
+        return loginTime;
     }
 
-    public long getTime() {
-        return time;
+    public void setLoginTime(long loginTime) {
+        this.loginTime = loginTime;
     }
 
     public String getUser_sex() {
