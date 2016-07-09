@@ -102,6 +102,10 @@ public class LoginFragment extends Fragment {
                             //记录本次登录时间，设置登录标志位
                             SPUtils.putLong(getActivity(), Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, System.currentTimeMillis());
                             SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
+                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
+                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
+                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
+                            progress.dismiss();
                             Listener listener = (Listener) getActivity();
                             listener.onSubmitLoginBtnClick();
                         } else {
@@ -111,8 +115,6 @@ public class LoginFragment extends Fragment {
                         }
                     }
                 });
-
-                progress.dismiss();
             }
         });
 

@@ -126,6 +126,9 @@ public class RegisterActivity extends AppCompatActivity
                     //记录本次登录时间，设置登录标志位
                     SPUtils.putLong(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, System.currentTimeMillis());
                     SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
                     progress.dismiss();
 
                     Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);

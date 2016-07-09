@@ -69,8 +69,17 @@ public class UserInfoSync {
         birth = (String) User.getObjectByKey(Constants.SP_BIRTH);
         email = (String) User.getObjectByKey(Constants.SP_EMAIL);
         phone_number = (String) User.getObjectByKey(Constants.SP_PHONE_NUMBER);
-        boolean is_valid_email = (boolean) User.getObjectByKey(Constants.SP_IS_VALID_EMAIL);
-        boolean is_valid_phone = (boolean) User.getObjectByKey(Constants.SP_IS_VALID_PHONE_NUMBER);
+
+        boolean is_valid_email = false;
+        boolean is_valid_phone = false;
+
+        if (User.getObjectByKey(Constants.SP_IS_VALID_EMAIL) != null) {
+            is_valid_email = (boolean) User.getObjectByKey(Constants.SP_IS_VALID_EMAIL);
+        }
+
+        if (User.getObjectByKey(Constants.SP_IS_VALID_PHONE_NUMBER) != null) {
+            is_valid_phone = (boolean) User.getObjectByKey(Constants.SP_IS_VALID_PHONE_NUMBER);
+        }
 
         SPUtils.putString(context, filename, Constants.SP_NICKNAME, nickname);
         SPUtils.putString(context, filename, Constants.SP_BIO, bio);
