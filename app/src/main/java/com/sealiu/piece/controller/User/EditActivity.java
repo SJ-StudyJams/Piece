@@ -52,8 +52,7 @@ public class EditActivity extends AppCompatActivity implements
 
     private static final String TAG = "EditActivity";
     private EditText usernameET, bioET, birthET, phoneET, emailET;
-    private ImageView headPicture, phoneIsValidIV, emailIsValidIV;
-    private RadioGroup radioGroup;
+    private ImageView headPicture;
     private String objectId;
     private Uri imageUri;
 
@@ -115,7 +114,7 @@ public class EditActivity extends AppCompatActivity implements
         String email = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, "");
 
         usernameET = (EditText) findViewById(R.id.user_name);
-        radioGroup = (RadioGroup) findViewById(R.id.user_sex);
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.user_sex);
         bioET = (EditText) findViewById(R.id.user_bio);
         headPicture = (ImageView) findViewById(R.id.head_picture);
         birthET = (EditText) findViewById(R.id.user_birth);
@@ -215,8 +214,8 @@ public class EditActivity extends AppCompatActivity implements
         boolean isValidPhone = SPUtils.getBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false);
         boolean isValidEmail = SPUtils.getBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, false);
 
-        phoneIsValidIV = (ImageView) findViewById(R.id.phone_is_valid);
-        emailIsValidIV = (ImageView) findViewById(R.id.email_is_valid);
+        ImageView phoneIsValidIV = (ImageView) findViewById(R.id.phone_is_valid);
+        ImageView emailIsValidIV = (ImageView) findViewById(R.id.email_is_valid);
 
         if (isValidPhone)
             phoneIsValidIV.setVisibility(View.VISIBLE);
@@ -315,6 +314,7 @@ public class EditActivity extends AppCompatActivity implements
         SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false);
         //改变手机号的验证状态
         updateVerifiedStatus();
+        Snackbar.make(layoutScroll, "手机号修改成功", Snackbar.LENGTH_LONG).show();
         phoneET.setText(phone);
     }
 
@@ -341,13 +341,26 @@ public class EditActivity extends AppCompatActivity implements
     }
 
     // 修改生日对话框（确定修改）
-    public void onEditBirthDialogPositiveClick(DialogFragment dialog, String birth) {
-        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birth);
-        birthET.setText(birth);
+    @Override
+    public void onEditBirthDialogPositiveClick(DialogFragment dialog, String birthAfter, final String birthBefore) {
+        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birthAfter);
+        birthET.setText(birthAfter);
 
+        Snackbar.make(layoutScroll, "生日修改成功", Snackbar.LENGTH_LONG)
+                .setAction("撤销", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birthBefore);
+                        if (birthBefore.equals(""))
+                            birthET.setText("点击设置");
+                        else
+                            birthET.setText(birthBefore);
+                    }
+                }).show();
     }
 
     // 修改生日对话框（取消修改）
+    @Override
     public void onEditBirthDialogNegativeClick(DialogFragment dialog) {
 
     }
