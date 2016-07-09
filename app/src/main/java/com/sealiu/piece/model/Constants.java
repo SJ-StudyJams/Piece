@@ -78,7 +78,7 @@ public class Constants {
     //个人简介
     public static final String SP_BIO = "bio";
     //头像
-    public static final String SP_HEAD_PICTURE = "headPicture";
+    public static final String SP_HEAD_PICTURE = "picture";
     //登陆与否（开放游客身份后，可以使用这个来判断是否登录）
     public static final String SP_IS_LOGIN = "isLogin";
     //_user objectId
