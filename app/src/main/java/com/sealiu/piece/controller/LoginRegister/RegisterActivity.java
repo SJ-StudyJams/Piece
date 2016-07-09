@@ -5,13 +5,15 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.ScrollView;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.MapsActivity;
@@ -30,63 +32,19 @@ public class RegisterActivity extends AppCompatActivity
     private static final String TAG = "RegisterActivity";
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 123;
     private String encryptPassword;
-    private String objectId;
 
     private FragmentManager fm = getSupportFragmentManager();
 
     private final User user = new User();
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // 动态申请权限
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_PHONE_STATE)) {
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_PHONE_STATE},
-                        MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_PHONE_STATE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
+    private ScrollView scrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_register);
+        scrollView = (ScrollView) findViewById(R.id.register_form);
 
         Fragment fragment = fm.findFragmentById(R.id.content_frame);
 
@@ -95,6 +53,22 @@ public class RegisterActivity extends AppCompatActivity
             fm.beginTransaction()
                     .add(R.id.content_frame, fragment, null)
                     .commit();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // 动态申请权限
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_PHONE_STATE)) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_PHONE_STATE},
+                        MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
+            }
         }
     }
 
@@ -148,16 +122,19 @@ public class RegisterActivity extends AppCompatActivity
 
         user.signUp(new SaveListener<User>() {
             @Override
-            public void done(User user, BmobException e) {
+            public void done(User u, BmobException e) {
                 if (e == null) {
-                    Log.i(TAG, "注册成功:" + user.toString());
-                    objectId = user.getObjectId();
+                    Log.i(TAG, "注册成功:" + u.toString());
                     // 注册成功后默认下次自动登录
                     SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, true);
                     SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_REMEMBER, true);
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, user.getUsername());
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
                     SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, objectId);
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, u.getEmail());
+                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, u.getEmailVerified());
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, u.getMobilePhoneNumber());
+                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, u.getMobilePhoneNumberVerified());
                     progress.dismiss();
 
                     Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
@@ -167,6 +144,15 @@ public class RegisterActivity extends AppCompatActivity
                     // 清除SP
                     SPUtils.clear(RegisterActivity.this, Constants.SP_FILE_NAME);
                     Log.i(TAG, e.toString());
+                    String content = Constants.createErrorInfo(e.getErrorCode()) + " 错误码：" + e.getErrorCode();
+                    Snackbar.make(scrollView, content, Snackbar.LENGTH_SHORT)
+                            .setAction("直接登录", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                }
+                            }).show();
                     progress.dismiss();
                 }
             }

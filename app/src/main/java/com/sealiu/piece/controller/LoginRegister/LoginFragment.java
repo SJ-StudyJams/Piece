@@ -107,11 +107,16 @@ public class LoginFragment extends Fragment {
 
                             Log.i(TAG, "登录成功，objectId：" + u.getObjectId());
 
-                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, username);
+                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
                             SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
                             SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, true);
                             SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
 
+                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_EMAIL, u.getEmail());
+                            SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, u.getEmailVerified());
+
+                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, u.getMobilePhoneNumber());
+                            SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, u.getMobilePhoneNumberVerified());
                             progress.dismiss();
                         } else {
                             SPUtils.clear(getActivity(), Constants.SP_FILE_NAME);
