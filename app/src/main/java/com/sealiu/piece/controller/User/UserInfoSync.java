@@ -15,7 +15,7 @@ import cn.bmob.v3.listener.UpdateListener;
  * on 7/6/2016.
  */
 public class UserInfoSync {
-    private String nickname, bio, sex, birth, email, phone_number;
+    private String nickname, bio, sex, birth, email, phone_number, picture;
     private static final String TAG = "UserInfoSync";
 
     /**
@@ -32,12 +32,14 @@ public class UserInfoSync {
         birth = SPUtils.getString(context, filename, Constants.SP_BIRTH, "");
         email = SPUtils.getString(context, filename, Constants.SP_EMAIL, "");
         phone_number = SPUtils.getString(context, filename, Constants.SP_PHONE_NUMBER, "");
+        picture = SPUtils.getString(context, filename, Constants.SP_HEAD_PICTURE, "");
 
         long loginTime = SPUtils.getLong(context, filename, Constants.SP_LOGIN_TIME, 0);
 
         User user = new User();
         user.setNickname(nickname);
         user.setBio(bio);
+        user.setPicture(picture);
         user.setBirth(birth);
         user.setUser_sex(sex);
         user.setEmail(email);
@@ -69,6 +71,7 @@ public class UserInfoSync {
         birth = (String) User.getObjectByKey(Constants.SP_BIRTH);
         email = (String) User.getObjectByKey(Constants.SP_EMAIL);
         phone_number = (String) User.getObjectByKey(Constants.SP_PHONE_NUMBER);
+        picture = (String) User.getObjectByKey(Constants.SP_HEAD_PICTURE);
 
         boolean is_valid_email = false;
         boolean is_valid_phone = false;
@@ -87,6 +90,7 @@ public class UserInfoSync {
         SPUtils.putString(context, filename, Constants.SP_BIRTH, birth);
         SPUtils.putString(context, filename, Constants.SP_EMAIL, email);
         SPUtils.putString(context, filename, Constants.SP_PHONE_NUMBER, phone_number);
+        SPUtils.putString(context, filename, Constants.SP_HEAD_PICTURE, picture);
         SPUtils.putBoolean(context, filename, Constants.SP_IS_VALID_EMAIL, is_valid_email);
         SPUtils.putBoolean(context, filename, Constants.SP_IS_VALID_PHONE_NUMBER, is_valid_phone);
 

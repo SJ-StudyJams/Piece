@@ -2,6 +2,7 @@ package com.sealiu.piece.controller.User;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -10,6 +11,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -32,9 +35,13 @@ import com.sealiu.piece.utils.SPUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.UploadFileListener;
 
 /**
  * 展示用户的个人信息（头像，昵称，简介）
@@ -52,9 +59,11 @@ public class EditActivity extends AppCompatActivity implements
 
     private static final String TAG = "EditActivity";
     private EditText usernameET, bioET, birthET, phoneET, emailET;
-    private ImageView headPicture;
+    private ImageView headPictureIV;
     private String objectId;
-    private Uri imageUri;
+    private Uri previewUri;
+    private String realPath;
+    private Bitmap bitmap; // 用于保存从后台下载头像
 
     private static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 111;
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 222;
@@ -112,11 +121,12 @@ public class EditActivity extends AppCompatActivity implements
         String birth = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, "");
         String phone = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, "");
         String email = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, "");
+        final String headPicture = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, "");
 
         usernameET = (EditText) findViewById(R.id.user_name);
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.user_sex);
         bioET = (EditText) findViewById(R.id.user_bio);
-        headPicture = (ImageView) findViewById(R.id.head_picture);
+        headPictureIV = (ImageView) findViewById(R.id.head_picture);
         birthET = (EditText) findViewById(R.id.user_birth);
         phoneET = (EditText) findViewById(R.id.user_phone);
         emailET = (EditText) findViewById(R.id.user_email);
@@ -144,6 +154,41 @@ public class EditActivity extends AppCompatActivity implements
             birthET.setText(birth);
         }
 
+        //显示头像
+        if (!headPicture.equals("")) {
+            final Handler handler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    if (msg.what == 0x9527) {
+                        //显示下载之后的图片
+                        headPictureIV.setImageBitmap(bitmap);
+                    }
+                }
+            };
+
+            new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    try {
+                        URL url = new URL(headPicture);
+                        //打开URL对应的资源输入流
+                        InputStream inputStream = url.openStream();
+                        //从InputStream流中解析出图片
+                        bitmap = BitmapFactory.decodeStream(inputStream);
+                        //发送消息，通知UI组件显示图片
+                        handler.sendEmptyMessage(0x9527);
+                        //关闭输入流
+                        inputStream.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }.start();
+
+        }
+
         //显示手机号
         if (phone.equals("")) {
             phoneET.setText("点击设置");
@@ -165,7 +210,7 @@ public class EditActivity extends AppCompatActivity implements
         usernameET.setOnClickListener(this);
         bioET.setOnClickListener(this);
         birthET.setOnClickListener(this);
-        headPicture.setOnClickListener(this);
+        headPictureIV.setOnClickListener(this);
         phoneET.setOnClickListener(this);
         emailET.setOnClickListener(this);
         changePwdBTN.setOnClickListener(this);
@@ -416,34 +461,28 @@ public class EditActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case TAKE_PHOTO:
-                if (resultCode == RESULT_OK) {
-                    Intent intent = new Intent("com.android.camera.action.CROP");
-                    intent.setDataAndType(imageUri, "image/*");
-                    intent.putExtra("scale", true);
-                    intent.putExtra("crop", "true");
-                    // 裁剪框的比例，1：1
-                    intent.putExtra("aspectX", 1);
-                    intent.putExtra("aspectY", 1);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    if (intent.resolveActivity(getPackageManager()) != null) {
-                        startActivityForResult(intent, CROP_PHOTO);
-                    } else {
-                        Snackbar.make(layoutScroll, "没有裁剪图片程序", Snackbar.LENGTH_LONG).show();
-                    }
-                }
-                break;
             case CHOOSE_PHOTO:
                 if (resultCode == RESULT_OK) {
+                    Uri uri;
+
+                    if (requestCode == 1) {
+                        uri = data.getData();
+                    } else {
+                        uri = previewUri;
+                    }
+
                     Intent intent = new Intent("com.android.camera.action.CROP");
-                    intent.setDataAndType(data.getData(), "image/*");
+                    intent.setDataAndType(uri, "image/*");
                     intent.putExtra("scale", true);
                     intent.putExtra("crop", "true");
                     // 裁剪框的比例，1：1
                     intent.putExtra("aspectX", 1);
                     intent.putExtra("aspectY", 1);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    intent.putExtra("outputX", 500);
+                    intent.putExtra("outputY", 500);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, previewUri);
                     if (intent.resolveActivity(getPackageManager()) != null) {
-                        startActivityForResult(intent, CROP_PHOTO);
+                        startActivityForResult(intent, 3);
                     } else {
                         Snackbar.make(layoutScroll, "没有裁剪图片程序", Snackbar.LENGTH_LONG).show();
                     }
@@ -451,10 +490,14 @@ public class EditActivity extends AppCompatActivity implements
                 break;
             case CROP_PHOTO:
                 if (resultCode == RESULT_OK) {
+                    String path = previewUri.toString();
+                    realPath = path.substring(7, path.length());
+
                     try {
+                        uploadHeadPicture(realPath);
                         Bitmap bitmap = BitmapFactory
-                                .decodeStream(getContentResolver().openInputStream(imageUri));
-                        headPicture.setImageBitmap(bitmap);
+                                .decodeStream(getContentResolver().openInputStream(previewUri));
+                        headPictureIV.setImageBitmap(bitmap);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -469,20 +512,14 @@ public class EditActivity extends AppCompatActivity implements
     @Override
     public void onCameraClick() {
         //启动相机
-        File outputImage = new File(Environment.getExternalStorageDirectory(), "tempImage.jpg");
-        try {
-            if (outputImage.exists()) {
-                outputImage.delete();
-            }
-            outputImage.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        imageUri = Uri.fromFile(outputImage);
+        File outputImage = new File(Environment.getExternalStorageDirectory(), "cameraImage.jpg");
+
+        previewUri = Uri.fromFile(outputImage);
+
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, previewUri);
         if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, TAKE_PHOTO);
+            startActivityForResult(intent, 2);
         } else {
             Snackbar.make(layoutScroll, "没有相机程序", Snackbar.LENGTH_LONG).show();
         }
@@ -491,12 +528,51 @@ public class EditActivity extends AppCompatActivity implements
     @Override
     public void onAlbumClick() {
         //启动相册
+        File outputImage = new File(Environment.getExternalStorageDirectory(), "chooseImage.jpg");
+
+        previewUri = Uri.fromFile(outputImage);
+
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, previewUri);
         if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, CHOOSE_PHOTO);
+            startActivityForResult(intent, 1);
         } else {
             Snackbar.make(layoutScroll, "没有相册程序", Snackbar.LENGTH_LONG).show();
         }
     }
+
+    /**
+     * 上传头像
+     *
+     * @param path 要上传头像的绝对地址
+     */
+    public void uploadHeadPicture(String path) {
+        final ProgressDialog progressDialog = new ProgressDialog(layoutScroll.getContext());
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("图片上传中");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setProgress(0);
+        progressDialog.setMax(100);
+        progressDialog.show();
+
+        final BmobFile bmobFile = new BmobFile(new File(path));
+
+        bmobFile.uploadblock(new UploadFileListener() {
+            @Override
+            public void done(BmobException e) {
+                String headPictureUrl = bmobFile.getFileUrl();
+                SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, headPictureUrl);
+                progressDialog.dismiss();
+                Snackbar.make(layoutScroll, "上传成功 " + headPictureUrl, Snackbar.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onProgress(Integer value) {
+                // TODO Auto-generated method stub
+                progressDialog.setProgress(value);
+            }
+        });
+    }
+
 }
