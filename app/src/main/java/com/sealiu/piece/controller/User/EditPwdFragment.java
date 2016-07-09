@@ -133,13 +133,15 @@ public class EditPwdFragment extends DialogFragment {
                                 }
                             } else {
                                 Log.e(TAG, e.toString());
+                                String content = Constants.createErrorInfo(e.getErrorCode()) + " 错误码：" + e.getErrorCode();
+                                Snackbar.make(EditActivity.layoutScroll, content, Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                Snackbar.make(EditActivity.layoutScroll, "密码修改成功，下次登录请使用新密码", Snackbar.LENGTH_LONG).show();
                 listener.onEditPwdDialogPositiveClick(EditPwdFragment.this);
             }
         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
