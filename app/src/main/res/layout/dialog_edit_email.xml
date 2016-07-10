@@ -6,14 +6,15 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
         <EditText
             android:id="@+id/edit_user_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="邮箱"
-            android:text=""
             android:inputType="textEmailAddress"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -21,7 +22,9 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
         <EditText
             android:id="@+id/edit_user_password"
             android:layout_width="match_parent"

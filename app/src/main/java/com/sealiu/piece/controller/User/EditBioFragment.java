@@ -1,14 +1,14 @@
 package com.sealiu.piece.controller.User;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +16,7 @@ import android.widget.TextView;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
-
-import cn.bmob.v3.BmobUser;
 
 
 /**
@@ -27,13 +24,11 @@ import cn.bmob.v3.BmobUser;
  * on 2016/7/4.
  */
 public class EditBioFragment extends DialogFragment {
-    private String bio;
+    private String bioBefore;
     private TextView bioTV;
-    private UserInfoSync userInfoSync = new UserInfoSync();
-    private User user2;
 
     public interface EditBioDialogListener {
-        void onEditBioDialogPositiveClick(DialogFragment dialog, String name);
+        void onEditBioDialogPositiveClick(DialogFragment dialog, String newBio, String oldBio);
 
         void onEditBioDialogNegativeClick(DialogFragment dialog);
     }
@@ -43,15 +38,15 @@ public class EditBioFragment extends DialogFragment {
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         // Verify that the host activity implements the callback interface
         try {
             // Instantiate the NoticeDialogListener so we can send events to the host
-            eListener = (EditBioDialogListener) activity;
+            eListener = (EditBioDialogListener) context;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement EditBioDialogListener");
         }
     }
@@ -74,32 +69,35 @@ public class EditBioFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        //获取本地用户信息
-        user2 = userInfoSync.getLoginInfo(getContext());
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         final View view = inflater.inflate(R.layout.dialog_edit_bio, null);
         builder.setView(view);
 
-        bio = user2.getBio();
-        Log.i("test", "bio" + bio);
-
+        bioBefore = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_BIO, "");
         bioTV = (TextView) view.findViewById(R.id.edit_bio);
-        bioTV.setText(bio);
+
+        if (!bioBefore.equals(""))
+            bioTV.setText(bioBefore);
+
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                if (bioTV != null) {
-                    String bio = bioTV.getText().toString();
-                    Log.i("EditFrag", bio);
-                    EditBioDialogListener listener = (EditBioDialogListener) getActivity();
-                    listener.onEditBioDialogPositiveClick(
-                            EditBioFragment.this,
-                            bio
-                    );
+                String bioString = bioTV.getText().toString();
+                // 执行bio输入内容的检查，以后要加上字数限制。
+                if (bioString.equals(bioBefore)) {
+                    Snackbar.make(EditActivity.layoutScroll, "填写的个人简介和之前一致，个人简介没有修改", Snackbar.LENGTH_LONG).show();
+                    return;
                 }
+
+                EditBioDialogListener listener = (EditBioDialogListener) getActivity();
+                listener.onEditBioDialogPositiveClick(
+                        EditBioFragment.this,
+                        bioString,
+                        bioBefore
+                );
             }
         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
@@ -107,7 +105,7 @@ public class EditBioFragment extends DialogFragment {
                 EditBioDialogListener listener = (EditBioDialogListener) getActivity();
                 listener.onEditBioDialogNegativeClick(EditBioFragment.this);
             }
-        }).setTitle("设置个人简介");
+        });
 
         return builder.create();
     }

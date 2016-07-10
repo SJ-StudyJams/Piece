@@ -59,11 +59,11 @@
                 android:targetPackage="com.sealiu.piece" />
         </Preference>
 
-        <Preference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_highlight_off_black_24dp"
-            android:key="pref_logout_key"
-            android:title="@string/pref_logout_title" />
+        <!--<Preference-->
+        <!--android:defaultValue="true"-->
+        <!--android:icon="@drawable/ic_highlight_off_black_24dp"-->
+        <!--android:key="pref_logout_key"-->
+        <!--android:title="@string/pref_logout_title" />-->
     </PreferenceCategory>
 
 </PreferenceScreen>

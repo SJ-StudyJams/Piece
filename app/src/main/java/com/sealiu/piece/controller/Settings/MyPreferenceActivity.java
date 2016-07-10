@@ -7,12 +7,8 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.controller.LoginRegister.LoginActivity;
-import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.utils.SPUtils;
 
 public class MyPreferenceActivity extends AppCompatActivity {
 
@@ -46,32 +42,33 @@ public class MyPreferenceActivity extends AppCompatActivity {
             addPreferencesFromResource(R.xml.preference);
 
             Preference aboutPreference = findPreference("pref_about_key");
-            Preference logoutPreference = findPreference("pref_logout_key");
 
             aboutPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     getActivity().getFragmentManager().beginTransaction()
-                            .replace(R.id.content_frame, new AboutPreferenceFragment())
+                            .replace(R.id.content_frame, new AboutPreferenceFragment()).addToBackStack(null)
                             .commit();
                     return true;
                 }
             });
 
-            logoutPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Log.i("Preference", String.valueOf(preference.getKey()));
-
-                    // 有bug，退出到登录页面之后，点击back按钮，有回到MapsActivity ==!
-                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    getActivity().finish();
-                    return true;
-                }
-            });
+//            Preference logoutPreference = findPreference("pref_logout_key");
+//            logoutPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//                @Override
+//                public boolean onPreferenceClick(Preference preference) {
+//                    Log.i("Preference", String.valueOf(preference.getKey()));
+//
+//                    // 有bug，退出到登录页面之后，点击back按钮，有回到MapsActivity ==!
+//                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
+//                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
+//                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                    startActivity(intent);
+//                    getActivity().finish();
+//                    return true;
+//                }
+//            });
         }
     }
 

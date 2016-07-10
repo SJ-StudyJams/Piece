@@ -10,10 +10,9 @@
         android:padding="16dp">
 
         <EditText
-            android:id="@+id/edit_username"
+            android:id="@+id/edit_nickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="昵称"
-            android:text="nickname"/>
+            android:hint="昵称" />
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>
