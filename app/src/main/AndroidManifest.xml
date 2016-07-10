@@ -60,14 +60,14 @@
         </activity>
         <activity android:name=".controller.LoginRegister.RegisterActivity" />
         <activity
-            android:name=".controller.MapsActivity"
+            android:name=".controller.Maps.MapsActivity"
             android:label="@string/app_name" />
         <activity
             android:name=".controller.User.UserActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.MapsActivity" />
+                android:value=".controller.Maps.MapsActivity" />
         </activity>
         <activity
             android:name=".controller.User.EditActivity"
@@ -81,7 +81,7 @@
             android:label="@string/setting_menu_title">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.MapsActivity" />
+                android:value=".controller.Maps.MapsActivity" />
         </activity>
         <activity
             android:name=".controller.Settings.FeedbackActivity"

@@ -1,4 +1,4 @@
-package com.sealiu.piece.controller;
+package com.sealiu.piece.controller.Maps;
 
 import android.Manifest;
 import android.content.Intent;

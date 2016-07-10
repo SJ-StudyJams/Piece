@@ -1,7 +1,5 @@
 package com.sealiu.piece.model;
 
-import java.util.Date;
-
 import cn.bmob.v3.BmobObject;
 
 /**
@@ -9,42 +7,36 @@ import cn.bmob.v3.BmobObject;
  * on 2016/7/1.
  */
 public class Piece extends BmobObject {
-    private Integer id;
-    //作者(外键)
-    private Integer authorID;
+    //作者(外键，用户的objectId)
+    private String authorID;
     //内容
     private String content;
-    private String image;
+    //图片
+    private String imageUrl;
+    //音频
+    private String audioUrl;
     //视频
-    private String video;
+    private String videoUrl;
     //piece类型
+    //小纸条（1），交友（2），活动（3），故事（4），新闻（5），天气（6），广告（7）
     private Integer type;
     //经度
     private Double longitude;
     //维度
     private Double latitude;
-    //创建时间
-    private Date createdTime;
     //浏览次数
     private Double viewCount;
     //点赞功能
     //private Double clickLike;
     //可见性
-    private Boolean visibility;
+    // -1 仅自己可见， 0 附近“30米”可见， 1 附近xxx米可见， 2 附件xxx米可见
+    private Integer visibility;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getAuthorID() {
+    public String getAuthorID() {
         return authorID;
     }
 
-    public void setAuthorID(Integer authorID) {
+    public void setAuthorID(String authorID) {
         this.authorID = authorID;
     }
 
@@ -56,20 +48,28 @@ public class Piece extends BmobObject {
         this.content = content;
     }
 
-    public String getImage() {
-        return image;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
-    public String getVideo() {
-        return video;
+    public String getAudioUrl() {
+        return audioUrl;
     }
 
-    public void setVideo(String video) {
-        this.video = video;
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 
     public Integer getType() {
@@ -96,14 +96,6 @@ public class Piece extends BmobObject {
         this.latitude = latitude;
     }
 
-    public Date getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
-    }
-
     public Double getViewCount() {
         return viewCount;
     }
@@ -112,13 +104,11 @@ public class Piece extends BmobObject {
         this.viewCount = viewCount;
     }
 
-    public Boolean getVisibility() {
+    public Integer getVisibility() {
         return visibility;
     }
 
-    public void setVisibility(Boolean visibility) {
+    public void setVisibility(Integer visibility) {
         this.visibility = visibility;
     }
-
-
 }
