@@ -2,17 +2,25 @@ package com.sealiu.piece.controller.User;
 
 import android.content.Context;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
-import com.sealiu.piece.utils.AESUtils;
 import com.sealiu.piece.utils.SPUtils;
 
 
+import org.json.JSONObject;
 
+import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobRealTimeData;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
+import cn.bmob.v3.listener.ValueEventListener;
 
 /**
  * Created by art2cat on 7/6/2016.
@@ -24,6 +32,7 @@ public class UserInfoSync {
     private String nicknameD, bioD, sexD, birthD, emailD, phone_numberD;
     private double time1;
     private long time;
+    private boolean isAutoLogin, phoneNumberVerified, emailVerified;
     private static final String TAG = "UserInfoSync";
 
     /**
@@ -44,18 +53,13 @@ public class UserInfoSync {
         long timeNow = System.currentTimeMillis();
         SPUtils.putLong(context, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, timeNow);
         Log.i(TAG, "pre:" + timeNow);
-        encodeNickname();
-        encodeBio();
-        encodeBirth();
-        encodeEmail();
-        encodePhoneNumber();
 
-        user.setNickname(nicknameE);
-        user.setBio(bioE);
-        user.setBirth(birthE);
+        user.setNickname(nickname);
+        user.setBio(bio);
+        user.setBirth(birth);
         user.setUser_sex(sex);
-        user.setEmail(emailE);
-        user.setMobilePhoneNumber(phone_numberE);
+        user.setEmail(email);
+        user.setMobilePhoneNumber(phone_number);
         user.setTime(timeNow);
         user.update(objectId, new UpdateListener() {
             @Override
@@ -72,135 +76,109 @@ public class UserInfoSync {
     /**
      * 从服务器获取当前用户信息
      * @param context
-     * @param filename
+     * @param
      */
-    public void getUserInfo(Context context, String filename) throws Exception {
-        nickname1 = (String) User.getObjectByKey(Constants.SP_NICKNAME);
+    public void getUserInfo(final Context context) throws Exception {
+        String username = (String) BmobUser.getObjectByKey(Constants.SP_USERNAME);
+        Log.i(TAG, "get username:" + username);
+        if (username != null) {
+            BmobQuery<User> query = new BmobQuery<User>();
+            query.addWhereEqualTo(username, "lucky");
+            query.findObjects(new FindListener<User>() {
+                @Override
+                public void done(List<User> list, BmobException e) {
+                    if (e == null) {
+                        Log.i(TAG, "done");
+                    } else {
+                        Log.i(TAG, "fail");
+                    }
+                }
+            });
+        }
+        nickname1 = (String) BmobUser.getObjectByKey(Constants.SP_NICKNAME);
+        Log.i(TAG, "get nickname：" + nickname1);
 
-        Log.i(TAG, "get nickname" + nickname1);
-        bio1 = (String) User.getObjectByKey(Constants.SP_BIO);
+        bio1 = (String) BmobUser.getObjectByKey(Constants.SP_BIO);
+        Log.i(TAG, "get bio：" + bio1);
 
-        Log.i(TAG, "get bio" + bio1);
-        sex1 = (String) User.getObjectByKey(Constants.SP_SEX);
+        sex1 = (String) BmobUser.getObjectByKey(Constants.SP_SEX);
+        Log.i(TAG, "get sex：" + sex1);
 
-        Log.i(TAG, "get sex" + sex1);
-        birth1 = (String) User.getObjectByKey(Constants.SP_BIRTH);
+        birth1 = (String) BmobUser.getObjectByKey(Constants.SP_BIRTH);
+        Log.i(TAG, "get birth:"+ birth1);
 
-        Log.i(TAG, "get birth"+ birth1);
-        email1 = (String) User.getObjectByKey(Constants.SP_EMAIL);
+        phone_number1 = (String) BmobUser.getObjectByKey(Constants.SP_PHONE_NUMBER);
+        Log.i(TAG, "get phone:" + phone_number1);
 
-        Log.i(TAG, "get email" + email1);
-        phone_number1 = (String) User.getObjectByKey(Constants.SP_PHONE_NUMBER);
+        emailVerified = (Boolean) BmobUser.getObjectByKey(Constants.SP_EMAIL_VERIFIED);
+        Log.i(TAG, "get email verified:" + emailVerified);
 
-        time1 = (double) User.getObjectByKey(Constants.SP_LOGIN_TIME);
-        Log.i(TAG, "get time1:" + time1);
-        time = Double.valueOf(time1).longValue();
-        Log.i(TAG, "get time:" + time);
+        phoneNumberVerified = (Boolean) BmobUser.getObjectByKey(Constants.SP_PHONE_NUMBER_VERIFIED);
+        Log.i(TAG, "get phone number verified:" + phoneNumberVerified);
 
+        String password = (String) BmobUser.getObjectByKey(Constants.SP_PASSWORD);
+        Log.i(TAG, "get password:" + password);
 
-        decodeNickname();
-        decodeBio();
-        decodeBirth();
-        decodeEmail();
-        decodePhoneNumber();
+        String username1 = (String) BmobUser.getObjectByKey(Constants.SP_USERNAME);
+        Log.i(TAG, "get username:" + username);
 
-        SPUtils.putString(context, filename, Constants.SP_NICKNAME, nicknameD);
-        SPUtils.putString(context, filename, Constants.SP_BIO, bioD);
-        SPUtils.putString(context, filename, Constants.SP_SEX, sex1);
-        SPUtils.putString(context, filename, Constants.SP_BIRTH, birthD);
-        SPUtils.putString(context, filename, Constants.SP_EMAIL, emailD);
-        SPUtils.putString(context, filename, Constants.SP_PHONE_NUMBER, phone_numberD);
-        SPUtils.putLong(context, filename, Constants.SP_LOGIN_TIME, time);
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, nickname1);
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_USERNAME, username1);
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_BIO, bio1);
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_SEX, sex1);
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birth1);
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_EMAIL, email1);
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, phone_number1);
+        SPUtils.putBoolean(context, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER_VERIFIED, phoneNumberVerified);
+        SPUtils.putBoolean(context, Constants.SP_FILE_NAME, Constants.SP_EMAIL_VERIFIED, emailVerified);
 
         Log.i(TAG, "get userinfo");
     }
 
-    private void encodeNickname() throws Exception {
-        if (nickname != null) {
-            nicknameE = AESUtils.encrypt(nickname);
-            Log.i(TAG, "encrypt nickname done");
+    public User getLoginInfo(Context context){
+        try {
+            getUserInfo(context);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        User loginInfo = new User();
+        //对数据进行读取
+        loginInfo.setNickname(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, null));
+        //loginInfo.setUsername(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_USERNAME, null));
+        loginInfo.setBio(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_BIO, null));
+        loginInfo.setUser_sex(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_SEX, null));
+        loginInfo.setBirth(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_BIRTH, null));
+        loginInfo.setEmail(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_EMAIL, null));
+        loginInfo.setMobilePhoneNumber(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, null));
+        loginInfo.setAutoLogin(SPUtils.getBoolean(context, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false));
+        loginInfo.setObjectId(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null));
+        loginInfo.setMobilePhoneNumberVerified(SPUtils.getBoolean(context, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER_VERIFIED, false));
+        loginInfo.setEmailVerified(SPUtils.getBoolean(context, Constants.SP_FILE_NAME, Constants.SP_EMAIL_VERIFIED, false));
+        loginInfo.setTime(SPUtils.getLong(context, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, 0));
+        loginInfo.setPwd(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null));
+        return loginInfo;
     }
 
-    private void decodeNickname() throws Exception {
+    public void saveLoginInfo (Context context, User loginInfo){
 
-        if (nickname1 != null) {
-            nicknameD = AESUtils.decrypt(nickname1);
-            Log.i(TAG, "decrypt nickname done");
-        }
-    }
+        //对更新后的数据进行保存
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, loginInfo.getNickname());
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_BIO, loginInfo.getBio());
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_SEX, loginInfo.getUser_sex());
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_BIRTH, loginInfo.getBirth());
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_EMAIL, loginInfo.getEmail());
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, loginInfo.getMobilePhoneNumber());
+        SPUtils.putBoolean(context, Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, loginInfo.isAutoLogin());
+        SPUtils.putBoolean(context, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER_VERIFIED, loginInfo.getMobilePhoneNumberVerified());
+        SPUtils.putBoolean(context, Constants.SP_FILE_NAME, Constants.SP_EMAIL_VERIFIED, loginInfo.getEmailVerified());
+        SPUtils.putLong(context, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, loginInfo.getTime());
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, loginInfo.getObjectId());
+        SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, loginInfo.getPwd());
+        //SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_USERNAME, loginInfo.getUsername());
+        Log.i(TAG, "nickname:" + loginInfo.getNickname());
+        Log.i(TAG, "pwd:" + loginInfo.getPwd());
+        Log.i(TAG, "save user info done");
 
-    private void encodeBio() throws Exception {
-        if (bio != null) {
-            bioE = AESUtils.encrypt(bio);
-            Log.i(TAG, "encrypt bio done");
-        }
-    }
-
-    private void decodeBio() throws Exception {
-        if (bio1 != null) {
-            bioD = AESUtils.decrypt(bio1);
-            Log.i(TAG, "decrypt bio done");
-        }
-
-    }
-
-    private void encodeBirth() throws Exception {
-        if (birth != null) {
-            birthE = AESUtils.encrypt(birth);
-            Log.i(TAG, "encrypt birth done");
-        }
-
-    }
-
-    private void decodeBirth() throws Exception {
-        if (birth1 != null) {
-            birthD = AESUtils.decrypt(birth1);
-            Log.i(TAG, "decrypt birth done");
-        }
-
-    }
-
-    private void encodeSex() throws Exception {
-        if (sex != null) {
-            sexE = AESUtils.encrypt(sex);
-            Log.i(TAG, "encrypt sex done");
-        }
-    }
-
-    private void decodeSex() throws Exception {
-        if (sex1 != null) {
-            sexD = AESUtils.decrypt(sex1);
-            Log.i(TAG, "decrypt sex done");
-        }
-    }
-
-    private void encodeEmail() throws Exception {
-        if (email != null) {
-            emailE = AESUtils.encrypt(email);
-            Log.i(TAG, "encrypt email done");
-        }
-    }
-
-    private void decodeEmail() throws Exception {
-        if (email1 != null) {
-            emailD = AESUtils.decrypt(email1);
-            Log.i(TAG, "decrypt email done");
-        }
-    }
-
-    private void encodePhoneNumber() throws Exception {
-        if (phone_number != null) {
-            phone_numberE = AESUtils.encrypt(phone_number);
-            Log.i(TAG, "encrypt phone number done");
-        }
-    }
-
-    private void decodePhoneNumber() throws Exception {
-        if (phone_number1 != null) {
-            phone_numberD = AESUtils.decrypt(phone_number1);
-            Log.i(TAG, "decrypt phone number done");
-        }
     }
 
 }

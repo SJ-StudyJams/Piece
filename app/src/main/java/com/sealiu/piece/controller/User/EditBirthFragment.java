@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.util.Date;
@@ -33,6 +34,8 @@ import cn.bmob.v3.BmobUser;
 public class EditBirthFragment extends DialogFragment {
     private String birth;
     private int yearI, monthI, dayI, month2;
+    private UserInfoSync userInfoSync = new UserInfoSync();
+    private User user2;
 
     public interface EditBirthDialogListener {
         void onEditBirthDialogPositiveClick(DialogFragment dialog, String birth);
@@ -76,6 +79,8 @@ public class EditBirthFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         final LayoutInflater inflater = getActivity().getLayoutInflater();
+        //获取本地用户信息
+        user2 = userInfoSync.getLoginInfo(getContext());
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
@@ -83,7 +88,7 @@ public class EditBirthFragment extends DialogFragment {
         builder.setView(view);
 
         final DatePicker datePicker = (DatePicker) view.findViewById(R.id.date_Picker);
-        birth = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_BIRTH, null);
+        birth = user2.getBirth();
         if (birth != null) {
             try {
                 //将字符串分割成字符串集合

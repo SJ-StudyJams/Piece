@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
 
 
@@ -26,6 +27,8 @@ import com.sealiu.piece.utils.SPUtils;
 public class EditPhoneFragment extends DialogFragment{
     private String phone, password;
     private TextView phoneTV, passwordTV;
+    private UserInfoSync userInfoSync = new UserInfoSync();
+    private User user2;
 
     public interface EditPhoneDialogListener {
         void onEditPhoneDialogPositiveClick(DialogFragment dialog, String phone);
@@ -69,14 +72,16 @@ public class EditPhoneFragment extends DialogFragment{
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
+        //获取本地用户信息
+        user2 = userInfoSync.getLoginInfo(getContext());
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         final View view = inflater.inflate(R.layout.dialog_edit_phone, null);
         builder.setView(view);
         
-        phone = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, null);
-        password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
+        phone = user2.getMobilePhoneNumber();
+        password = user2.getPwd();
         Log.i("test", "password" + password);
         Log.i("test", "phone" + phone);
 

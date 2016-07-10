@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
 
@@ -38,7 +39,8 @@ public class EditPwdFragment extends DialogFragment {
     private String encryptOldPassword, encryptNewPassword;
     private Button change_Password;
     private static final String TAG = "EditPwdFragment";
-    //private User user = new User();
+    private UserInfoSync userInfoSync = new UserInfoSync();
+    private User user2;
     private BmobUser user = new BmobUser();
 
     public interface EditPwdDialogListener {
@@ -83,6 +85,8 @@ public class EditPwdFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
+        //获取本地用户信息
+        user2 = userInfoSync.getLoginInfo(getContext());
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
@@ -104,7 +108,7 @@ public class EditPwdFragment extends DialogFragment {
                 repeat_pwd = repeat_pwd_ET.getText().toString();
                 Log.i(TAG, "repeat new password:" + old_pwd);
 
-                final String password = SPUtils.getString(getContext(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
+                final String password = user2.getPwd();
 
                 if (password.equals(old_pwd)) {
                     if (new_pwd.equals(repeat_pwd)) {

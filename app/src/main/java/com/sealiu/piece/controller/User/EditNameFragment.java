@@ -28,6 +28,8 @@ import cn.bmob.v3.BmobUser;
 public class EditNameFragment extends DialogFragment {
     private String nickname;
     private TextView nameTV;
+    private UserInfoSync userInfoSync = new UserInfoSync();
+    private User user2;
 
     public interface EditNameDialogListener {
         void onEditNameDialogPositiveClick(DialogFragment dialog, String name);
@@ -71,13 +73,15 @@ public class EditNameFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
+        //获取本地用户信息
+        user2 = userInfoSync.getLoginInfo(getContext());
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         final View view = inflater.inflate(R.layout.dialog_edit_name, null);
         builder.setView(view);
 
-        nickname = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_NICKNAME, null);
+        nickname = user2.getNickname();
         Log.i("test", "nickname" + nickname);
 
         nameTV = (TextView) view.findViewById(R.id.edit_username);

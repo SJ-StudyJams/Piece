@@ -1,5 +1,6 @@
 package com.sealiu.piece.model;
 
+
 /**
  * Created by art2cat on 7/4/2016.
  */
@@ -54,8 +55,6 @@ public class Constants {
     public static final String SP_NICKNAME = "nickname";
     //个人简介
     public static final String SP_BIO = "bio";
-    //登陆与否
-    public static final String SP_IS_LOGIN = "isLogin";
     //自动登录
     public static final String SP_IS_AUTO_LOGIN = "isAutoLogin";
     //_user objectId
@@ -66,6 +65,12 @@ public class Constants {
     public static final String SP_PHONE_NUMBER = "mobilePhoneNumber";
     //登录时间
     public static final String SP_LOGIN_TIME = "time";
+    //邮箱是否验证
+    public static final String SP_EMAIL_VERIFIED = "emailVerified";
+    //手机号是否验证
+    public static final String SP_PHONE_NUMBER_VERIFIED = "mobilePhoneNumberVerified";
+    //头像
+    public static final String SP_USER_AVATAR = "userAvatar";
 
     /**
      * RSA密钥内容 base64 code

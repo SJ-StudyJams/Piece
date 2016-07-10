@@ -1,5 +1,7 @@
 package com.sealiu.piece.model;
 
+import android.util.Log;
+
 import cn.bmob.v3.BmobUser;
 
 /**
@@ -28,6 +30,8 @@ public class User extends BmobUser {
     private String birth;
     //昵称
     private String nickname;
+    //自动登陆
+    private boolean autoLogin;
 
     @Override
     public String getObjectId() {
@@ -108,9 +112,16 @@ public class User extends BmobUser {
     public String getNickname() {
         return nickname;
     }
-
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public boolean isAutoLogin() {
+        return autoLogin;
+    }
+
+    public void setAutoLogin(boolean autoLogin) {
+        this.autoLogin = autoLogin;
     }
 
 }

@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.Md5Utils;
@@ -33,6 +34,8 @@ public class LoginFragment extends Fragment {
     private User user = new User();
     private String username, pwd, encryptPassword;
     private static final String TAG = "LoginFragment";
+    private UserInfoSync userInfoSync = new UserInfoSync();
+    private User user2;
 
 
     public interface Listener {
@@ -47,6 +50,7 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_login, container, false);
+        user2 = userInfoSync.getLoginInfo(getActivity());
 
         et_account = (EditText) view.findViewById(R.id.login_phone_or_email);
         et_pwd = (EditText) view.findViewById(R.id.login_password);
@@ -107,14 +111,17 @@ public class LoginFragment extends Fragment {
 
                             Log.i(TAG, "登录成功，objectId：" + u.getObjectId());
 
-                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, username);
-                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
-                            SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, true);
-                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
+                            //user2.setUsername(username);
+                            Log.i(TAG, "username:" + user.getUsername());
+                            SPUtils.putString(getContext(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, user.getUsername());
+                            user2.setPwd(pwd);
+                            user2.setAutoLogin(true);
+                            user2.setObjectId(user.getObjectId());
+                            user2.setTime(System.currentTimeMillis());
 
                             progress.dismiss();
                         } else {
-                            SPUtils.clear(getActivity(), Constants.SP_FILE_NAME);
+                            SPUtils.clear(getContext(), Constants.SP_FILE_NAME);
                             Snackbar.make(view, "用户名或密码错误", Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
                             Log.e(TAG, e.toString());
@@ -126,5 +133,12 @@ public class LoginFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "fragment");
+        userInfoSync.saveLoginInfo(getActivity(), user2);
     }
 }

@@ -29,6 +29,8 @@ import cn.bmob.v3.BmobUser;
 public class EditEmailFragment extends DialogFragment {
     private String email, password;
     private TextView emailTV, passwordTV;
+    private UserInfoSync userInfoSync = new UserInfoSync();
+    private User user2;
 
     public interface EditEmailDialogListener {
         void onEditEmailDialogPositiveClick(DialogFragment dialog, String email);
@@ -72,14 +74,16 @@ public class EditEmailFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
+        //获取本地用户信息
+        user2 = userInfoSync.getLoginInfo(getContext());
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         final View view = inflater.inflate(R.layout.dialog_edit_email, null);
         builder.setView(view);
 
-        email = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_EMAIL, null);
-        password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
+        email = user2.getEmail();
+        password = user2.getPwd();
         Log.i("test", "password" + password);
         Log.i("test", "Email" + email);
 

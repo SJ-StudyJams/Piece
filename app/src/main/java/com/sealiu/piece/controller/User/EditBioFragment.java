@@ -29,6 +29,8 @@ import cn.bmob.v3.BmobUser;
 public class EditBioFragment extends DialogFragment {
     private String bio;
     private TextView bioTV;
+    private UserInfoSync userInfoSync = new UserInfoSync();
+    private User user2;
 
     public interface EditBioDialogListener {
         void onEditBioDialogPositiveClick(DialogFragment dialog, String name);
@@ -72,13 +74,15 @@ public class EditBioFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
+        //获取本地用户信息
+        user2 = userInfoSync.getLoginInfo(getContext());
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         final View view = inflater.inflate(R.layout.dialog_edit_bio, null);
         builder.setView(view);
 
-        bio = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_BIO, null);
+        bio = user2.getBio();
         Log.i("test", "bio" + bio);
 
         bioTV = (TextView) view.findViewById(R.id.edit_bio);
