@@ -86,7 +86,7 @@ public class EditPwdFragment extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         //获取本地用户信息
-        user2 = userInfoSync.getLoginInfo(getContext());
+        //user2 = userInfoSync.getLoginInfo(getContext());
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
