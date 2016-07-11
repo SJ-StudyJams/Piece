@@ -36,7 +36,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBqWihzjyEJ2oTGKHvv_rhqbqPIqDaJPVI" />
@@ -84,19 +83,14 @@
         </activity>
         <activity
             android:name=".controller.Settings.TermsActivity"
-            android:label="@string/pref_terms_of_use_title">
-
-        </activity>
+            android:label="@string/pref_terms_of_use_title"></activity>
         <activity
             android:name=".controller.Settings.PrivacyActivity"
-            android:label="@string/pref_privacy_policy_title">
-
-        </activity>
+            android:label="@string/pref_privacy_policy_title"></activity>
         <activity
             android:name=".controller.Settings.LicensesActivity"
-            android:label="@string/pref_licenses_title">
-
-        </activity>
+            android:label="@string/pref_licenses_title"></activity>
+        <activity android:name=".controller.Piece.WritePieceActivity"></activity>
     </application>
 
 </manifest>
