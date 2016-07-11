@@ -27,6 +27,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sealiu.piece.R;
@@ -131,6 +132,9 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Snackbar.make(snackBarHolderView, "Map Ready",
+                Snackbar.LENGTH_LONG).show();
+
         mMap = googleMap;
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -197,20 +201,29 @@ public class MapsActivity extends AppCompatActivity implements
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
 
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-            if (mLastLocation != null) {
-                mCurrentLatitude = mLastLocation.getLatitude();
-                mCurrentLongitude = mLastLocation.getLongitude();
+            MapStateManager mgr = new MapStateManager(this);
+            CameraPosition position = mgr.getSavedCameraPosition();
 
-                try {
-                    displayCurrentPosition.setText(getPositionName(mCurrentLatitude, mCurrentLongitude));
-                } catch (IOException e) {
-                    e.printStackTrace();
+            if (position != null) {
+                CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+                mMap.moveCamera(update);
+            } else {
+
+                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                        mGoogleApiClient);
+                if (mLastLocation != null) {
+                    mCurrentLatitude = mLastLocation.getLatitude();
+                    mCurrentLongitude = mLastLocation.getLongitude();
+
+                    try {
+                        displayCurrentPosition.setText(getPositionName(mCurrentLatitude, mCurrentLongitude));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
+                    gotoLocation(latLng, 15, false);
                 }
-
-                LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
-                gotoLocation(latLng, 15, false);
             }
         } else {
             ActivityCompat.requestPermissions(this,
