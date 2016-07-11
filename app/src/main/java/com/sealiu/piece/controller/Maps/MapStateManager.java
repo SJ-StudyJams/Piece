@@ -52,9 +52,7 @@ public class MapStateManager {
         float zoom = mapStatePrefs.getFloat(ZOOM, 0);
         float bearing = mapStatePrefs.getFloat(BEARING, 0);
         float tilt = mapStatePrefs.getFloat(TILT, 0);
-        float map_type = mapStatePrefs.getInt(MAP_TYPE, GoogleMap.MAP_TYPE_NORMAL);
 
-        CameraPosition position = new CameraPosition(target, zoom, tilt, bearing);
-        return position;
+        return new CameraPosition(target, zoom, tilt, bearing);
     }
 }
