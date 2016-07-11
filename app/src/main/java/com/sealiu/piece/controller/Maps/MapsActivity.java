@@ -169,21 +169,37 @@ public class MapsActivity extends AppCompatActivity implements
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission was granted!
-                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                            mGoogleApiClient);
-                    if (mLastLocation != null) {
-                        mCurrentLatitude = mLastLocation.getLatitude();
-                        mCurrentLongitude = mLastLocation.getLongitude();
-                    }
+                    MapStateManager mgr = new MapStateManager(this);
+                    CameraPosition position = mgr.getSavedCameraPosition();
 
-                    try {
-                        displayCurrentPosition.setText(getPositionName(mCurrentLatitude, mCurrentLongitude));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    if (position != null) {
+                        CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+                        mMap.moveCamera(update);
 
-                    LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
-                    gotoLocation(latLng, 10, false);
+                        try {
+                            displayCurrentPosition.setText(getPositionName(position.target.latitude, position.target.longitude));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    } else {
+
+                        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                                mGoogleApiClient);
+                        if (mLastLocation != null) {
+                            mCurrentLatitude = mLastLocation.getLatitude();
+                            mCurrentLongitude = mLastLocation.getLongitude();
+
+                            try {
+                                displayCurrentPosition.setText(getPositionName(mCurrentLatitude, mCurrentLongitude));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
+                            gotoLocation(latLng, 15, false);
+                        }
+                    }
                 }
                 break;
             default:
@@ -207,6 +223,13 @@ public class MapsActivity extends AppCompatActivity implements
             if (position != null) {
                 CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
                 mMap.moveCamera(update);
+
+                try {
+                    displayCurrentPosition.setText(getPositionName(position.target.latitude, position.target.longitude));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             } else {
 
                 mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
