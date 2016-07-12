@@ -57,21 +57,19 @@ public class EditActivity extends AppCompatActivity implements
         PickPictureFragment.PickPictureListener,
         View.OnClickListener {
 
+    public static final int TAKE_PHOTO = 1;
+    public static final int CHOOSE_PHOTO = 2;
+    public static final int CROP_PHOTO = 3;
     private static final String TAG = "EditActivity";
+    private static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 111;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 222;
+    public static NestedScrollView layoutScroll;
     private EditText usernameET, bioET, birthET, phoneET, emailET;
     private ImageView headPictureIV;
     private String objectId;
     private Uri previewUri;
     private String realPath;
     private Bitmap bitmap; // 用于保存从后台下载头像
-
-    private static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 111;
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 222;
-    public static final int TAKE_PHOTO = 1;
-    public static final int CHOOSE_PHOTO = 2;
-    public static final int CROP_PHOTO = 3;
-
-    public static NestedScrollView layoutScroll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,14 +85,6 @@ public class EditActivity extends AppCompatActivity implements
             BmobUser bmobUser = User.getCurrentUser();
             //获取objectId
             objectId = bmobUser.getObjectId();
-        }
-
-        // 从bmob后台同步用户信息到sp文件中存储
-        UserInfoSync sync = new UserInfoSync();
-        try {
-            sync.getUserInfo(this, Constants.SP_FILE_NAME);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

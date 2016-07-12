@@ -38,6 +38,7 @@ import com.sealiu.piece.controller.LoginRegister.LoginActivity;
 import com.sealiu.piece.controller.Piece.WritePieceActivity;
 import com.sealiu.piece.controller.Settings.MyPreferenceActivity;
 import com.sealiu.piece.controller.User.UserActivity;
+import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.utils.SPUtils;
 
@@ -62,11 +63,21 @@ public class MapsActivity extends AppCompatActivity implements
     private NestedScrollView snackBarHolderView;
     private GoogleMap mMap;
     private Double mCurrentLatitude, mCurrentLongitude;
+    private String mCurrentLocationName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // 从bmob后台同步用户信息到sp文件中存储
+        UserInfoSync sync = new UserInfoSync();
+        try {
+            sync.getUserInfo(this, Constants.SP_FILE_NAME);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         snackBarHolderView = (NestedScrollView) findViewById(R.id.content_holder);
         displayCurrentPosition = (TextView) findViewById(R.id.position_info);
 
@@ -85,7 +96,43 @@ public class MapsActivity extends AppCompatActivity implements
             public void onClick(View view) {
                 FloatingActionsMenu floatingActionsMenu = (FloatingActionsMenu) findViewById(R.id.floating_actions_menu);
                 floatingActionsMenu.collapse();
-                startActivity(new Intent(MapsActivity.this, WritePieceActivity.class));
+
+                if (isValidLocation()) {
+                    Intent intent = new Intent(MapsActivity.this, WritePieceActivity.class);
+                    intent.putExtra("LAT", mCurrentLatitude);
+                    intent.putExtra("LNG", mCurrentLongitude);
+                    intent.putExtra("LOC", mCurrentLocationName);
+                    startActivity(intent);
+                } else {
+                    Snackbar.make(snackBarHolderView, "无法确定你的位置", Snackbar.LENGTH_LONG)
+                            .setAction("获取位置信息", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                                            == PackageManager.PERMISSION_GRANTED) {
+                                        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                                                mGoogleApiClient);
+                                        if (mLastLocation != null) {
+                                            mCurrentLatitude = mLastLocation.getLatitude();
+                                            mCurrentLongitude = mLastLocation.getLongitude();
+
+                                            try {
+                                                mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
+                                                String detailPosition = mCurrentLocationName + " (" + mCurrentLatitude + " ," + mCurrentLongitude + ")";
+                                                displayCurrentPosition.setText(detailPosition);
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                            LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
+                                            gotoLocation(latLng, 15, false);
+                                        }
+                                    }
+                                }
+                            }).show();
+                }
+
             }
         });
     }
@@ -182,36 +229,31 @@ public class MapsActivity extends AppCompatActivity implements
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission was granted!
+
+                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                            mGoogleApiClient);
+                    if (mLastLocation != null) {
+                        mCurrentLatitude = mLastLocation.getLatitude();
+                        mCurrentLongitude = mLastLocation.getLongitude();
+
+                        try {
+                            mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
+                            String detailPosition = mCurrentLocationName + " (" + mCurrentLatitude + " ," + mCurrentLongitude + ")";
+                            displayCurrentPosition.setText(detailPosition);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     MapStateManager mgr = new MapStateManager(this);
                     CameraPosition position = mgr.getSavedCameraPosition();
 
                     if (position != null) {
                         CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
                         mMap.moveCamera(update);
-
-                        try {
-                            displayCurrentPosition.setText(getPositionName(position.target.latitude, position.target.longitude));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
                     } else {
-
-                        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                                mGoogleApiClient);
-                        if (mLastLocation != null) {
-                            mCurrentLatitude = mLastLocation.getLatitude();
-                            mCurrentLongitude = mLastLocation.getLongitude();
-
-                            try {
-                                displayCurrentPosition.setText(getPositionName(mCurrentLatitude, mCurrentLongitude));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
-                            gotoLocation(latLng, 15, false);
-                        }
+                        LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
+                        gotoLocation(latLng, 15, false);
                     }
                 }
                 break;
@@ -226,9 +268,22 @@ public class MapsActivity extends AppCompatActivity implements
         Snackbar.make(snackBarHolderView, "成功连接 Google API",
                 Snackbar.LENGTH_LONG).show();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
+
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            if (mLastLocation != null) {
+                mCurrentLatitude = mLastLocation.getLatitude();
+                mCurrentLongitude = mLastLocation.getLongitude();
+
+                try {
+                    mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
+                    String detailPosition = mCurrentLocationName + " (" + mCurrentLatitude + " ," + mCurrentLongitude + ")";
+                    displayCurrentPosition.setText(detailPosition);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
             MapStateManager mgr = new MapStateManager(this);
             CameraPosition position = mgr.getSavedCameraPosition();
@@ -236,30 +291,9 @@ public class MapsActivity extends AppCompatActivity implements
             if (position != null) {
                 CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
                 mMap.moveCamera(update);
-
-                try {
-                    displayCurrentPosition.setText(getPositionName(position.target.latitude, position.target.longitude));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
             } else {
-
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                        mGoogleApiClient);
-                if (mLastLocation != null) {
-                    mCurrentLatitude = mLastLocation.getLatitude();
-                    mCurrentLongitude = mLastLocation.getLongitude();
-
-                    try {
-                        displayCurrentPosition.setText(getPositionName(mCurrentLatitude, mCurrentLongitude));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
-                    gotoLocation(latLng, 15, false);
-                }
+                LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
+                gotoLocation(latLng, 15, false);
             }
         } else {
             ActivityCompat.requestPermissions(this,
@@ -288,7 +322,9 @@ public class MapsActivity extends AppCompatActivity implements
     private String getPositionName(Double latitude, Double longtitude) throws IOException {
         Geocoder geocoder = new Geocoder(this);
         List<Address> addresses = geocoder.getFromLocation(latitude, longtitude, 1);
-        return addresses.get(0).getLocality();
+        if (addresses.size() == 0)
+            return null;
+        else return addresses.get(0).getLocality();
     }
 
     /**
@@ -308,5 +344,9 @@ public class MapsActivity extends AppCompatActivity implements
     private void gotoLocation(LatLng ll, float zoom, boolean animate, String makerTitle) {
         gotoLocation(ll, zoom, animate);
         mMap.addMarker(new MarkerOptions().position(ll).title(makerTitle));
+    }
+
+    private boolean isValidLocation() {
+        return (mCurrentLatitude != null && mCurrentLongitude != null && mCurrentLocationName != null);
     }
 }
