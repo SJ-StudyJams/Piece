@@ -1,15 +1,21 @@
 package com.sealiu.piece.controller.Piece;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.sealiu.piece.R;
@@ -21,7 +27,7 @@ import java.net.URL;
 
 public class WritePieceActivity extends AppCompatActivity {
 
-    private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 1;
+    private static final String TAG = "WritePieceActivity";
 
     private Double mLatitude, mLongitude;
     private String mLocationName;
@@ -29,6 +35,11 @@ public class WritePieceActivity extends AppCompatActivity {
     private TextView myLocationTV;
     private ImageView headPictureIV;
     private TextView nickNameTV;
+    private Spinner visibilitySpinner;
+    private EditText piectContentET;
+
+    private RelativeLayout snackBarHolderView;
+
     private Bitmap bitmap;
 
     @Override
@@ -36,14 +47,20 @@ public class WritePieceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_piece);
 
+        snackBarHolderView = (RelativeLayout) findViewById(R.id.layout_holder);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         myLocationTV = (TextView) findViewById(R.id.my_location_name);
         nickNameTV = (TextView) findViewById(R.id.user_nickname);
         headPictureIV = (ImageView) findViewById(R.id.user_head_picture);
+        visibilitySpinner = (Spinner) findViewById(R.id.visibility);
+        piectContentET = (EditText) findViewById(R.id.piece_content);
 
         initUI();
+
+
     }
 
     @Override
@@ -57,6 +74,25 @@ public class WritePieceActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_send_piece:
                 // 发送编写的Piece
+
+                String objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
+                String pieceContent = piectContentET.getText().toString();
+                String visibilityRange = visibilitySpinner.getSelectedItem().toString();
+
+                if (pieceContent.equals("")) {
+                    Snackbar.make(snackBarHolderView, "请填写内容", Snackbar.LENGTH_LONG).show();
+                    break;
+                }
+
+                final ProgressDialog progress = new ProgressDialog(this);
+                progress.setMessage("发送中");
+                progress.setCanceledOnTouchOutside(false);
+                progress.show();
+
+                //先Bmob后台写数据
+                Log.i(TAG, "用户ID：" + objectId + "; 可见范围：" + visibilityRange + "; 纸条内容：" + pieceContent);
+
+                progress.dismiss();
                 break;
             default:
                 break;
