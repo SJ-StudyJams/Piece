@@ -9,7 +9,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -82,6 +83,8 @@ public class MapsActivity extends AppCompatActivity implements
         writePiectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FloatingActionsMenu floatingActionsMenu = (FloatingActionsMenu) findViewById(R.id.floating_actions_menu);
+                floatingActionsMenu.collapse();
                 startActivity(new Intent(MapsActivity.this, WritePieceActivity.class));
             }
         });
