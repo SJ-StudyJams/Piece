@@ -99,13 +99,13 @@ public class Constants {
      */
 
     //rsa_public_key
-    public static String PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFGMdDEV5C6AEwAGWD5olbyDhc\n" +
+    public static final String PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFGMdDEV5C6AEwAGWD5olbyDhc\n" +
             "IQZ4xTwMNEBJi5kBRWYaiBMzzs2sTTVzxCPE20eAAxt8I6zXqa6rQzl78g/m6n+e\n" +
             "GRI/LlLenNgZatoj7GQGgnIPKx2HEQy22BzXaWs2AOBLX4US79hTpWY02eXKCXBd\n" +
             "ofyEm2LH2uWPPoQqKwIDAQAB";
 
     //rsa_private_key
-    public static String PRIVATE_KEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMUYx0MRXkLoATAA" +
+    public static final String PRIVATE_KEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMUYx0MRXkLoATAA" +
             "ZYPmiVvIOFwhBnjFPAw0QEmLmQFFZhqIEzPOzaxNNXPEI8TbR4ADG3wjrNeprqtD" +
             "OXvyD+bqf54ZEj8uUt6c2Blq2iPsZAaCcg8rHYcRDLbYHNdpazYA4EtfhRLv2FOl" +
             "ZjTZ5coJcF2h/ISbYsfa5Y8+hCorAgMBAAECgYEAkU8kUTjz0sXzYi1YqncDm8ww" +
@@ -129,4 +129,16 @@ public class Constants {
      * AES偏移量 （可修改）
      */
     public static final String IV_PARAMERER = "1020304050607080";
+
+    /**
+     * 此为Maps常量
+     */
+    public static final String MAPS_PREFS_NAME = "mapCameraState";
+    public static final String MAPS_LNG = "longitude";
+    public static final String MAPS_LAT = "latitude";
+    public static final String MAPS_ZOOM = "zoom";
+    public static final String MAPS_BEARING = "bearing";
+    public static final String MAPS_TILT = "tilt";
+    public static final String MAPS_MAP_TYPE = "mapType";
+
 }

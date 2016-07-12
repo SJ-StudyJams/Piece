@@ -33,6 +33,13 @@ public class SPUtils {
         sp.edit().putLong(key, defValue).apply();
     }
 
+    public static void putFloat(Context context, String filename, String key, float defValue) {
+        SharedPreferences sp = context.getSharedPreferences(filename, Context
+                .MODE_PRIVATE);
+        //保存数据
+        sp.edit().putFloat(key, defValue).apply();
+    }
+
     public static void putInt(Context context, String filename, String key, int defValue) {
         SharedPreferences sp = context.getSharedPreferences(filename, Context
                 .MODE_PRIVATE);
@@ -60,8 +67,15 @@ public class SPUtils {
         return sp.getLong(key, defValue);
     }
 
+    public static float getFloat(Context context, String filename, String key,
+                                     float defValue) {
+        SharedPreferences sp = context.getSharedPreferences(
+                filename, Context.MODE_PRIVATE);
+        return sp.getFloat(key, defValue);
+    }
+
     public static int getInt(Context context, String filename, String key,
-                                     int defValue) {
+                                 int defValue) {
         SharedPreferences sp = context.getSharedPreferences(
                 filename, Context.MODE_PRIVATE);
         return sp.getInt(key, defValue);

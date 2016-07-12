@@ -5,8 +5,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.utils.SPUtils;
 
 public class WritePieceActivity extends AppCompatActivity {
 

@@ -285,9 +285,9 @@ public class MapsActivity extends AppCompatActivity implements
     /**
      * 获取指定经纬度的地理位置名称
      */
-    private String getPositionName(Double latitude, Double longtitude) throws IOException {
+    private String getPositionName(Double latitude, Double longitude) throws IOException {
         Geocoder geocoder = new Geocoder(this);
-        List<Address> addresses = geocoder.getFromLocation(latitude, longtitude, 1);
+        List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
         return addresses.get(0).getLocality();
     }
 
