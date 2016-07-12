@@ -20,10 +20,14 @@ import android.widget.TextView;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.io.InputStream;
 import java.net.URL;
+
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
 
 public class WritePieceActivity extends AppCompatActivity {
 
@@ -77,7 +81,7 @@ public class WritePieceActivity extends AppCompatActivity {
 
                 String objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
                 String pieceContent = piectContentET.getText().toString();
-                String visibilityRange = visibilitySpinner.getSelectedItem().toString();
+                int visibilityPosition = visibilitySpinner.getSelectedItemPosition();
 
                 if (pieceContent.equals("")) {
                     Snackbar.make(snackBarHolderView, "请填写内容", Snackbar.LENGTH_LONG).show();
@@ -89,10 +93,24 @@ public class WritePieceActivity extends AppCompatActivity {
                 progress.setCanceledOnTouchOutside(false);
                 progress.show();
 
-                //先Bmob后台写数据
-                Log.i(TAG, "用户ID：" + objectId + "; 可见范围：" + visibilityRange + "; 纸条内容：" + pieceContent);
+                //向Bmob后台写数据
+                Log.i(TAG, "用户ID：" + objectId + "; 可见范围：" + visibilityPosition + "; 纸条内容：" + pieceContent);
+                Piece piece = new Piece(objectId, pieceContent, mLatitude, mLongitude, visibilityPosition);
+                piece.save(new SaveListener<String>() {
+                    @Override
+                    public void done(String s, BmobException e) {
+                        progress.dismiss();
+                        if (e == null) {
+                            Snackbar.make(snackBarHolderView, "发送成功", Snackbar.LENGTH_SHORT).show();
+                            finish();
+                        } else {
+                            Snackbar.make(snackBarHolderView, "发送失败 错误码：" +
+                                    Constants.createErrorInfo(e.getErrorCode()), Snackbar.LENGTH_LONG)
+                                    .show();
+                        }
+                    }
+                });
 
-                progress.dismiss();
                 break;
             default:
                 break;
