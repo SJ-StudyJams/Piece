@@ -12,7 +12,7 @@ import android.util.Log;
 import android.widget.ScrollView;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.controller.MapsActivity;
+import com.sealiu.piece.controller.Maps.MapsActivity;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.Md5Utils;
