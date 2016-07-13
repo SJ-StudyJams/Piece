@@ -70,7 +70,7 @@
                 android:orientation="horizontal"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/piece_number_nearby"
