@@ -19,8 +19,6 @@ import cn.bmob.v3.listener.UpdateListener;
  * on 7/6/2016.
  */
 public class UserInfoSync {
-    private String nickname, bio, sex, birth, email, phone_number, picture;
-    private boolean flag;
     private static final String TAG = "UserInfoSync";
 
     /**
@@ -31,6 +29,7 @@ public class UserInfoSync {
      * @param filename SP 文件名
      */
     public void upload(final Context context, String objectId, final String filename) throws Exception {
+        String nickname, bio, sex, birth, email, phone_number, picture;
         nickname = SPUtils.getString(context, filename, Constants.SP_NICKNAME, "");
         bio = SPUtils.getString(context, filename, Constants.SP_BIO, "");
         sex = SPUtils.getString(context, filename, Constants.SP_SEX, "");
@@ -68,6 +67,7 @@ public class UserInfoSync {
      *
      * @param context  上下文对象
      * @param filename SP 文件名
+     * @param username 需要查询用户的用户名
      */
     public void getUserInfo(final Context context, final String filename, String username) throws Exception {
 
@@ -108,57 +108,14 @@ public class UserInfoSync {
                     SPUtils.putBoolean(context, filename, Constants.SP_IS_VALID_EMAIL, ev);
                     SPUtils.putBoolean(context, filename, Constants.SP_IS_VALID_PHONE_NUMBER, pv);
                     SPUtils.putString(context, filename, Constants.SP_HEAD_PICTURE, avatar);
-                    setFlag(true);
+
                 } else {
                     e.printStackTrace();
-                    setFlag(false);
                 }
             }
         });
-        Log.i(TAG, "query success:" + isFlag());
 
-        if (isFlag()) {
-            Log.i(TAG, "query success");
-        } else {
-            nickname = (String) User.getObjectByKey(Constants.SP_NICKNAME);
-            bio = (String) User.getObjectByKey(Constants.SP_BIO);
-            sex = (String) User.getObjectByKey(Constants.SP_SEX);
-            birth = (String) User.getObjectByKey(Constants.SP_BIRTH);
-            email = (String) User.getObjectByKey(Constants.SP_EMAIL);
-            phone_number = (String) User.getObjectByKey(Constants.SP_PHONE_NUMBER);
-            picture = (String) User.getObjectByKey(Constants.SP_HEAD_PICTURE);
-
-            boolean is_valid_email = false;
-            boolean is_valid_phone = false;
-
-            if (User.getObjectByKey(Constants.SP_IS_VALID_EMAIL) != null) {
-                is_valid_email = (boolean) User.getObjectByKey(Constants.SP_IS_VALID_EMAIL);
-            }
-
-            if (User.getObjectByKey(Constants.SP_IS_VALID_PHONE_NUMBER) != null) {
-                is_valid_phone = (boolean) User.getObjectByKey(Constants.SP_IS_VALID_PHONE_NUMBER);
-            }
-
-            SPUtils.putString(context, filename, Constants.SP_NICKNAME, nickname);
-            SPUtils.putString(context, filename, Constants.SP_BIO, bio);
-            SPUtils.putString(context, filename, Constants.SP_SEX, sex);
-            SPUtils.putString(context, filename, Constants.SP_BIRTH, birth);
-            SPUtils.putString(context, filename, Constants.SP_EMAIL, email);
-            SPUtils.putString(context, filename, Constants.SP_PHONE_NUMBER, phone_number);
-            SPUtils.putString(context, filename, Constants.SP_HEAD_PICTURE, picture);
-            SPUtils.putBoolean(context, filename, Constants.SP_IS_VALID_EMAIL, is_valid_email);
-            SPUtils.putBoolean(context, filename, Constants.SP_IS_VALID_PHONE_NUMBER, is_valid_phone);
-
-            Log.i(TAG, "getUserInfo success");
-        }
-    }
-
-    public boolean isFlag() {
-        return flag;
-    }
-
-    public void setFlag(boolean flag) {
-        this.flag = flag;
+        Log.i(TAG, "getUserInfo success");
     }
 
 }
