@@ -32,6 +32,7 @@ import cn.bmob.v3.listener.SaveListener;
 public class WritePieceActivity extends AppCompatActivity {
 
     private static final String TAG = "WritePieceActivity";
+    private static final int ERROR = 4;
 
     private Double mLatitude, mLongitude;
     private String mLocationName;
@@ -100,7 +101,7 @@ public class WritePieceActivity extends AppCompatActivity {
                         } else {
                             Intent intent = new Intent();
                             intent.putExtra("errorCode", e.getErrorCode());
-                            setResult(RESULT_CANCELED, intent);
+                            setResult(ERROR, intent);
                         }
                         finish();
                     }

@@ -70,6 +70,7 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private static final int PERMISSIONS_REQUEST_FINE_COARSE_LOCATION = 2;
     private static final int WRITE_PIECE_REQUEST_CODE = 3;
+    private static final int ERROR = 4;
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
     TextView displayCurrentPosition;
@@ -128,7 +129,7 @@ public class MapsActivity extends AppCompatActivity implements
             case WRITE_PIECE_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
                     Snackbar.make(snackBarHolderView, "发送成功", Snackbar.LENGTH_LONG).show();
-                } else if (resultCode == RESULT_CANCELED) {
+                } else if (resultCode == ERROR) {
                     int errorCode = data.getIntExtra("errorCode", 0);
                     Snackbar.make(snackBarHolderView, "发送失败 错误码：" + Constants.createErrorInfo(errorCode), Snackbar.LENGTH_LONG).show();
                 }
