@@ -12,11 +12,13 @@ public class Piece extends BmobObject {
     //内容
     private String content;
     //图片
-    private String imageUrl;
+    private String image;
+    //链接
+    private String url;
     //音频
-    private String audioUrl;
+    private String audio;
     //视频
-    private String videoUrl;
+    private String video;
     //piece类型
     //小纸条（1），交友（2），活动（3），故事（4），新闻（5），天气（6），广告（7）
     private Integer type;
@@ -25,12 +27,18 @@ public class Piece extends BmobObject {
     //维度
     private Double latitude;
     //浏览次数
-    private Double viewCount;
-    //点赞功能
-    //private Double clickLike;
+    private Integer viewCount = 0;
     //可见性
-    // -1 仅自己可见， 0 附近“30米”可见， 1 附近xxx米可见， 2 附件xxx米可见
+    //5km, 20km, 60km, 100km (分别为：0，1，2，3)
     private Integer visibility;
+
+    public Piece(String authorID, String content, Double lat, Double lng, Integer visib) {
+        this.authorID = authorID;
+        this.content = content;
+        this.latitude = lat;
+        this.longitude = lng;
+        this.visibility = visib;
+    }
 
     public String getAuthorID() {
         return authorID;
@@ -48,28 +56,36 @@ public class Piece extends BmobObject {
         this.content = content;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImage(String image) {
+        this.image = image;
     }
 
-    public String getAudioUrl() {
-        return audioUrl;
+    public String getUrl() {
+        return url;
     }
 
-    public void setAudioUrl(String audioUrl) {
-        this.audioUrl = audioUrl;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public String getVideoUrl() {
-        return videoUrl;
+    public String getAudio() {
+        return audio;
     }
 
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
+    public void setAudio(String audio) {
+        this.audio = audio;
+    }
+
+    public String getVideo() {
+        return video;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
     }
 
     public Integer getType() {
@@ -96,11 +112,11 @@ public class Piece extends BmobObject {
         this.latitude = latitude;
     }
 
-    public Double getViewCount() {
+    public Integer getViewCount() {
         return viewCount;
     }
 
-    public void setViewCount(Double viewCount) {
+    public void setViewCount(Integer viewCount) {
         this.viewCount = viewCount;
     }
 

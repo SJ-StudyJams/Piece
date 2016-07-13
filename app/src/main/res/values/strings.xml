@@ -214,4 +214,11 @@
     <string name="write_piece">写纸条</string>
     <string name="send_piece">发送</string>
     <string name="write_something">写点什么...</string>
+
+    <string-array name="visibility_arrays">
+        <item>5km</item>
+        <item>20km</item>
+        <item>60km</item>
+        <item>100km</item>
+    </string-array>
 </resources>
