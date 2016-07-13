@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?><!--piece customizing marker info window with user head picture and pure words-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/info_window_nickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="nickname"
+        android:textColor="@color/primaryText" />
+
+    <TextView
+        android:id="@+id/info_window_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/info_window_nickname"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/info_window_nickname"
+        android:text="昨天 9:45"
+        android:textColor="@color/secondaryText"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/info_window_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/info_window_nickname"
+        android:text="content"
+        android:textColor="@color/secondaryText" />
+
+</RelativeLayout>
