@@ -1,6 +1,6 @@
 package com.sealiu.piece.controller.Piece;
 
-import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -79,19 +79,14 @@ public class WritePieceActivity extends AppCompatActivity {
             case R.id.menu_send_piece:
                 // 发送编写的Piece
 
-                String objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
-                String pieceContent = piectContentET.getText().toString();
-                int visibilityPosition = visibilitySpinner.getSelectedItemPosition();
+                final String objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
+                final String pieceContent = piectContentET.getText().toString();
+                final int visibilityPosition = visibilitySpinner.getSelectedItemPosition();
 
                 if (pieceContent.equals("")) {
                     Snackbar.make(snackBarHolderView, "请填写内容", Snackbar.LENGTH_LONG).show();
                     break;
                 }
-
-                final ProgressDialog progress = new ProgressDialog(this);
-                progress.setMessage("发送中");
-                progress.setCanceledOnTouchOutside(false);
-                progress.show();
 
                 //向Bmob后台写数据
                 Log.i(TAG, "用户ID：" + objectId + "; 可见范围：" + visibilityPosition + "; 纸条内容：" + pieceContent);
@@ -99,15 +94,15 @@ public class WritePieceActivity extends AppCompatActivity {
                 piece.save(new SaveListener<String>() {
                     @Override
                     public void done(String s, BmobException e) {
-                        progress.dismiss();
                         if (e == null) {
-                            Snackbar.make(snackBarHolderView, "发送成功", Snackbar.LENGTH_SHORT).show();
-                            finish();
+                            Intent intent = new Intent();
+                            setResult(RESULT_OK, intent);
                         } else {
-                            Snackbar.make(snackBarHolderView, "发送失败 错误码：" +
-                                    Constants.createErrorInfo(e.getErrorCode()), Snackbar.LENGTH_LONG)
-                                    .show();
+                            Intent intent = new Intent();
+                            intent.putExtra("errorCode", e.getErrorCode());
+                            setResult(RESULT_CANCELED, intent);
                         }
+                        finish();
                     }
                 });
 

@@ -9,19 +9,21 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -40,10 +42,15 @@ import com.sealiu.piece.controller.Settings.MyPreferenceActivity;
 import com.sealiu.piece.controller.User.UserActivity;
 import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.io.IOException;
 import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -52,21 +59,30 @@ import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFail
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         ConnectionCallbacks,
-        OnConnectionFailedListener {
+        OnConnectionFailedListener,
+        View.OnClickListener {
 
     private static final String TAG = "MapsActivity";
     private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private static final int PERMISSIONS_REQUEST_FINE_COARSE_LOCATION = 2;
+    private static final int WRITE_PIECE_REQUEST_CODE = 3;
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
+
     TextView displayCurrentPosition;
-    private NestedScrollView snackBarHolderView;
+    TextView pieceNumberNear;
+    ImageButton hideShowMoreInfoBtn;
+    LinearLayout moreInfoLayout;
+
+    private RelativeLayout snackBarHolderView;
+
     private GoogleMap mMap;
     private Double mCurrentLatitude, mCurrentLongitude;
     private String mCurrentLocationName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -78,8 +94,9 @@ public class MapsActivity extends AppCompatActivity implements
             e.printStackTrace();
         }
 
-        snackBarHolderView = (NestedScrollView) findViewById(R.id.content_holder);
+        snackBarHolderView = (RelativeLayout) findViewById(R.id.content_holder);
         displayCurrentPosition = (TextView) findViewById(R.id.position_info);
+        pieceNumberNear = (TextView) findViewById(R.id.piece_number_nearby);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -90,55 +107,36 @@ public class MapsActivity extends AppCompatActivity implements
                 .addApi(LocationServices.API)
                 .build();
 
-        FloatingActionButton writePiectBtn = (FloatingActionButton) findViewById(R.id.write_piece_fab);
-        writePiectBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FloatingActionsMenu floatingActionsMenu = (FloatingActionsMenu) findViewById(R.id.floating_actions_menu);
-                floatingActionsMenu.collapse();
+        final FloatingActionButton writePieceBtn = (FloatingActionButton) findViewById(R.id.write_piece_fab);
+        ImageButton findMyLocationBtn = (ImageButton) findViewById(R.id.find_my_location);
+        hideShowMoreInfoBtn = (ImageButton) findViewById(R.id.hide_show);
+        moreInfoLayout = (LinearLayout) findViewById(R.id.more_info_panel);
 
-                if (isValidLocation()) {
-                    Intent intent = new Intent(MapsActivity.this, WritePieceActivity.class);
-                    intent.putExtra("LAT", mCurrentLatitude);
-                    intent.putExtra("LNG", mCurrentLongitude);
-                    intent.putExtra("LOC", mCurrentLocationName);
-                    startActivity(intent);
-                } else {
-                    Snackbar.make(snackBarHolderView, "无法确定你的位置", Snackbar.LENGTH_LONG)
-                            .setAction("获取位置信息", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
+        writePieceBtn.setOnClickListener(this);
+        findMyLocationBtn.setOnClickListener(this);
+        hideShowMoreInfoBtn.setOnClickListener(this);
 
-                                    if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                                            == PackageManager.PERMISSION_GRANTED) {
-                                        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                                                mGoogleApiClient);
-                                        if (mLastLocation != null) {
-                                            mCurrentLatitude = mLastLocation.getLatitude();
-                                            mCurrentLongitude = mLastLocation.getLongitude();
+    }
 
-                                            try {
-                                                mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
-                                                String detailPosition = mCurrentLocationName + " (" + mCurrentLatitude + " ," + mCurrentLongitude + ")";
-                                                displayCurrentPosition.setText(detailPosition);
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-
-                                            LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
-                                            gotoLocation(latLng, 15, false);
-                                        }
-                                    }
-                                }
-                            }).show();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i(TAG, "onActivityResult");
+        switch (requestCode) {
+            case WRITE_PIECE_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    Snackbar.make(snackBarHolderView, "发送成功", Snackbar.LENGTH_LONG).show();
+                } else if (resultCode == RESULT_CANCELED) {
+                    int errorCode = data.getIntExtra("errorCode", 0);
+                    Snackbar.make(snackBarHolderView, "发送失败 错误码：" + Constants.createErrorInfo(errorCode), Snackbar.LENGTH_LONG).show();
                 }
-
-            }
-        });
+                break;
+            default:
+        }
     }
 
     @Override
     protected void onResume() {
+        Log.i(TAG, "onResume");
         super.onResume();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -149,12 +147,14 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     protected void onStart() {
+        Log.i(TAG, "onStart");
         super.onStart();
         mGoogleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
+        Log.i(TAG, "onStop");
         super.onStop();
         MapStateManager mgr = new MapStateManager(this);
         mgr.saveMapState(mMap);
@@ -163,6 +163,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.i(TAG, "onCreateOptionsMenu");
         getMenuInflater().inflate(R.menu.menu_map, menu);
         return super.onCreateOptionsMenu(menu);
     }
@@ -192,17 +193,18 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Snackbar.make(snackBarHolderView, "Map Ready",
-                Snackbar.LENGTH_LONG).show();
+        Log.i(TAG, "Map Ready");
 
         mMap = googleMap;
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            mMap.getUiSettings().setZoomControlsEnabled(true);
-            mMap.getUiSettings().setAllGesturesEnabled(false);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            mMap.getUiSettings().setZoomControlsEnabled(false);
+            mMap.getUiSettings().setMapToolbarEnabled(false);
+            mMap.getUiSettings().setCompassEnabled(false);
+            mMap.getUiSettings().setTiltGesturesEnabled(false);
 
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_FINE_LOCATION);
@@ -221,7 +223,11 @@ public class MapsActivity extends AppCompatActivity implements
                     if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
                         mMap.setMyLocationEnabled(true);
-                        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                        mMap.getUiSettings().setZoomControlsEnabled(false);
+                        mMap.getUiSettings().setMapToolbarEnabled(false);
+                        mMap.getUiSettings().setCompassEnabled(false);
+                        mMap.getUiSettings().setTiltGesturesEnabled(false);
                     }
                 }
                 break;
@@ -235,6 +241,8 @@ public class MapsActivity extends AppCompatActivity implements
                     if (mLastLocation != null) {
                         mCurrentLatitude = mLastLocation.getLatitude();
                         mCurrentLongitude = mLastLocation.getLongitude();
+
+                        initMarker();
 
                         try {
                             mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
@@ -253,7 +261,7 @@ public class MapsActivity extends AppCompatActivity implements
                         mMap.moveCamera(update);
                     } else {
                         LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
-                        gotoLocation(latLng, 15, false);
+                        gotoLocation(latLng, 14, false);
                     }
                 }
                 break;
@@ -265,8 +273,8 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Snackbar.make(snackBarHolderView, "成功连接 Google API",
-                Snackbar.LENGTH_LONG).show();
+        Log.i(TAG, "Service Connected");
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
 
@@ -275,6 +283,9 @@ public class MapsActivity extends AppCompatActivity implements
             if (mLastLocation != null) {
                 mCurrentLatitude = mLastLocation.getLatitude();
                 mCurrentLongitude = mLastLocation.getLongitude();
+
+                //初始化标记
+                initMarker();
 
                 try {
                     mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
@@ -293,7 +304,7 @@ public class MapsActivity extends AppCompatActivity implements
                 mMap.moveCamera(update);
             } else {
                 LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
-                gotoLocation(latLng, 15, false);
+                gotoLocation(latLng, 14, false);
             }
         } else {
             ActivityCompat.requestPermissions(this,
@@ -313,6 +324,60 @@ public class MapsActivity extends AppCompatActivity implements
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Snackbar.make(snackBarHolderView, "连接 Google API 失败",
                 Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.write_piece_fab:
+                if (isValidLocation()) {
+                    Intent intent = new Intent(MapsActivity.this, WritePieceActivity.class);
+                    intent.putExtra("LAT", mCurrentLatitude);
+                    intent.putExtra("LNG", mCurrentLongitude);
+                    intent.putExtra("LOC", mCurrentLocationName);
+                    startActivityForResult(intent, WRITE_PIECE_REQUEST_CODE);
+                } else {
+                    Snackbar.make(snackBarHolderView, "无法获取你的位置", Snackbar.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.find_my_location:
+                if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                            mGoogleApiClient);
+                    if (mLastLocation != null) {
+                        mCurrentLatitude = mLastLocation.getLatitude();
+                        mCurrentLongitude = mLastLocation.getLongitude();
+
+                        try {
+                            mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
+                            String detailPosition = mCurrentLocationName + " (" + mCurrentLatitude + " ," + mCurrentLongitude + ")";
+                            displayCurrentPosition.setText(detailPosition);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
+                        float currentZoom = mMap.getCameraPosition().zoom;
+                        if (currentZoom > 16 || currentZoom < 12) {
+                            gotoLocation(latLng, 14, true);
+                        } else {
+                            gotoLocation(latLng, currentZoom, true);
+                        }
+                    }
+                }
+                break;
+            case R.id.hide_show:
+                if (moreInfoLayout.getVisibility() == View.VISIBLE) {
+                    hideShowMoreInfoBtn.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
+                    moreInfoLayout.setVisibility(View.GONE);
+                } else if (moreInfoLayout.getVisibility() == View.GONE) {
+                    hideShowMoreInfoBtn.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
+                    moreInfoLayout.setVisibility(View.VISIBLE);
+                }
+                break;
+            default:
+        }
     }
 
 
@@ -338,15 +403,61 @@ public class MapsActivity extends AppCompatActivity implements
             mMap.moveCamera(update);
     }
 
-    /**
-     * 将镜头移动至指定地点，指定缩放等级，指定是否使用动画，并在指定位置创建一个maker
-     */
-    private void gotoLocation(LatLng ll, float zoom, boolean animate, String makerTitle) {
-        gotoLocation(ll, zoom, animate);
-        mMap.addMarker(new MarkerOptions().position(ll).title(makerTitle));
-    }
-
     private boolean isValidLocation() {
         return (mCurrentLatitude != null && mCurrentLongitude != null && mCurrentLocationName != null);
     }
+
+    private void initMarker() {
+        //因为纸条的可见范围最大为100km，所以默认为100km
+        double[] llRange = Common.GetAround(mCurrentLatitude, mCurrentLongitude, 100000);
+
+        BmobQuery<Piece> query = new BmobQuery<>();
+        query.addWhereGreaterThanOrEqualTo("latitude", llRange[0])
+                .addWhereLessThanOrEqualTo("latitude", llRange[2])
+                .addWhereGreaterThanOrEqualTo("longitude", llRange[1])
+                .addWhereLessThanOrEqualTo("longitude", llRange[3]);
+        query.setLimit(100);
+        query.order("-createdAt,-updatedAt");
+        query.findObjects(new FindListener<Piece>() {
+            @Override
+            public void done(List<Piece> list, BmobException e) {
+                Log.i(TAG, list.size() + "");
+                int number = 0;
+                for (Piece p : list) {
+                    int pr = 0;
+                    switch (p.getVisibility()) {
+                        case 0:
+                            pr = 5000;
+                            break;
+                        case 1:
+                            pr = 20000;
+                            break;
+                        case 2:
+                            pr = 60000;
+                            break;
+                        case 3:
+                            pr = 100000;
+                            break;
+                        default:
+                    }
+                    double distance = Common.GetDistance(mCurrentLatitude, mCurrentLongitude, p.getLatitude(), p.getLongitude());
+                    Log.i(TAG, "距离(m)" + distance);
+
+                    if (distance <= pr) {
+                        number++;
+
+                        MarkerOptions options = new MarkerOptions()
+                                .position(new LatLng(p.getLatitude(), p.getLongitude()))
+                                .title(p.getAuthorID())
+                                .flat(true)
+                                .snippet(p.getContent());
+                        mMap.addMarker(options);
+                    }
+                }//for
+                String info = "附近有 " + number + " Pieces";
+                pieceNumberNear.setText(info);
+            }//done
+        });
+    }
+
 }
