@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -34,6 +35,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.LoginRegister.LoginActivity;
@@ -43,6 +45,7 @@ import com.sealiu.piece.controller.User.UserActivity;
 import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.Piece;
+import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.io.IOException;
@@ -55,6 +58,7 @@ import cn.bmob.v3.listener.FindListener;
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import static com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
@@ -68,14 +72,11 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int WRITE_PIECE_REQUEST_CODE = 3;
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
-
     TextView displayCurrentPosition;
     TextView pieceNumberNear;
     ImageButton hideShowMoreInfoBtn;
     LinearLayout moreInfoLayout;
-
     private RelativeLayout snackBarHolderView;
-
     private GoogleMap mMap;
     private Double mCurrentLatitude, mCurrentLongitude;
     private String mCurrentLocationName;
@@ -109,11 +110,13 @@ public class MapsActivity extends AppCompatActivity implements
 
         final FloatingActionButton writePieceBtn = (FloatingActionButton) findViewById(R.id.write_piece_fab);
         ImageButton findMyLocationBtn = (ImageButton) findViewById(R.id.find_my_location);
+        Button seeAllBtn = (Button) findViewById(R.id.see_all_btn);
         hideShowMoreInfoBtn = (ImageButton) findViewById(R.id.hide_show);
         moreInfoLayout = (LinearLayout) findViewById(R.id.more_info_panel);
 
         writePieceBtn.setOnClickListener(this);
         findMyLocationBtn.setOnClickListener(this);
+        seeAllBtn.setOnClickListener(this);
         hideShowMoreInfoBtn.setOnClickListener(this);
 
     }
@@ -189,7 +192,6 @@ public class MapsActivity extends AppCompatActivity implements
 
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -286,6 +288,7 @@ public class MapsActivity extends AppCompatActivity implements
 
                 //初始化标记
                 initMarker();
+                mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 
                 try {
                     mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
@@ -376,17 +379,19 @@ public class MapsActivity extends AppCompatActivity implements
                     moreInfoLayout.setVisibility(View.VISIBLE);
                 }
                 break;
+            case R.id.see_all_btn:
+
+                break;
             default:
         }
     }
 
-
     /**
      * 获取指定经纬度的地理位置名称
      */
-    private String getPositionName(Double latitude, Double longtitude) throws IOException {
+    private String getPositionName(Double latitude, Double longitude) throws IOException {
         Geocoder geocoder = new Geocoder(this);
-        List<Address> addresses = geocoder.getFromLocation(latitude, longtitude, 1);
+        List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
         if (addresses.size() == 0)
             return null;
         else return addresses.get(0).getLocality();
@@ -423,7 +428,7 @@ public class MapsActivity extends AppCompatActivity implements
             public void done(List<Piece> list, BmobException e) {
                 Log.i(TAG, list.size() + "");
                 int number = 0;
-                for (Piece p : list) {
+                for (final Piece p : list) {
                     int pr = 0;
                     switch (p.getVisibility()) {
                         case 0:
@@ -441,23 +446,72 @@ public class MapsActivity extends AppCompatActivity implements
                         default:
                     }
                     double distance = Common.GetDistance(mCurrentLatitude, mCurrentLongitude, p.getLatitude(), p.getLongitude());
-                    Log.i(TAG, "距离(m)" + distance);
 
                     if (distance <= pr) {
                         number++;
 
-                        MarkerOptions options = new MarkerOptions()
-                                .position(new LatLng(p.getLatitude(), p.getLongitude()))
-                                .title(p.getAuthorID())
-                                .flat(true)
-                                .snippet(p.getContent());
-                        mMap.addMarker(options);
+                        BmobQuery<User> query = new BmobQuery<>();
+                        query.addWhereEqualTo("objectId", p.getAuthorID());
+                        query.findObjects(new FindListener<User>() {
+                            @Override
+                            public void done(List<User> list, BmobException e) {
+                                if (e == null) {
+                                    MarkerOptions options = new MarkerOptions()
+                                            .position(new LatLng(p.getLatitude(), p.getLongitude()))
+                                            .title(list.get(0).getNickname())
+                                            .snippet(p.getContent() + "::" + p.getCreatedAt())
+                                            .flat(true);
+                                    mMap.addMarker(options);
+                                }
+                            }
+                        });
+
+
                     }
                 }//for
                 String info = "附近有 " + number + " Pieces";
                 pieceNumberNear.setText(info);
             }//done
         });
+    }
+
+    class CustomInfoWindowAdapter implements InfoWindowAdapter {
+
+        private View mContents;
+
+        CustomInfoWindowAdapter() {
+            mContents = getLayoutInflater().inflate(R.layout.info_window_w, null);
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            String title = marker.getTitle();
+            String snippet = marker.getSnippet();
+
+            String[] contentAndDate = snippet.split("::");
+
+            TextView nickname = (TextView) mContents.findViewById(R.id.info_window_nickname);
+            TextView content = (TextView) mContents.findViewById(R.id.info_window_content);
+            TextView time = (TextView) mContents.findViewById(R.id.info_window_time);
+
+            if (title != null)
+                nickname.setText(title);
+            else
+                nickname.setText("");
+
+            if (contentAndDate.length == 2) {
+                content.setText(contentAndDate[0]);
+                time.setText(contentAndDate[1]);
+            } else {
+                content.setText("");
+            }
+            return mContents;
+        }
     }
 
 }
