@@ -1,6 +1,8 @@
 package com.sealiu.piece.controller.Maps;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -185,9 +187,23 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivity(new Intent(MapsActivity.this, UserActivity.class));
                 break;
             case R.id.switch_menu_title:
-                SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
-                startActivity(new Intent(MapsActivity.this, LoginActivity.class));
-                finish();
+                new AlertDialog.Builder(this)
+                        .setTitle("退出账户")
+                        .setMessage("执行该操作后你需要重新登录")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                SPUtils.putBoolean(MapsActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
+                                startActivity(new Intent(MapsActivity.this, LoginActivity.class));
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        }).show();
                 break;
             default:
                 break;
