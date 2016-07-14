@@ -19,6 +19,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -372,10 +374,12 @@ public class MapsActivity extends AppCompatActivity implements
                 }
                 break;
             case R.id.hide_show:
+                Animation expand = AnimationUtils.loadAnimation(getBaseContext(), R.anim.expand_panel);
                 if (moreInfoLayout.getVisibility() == View.VISIBLE) {
                     hideShowMoreInfoBtn.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
                     moreInfoLayout.setVisibility(View.GONE);
                 } else if (moreInfoLayout.getVisibility() == View.GONE) {
+                    moreInfoLayout.startAnimation(expand);
                     hideShowMoreInfoBtn.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
                     moreInfoLayout.setVisibility(View.VISIBLE);
                 }
