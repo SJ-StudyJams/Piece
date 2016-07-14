@@ -46,7 +46,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".controller.LoginRegister.RegisterActivity" />
@@ -83,14 +83,21 @@
         </activity>
         <activity
             android:name=".controller.Settings.TermsActivity"
-            android:label="@string/pref_terms_of_use_title"></activity>
+            android:label="@string/pref_terms_of_use_title" />
         <activity
             android:name=".controller.Settings.PrivacyActivity"
-            android:label="@string/pref_privacy_policy_title"></activity>
+            android:label="@string/pref_privacy_policy_title" />
         <activity
             android:name=".controller.Settings.LicensesActivity"
-            android:label="@string/pref_licenses_title"></activity>
-        <activity android:name=".controller.Piece.WritePieceActivity"></activity>
+            android:label="@string/pref_licenses_title" />
+        <activity android:name=".controller.Piece.WritePieceActivity" />
+        <activity android:name=".controller.SplashScreenActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
