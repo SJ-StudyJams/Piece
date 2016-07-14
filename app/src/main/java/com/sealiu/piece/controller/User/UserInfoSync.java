@@ -82,8 +82,8 @@ public class UserInfoSync {
                     String nickname = user.getNickname();
                     String email = user.getEmail();
                     String phone = user.getMobilePhoneNumber();
-                    boolean ev = user.getEmailVerified();
-                    boolean pv = user.getMobilePhoneNumberVerified();
+                    boolean ev = user.getEmailVerified() == null ? false : user.getEmailVerified();
+                    boolean pv = user.getMobilePhoneNumberVerified() == null ? false : user.getMobilePhoneNumberVerified();
                     String bio = user.getBio();
                     String birth = user.getBirth();
                     String sex = user.getUser_sex();
