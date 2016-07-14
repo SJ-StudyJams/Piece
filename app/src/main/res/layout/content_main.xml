@@ -59,7 +59,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_keyboard_arrow_up_black_24dp" />
+                    android:src="@drawable/ic_keyboard_arrow_down_black_24dp" />
             </LinearLayout>
 
 
@@ -70,7 +70,7 @@
                 android:orientation="horizontal"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/piece_number_nearby"
