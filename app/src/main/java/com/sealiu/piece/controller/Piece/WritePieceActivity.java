@@ -56,6 +56,7 @@ public class WritePieceActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle(R.string.write_piece);
 
         myLocationTV = (TextView) findViewById(R.id.my_location_name);
         nickNameTV = (TextView) findViewById(R.id.user_nickname);
@@ -92,6 +93,7 @@ public class WritePieceActivity extends AppCompatActivity {
                 //向Bmob后台写数据
                 Log.i(TAG, "用户ID：" + objectId + "; 可见范围：" + visibilityPosition + "; 纸条内容：" + pieceContent);
                 Piece piece = new Piece(objectId, pieceContent, mLatitude, mLongitude, visibilityPosition);
+                piece.setType(1);
                 piece.save(new SaveListener<String>() {
                     @Override
                     public void done(String s, BmobException e) {

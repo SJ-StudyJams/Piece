@@ -39,7 +39,7 @@
     <string name="edit_user_info">个人信息</string>
     <string name="remember_password">记住密码</string>
     <string name="auto_login">自动登录</string>
-    <string name="switch_menu_title">切换用户</string>
+    <string name="logout_menu_title">退出账户</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -213,7 +213,8 @@
     <string name="fetching_location">定位中</string>
     <string name="write_piece">写纸条</string>
     <string name="send_piece">发送</string>
-    <string name="write_something">写点什么...</string>
+    <string name="write_something">写点什么吧</string>
+    <string name="pieces_nearby">附近的Pieces</string>
 
     <string-array name="visibility_arrays">
         <item>5km</item>

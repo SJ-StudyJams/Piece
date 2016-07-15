@@ -1,32 +1,49 @@
 package com.sealiu.piece.controller.User;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.Piece.PieceAdapter;
 import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.Piece;
+import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
 
-import java.io.InputStream;
-import java.net.URL;
+import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
+
+import static android.graphics.PorterDuff.Mode;
 
 /**
  * 展示用户发送过的小纸条（类似朋友圈）
- * 目前只提供点击用户头像进入查看页面，小纸条展示放到Piece模块中开发
+ * 点击用户头像进入查看页面
  */
-public class UserActivity extends AppCompatActivity {
+public class UserActivity extends AppCompatActivity implements View.OnClickListener {
 
-
-    private Bitmap bitmap;
-    private ImageView headPictureIV;
+    private static final String TAG = "UserActivity";
+    private static final String LAYOUT_MANAGER_FLAG = "LayoutManager";
+    private ImageButton linear;
+    private ImageButton grid;
+    private ImageButton staggeredGrid;
+    private FloatingActionButton fab;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private int mLayoutManagerFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +51,40 @@ public class UserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        headPictureIV = (ImageView) findViewById(R.id.head_picture);
-        headPictureIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(UserActivity.this, EditActivity.class));
-            }
-        });
 
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        linear = (ImageButton) findViewById(R.id.linear);
+        grid = (ImageButton) findViewById(R.id.grid);
+        staggeredGrid = (ImageButton) findViewById(R.id.staggered_grid);
+        mRecyclerView = (RecyclerView) findViewById(R.id.my_piece_recycler_view);
+
+        fab.setOnClickListener(this);
+        linear.setOnClickListener(this);
+        grid.setOnClickListener(this);
+        staggeredGrid.setOnClickListener(this);
+
+        // set RecyclerView
+        mRecyclerView.setHasFixedSize(true);
+        // set LayoutManager
+        if (savedInstanceState != null) {
+            mLayoutManagerFlag = savedInstanceState.getInt(LAYOUT_MANAGER_FLAG);
+        } else {
+            mLayoutManagerFlag = 1;
+        }
+
+        switch (mLayoutManagerFlag) {
+            case 1:
+                setLinear();
+                break;
+            case 2:
+                setGrid();
+                break;
+            case 3:
+                setStaggeredGrid();
+                break;
+        }
+        // fetch data, and set adapter
         initUI();
-
-
     }
 
     /**
@@ -53,7 +93,6 @@ public class UserActivity extends AppCompatActivity {
     private void initUI() {
 
         String nickName = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, "");
-        final String headPicture = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, "");
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeButtonEnabled(true);
@@ -61,38 +100,75 @@ public class UserActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(nickName);
         }
 
-        //显示头像
-        if (!headPicture.equals("")) {
-            final Handler handler = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    if (msg.what == 0x9527) {
-                        //显示下载之后的图片
-                        headPictureIV.setImageBitmap(bitmap);
-                    }
-                }
-            };
+        String userObjectId = User.getCurrentUser().getObjectId();
 
-            new Thread() {
-                @Override
-                public void run() {
-                    super.run();
-                    try {
-                        URL url = new URL(headPicture);
-                        //打开URL对应的资源输入流
-                        InputStream inputStream = url.openStream();
-                        //从InputStream流中解析出图片
-                        bitmap = BitmapFactory.decodeStream(inputStream);
-                        //发送消息，通知UI组件显示图片
-                        handler.sendEmptyMessage(0x9527);
-                        //关闭输入流
-                        inputStream.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        BmobQuery<Piece> query = new BmobQuery<>();
+        query.addWhereEqualTo("authorID", userObjectId);
+        query.setLimit(1000);
+        query.order("-createdAt,-updatedAt");
+        query.findObjects(new FindListener<Piece>() {
+            @Override
+            public void done(List<Piece> list, BmobException e) {
+                mAdapter = new PieceAdapter(list);
+                mRecyclerView.setAdapter(mAdapter);
+            }//done
+        });
+    }
 
-                }
-            }.start();
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.fab:
+                startActivity(new Intent(UserActivity.this, EditActivity.class));
+                break;
+            case R.id.linear:
+                setLinear();
+                break;
+            case R.id.grid:
+                setGrid();
+                break;
+            case R.id.staggered_grid:
+                setStaggeredGrid();
+                break;
+            default:
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(LAYOUT_MANAGER_FLAG, mLayoutManagerFlag);
+    }
+
+    public void setLinear() {
+        grid.clearColorFilter();
+        staggeredGrid.clearColorFilter();
+        linear.setColorFilter(0xff0099cc, Mode.MULTIPLY);
+        mLayoutManagerFlag = 1;
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+    }
+
+    public void setGrid() {
+        linear.clearColorFilter();
+        staggeredGrid.clearColorFilter();
+        grid.setColorFilter(0xff0099cc, Mode.MULTIPLY);
+        mLayoutManagerFlag = 2;
+        mLayoutManager = new GridLayoutManager(this, 2);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+    }
+
+    public void setStaggeredGrid() {
+        linear.clearColorFilter();
+        grid.clearColorFilter();
+        staggeredGrid.setColorFilter(0xff0099cc, Mode.MULTIPLY);
+        mLayoutManagerFlag = 3;
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mLayoutManager = new StaggeredGridLayoutManager(3, 1);
+        } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mLayoutManager = new StaggeredGridLayoutManager(2, 1);
+        }
+        mRecyclerView.setLayoutManager(mLayoutManager);
     }
 }

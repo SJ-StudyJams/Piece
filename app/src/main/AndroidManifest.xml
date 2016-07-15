@@ -90,15 +90,20 @@
         <activity
             android:name=".controller.Settings.LicensesActivity"
             android:label="@string/pref_licenses_title" />
-        <activity android:name=".controller.Piece.WritePieceActivity" />
+
+        <activity
+            android:name=".controller.Piece.WritePieceActivity"
+            android:label="@string/write_piece" />
+
         <activity android:name=".controller.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service.PieceMainService" />
+        <activity
+            android:name=".controller.Piece.PiecesActivity"
+            android:label="@string/pieces_nearby" />
     </application>
 
 </manifest>
