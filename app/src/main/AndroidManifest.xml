@@ -104,6 +104,10 @@
         <activity
             android:name=".controller.Piece.PiecesActivity"
             android:label="@string/pieces_nearby" />
+
+        <service android:name=".service.PieceMainService" >
+
+        </service>
     </application>
 
 </manifest>

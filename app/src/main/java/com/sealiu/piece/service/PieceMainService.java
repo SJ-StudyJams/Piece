@@ -4,14 +4,19 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
- * Created by art2cat on 16-7-15.
+ * Created by art2cat
+ * on 16-7-15.
  */
 public class PieceMainService extends Service {
+    public static final String TAG = "PieceMainService";
+
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.i(TAG, "MainService Start");
     }
 
     @Override
@@ -21,6 +26,7 @@ public class PieceMainService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.i(TAG, "MainService Stop");
         super.onDestroy();
     }
 

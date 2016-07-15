@@ -15,6 +15,7 @@ import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Maps.MapsActivity;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
+import com.sealiu.piece.service.PieceMainService;
 import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
 
@@ -31,6 +32,10 @@ public class LoginActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //启动MainService
+        Intent intent1 = new Intent(this, PieceMainService.class);
+        startService(intent1);
+        Log.i(TAG, "onCreate");
 
         scrollView = (ScrollView) findViewById(R.id.login_form);
 
@@ -43,10 +48,10 @@ public class LoginActivity extends AppCompatActivity
                 && username != null
                 && pwd != null) {
             //距上次登录没有超过1个月，objectId不为空，且用户为登录状态，则自动登录
-            final ProgressDialog progress = new ProgressDialog(LoginActivity.this);
-            progress.setMessage("正在登录中...");
-            progress.setCanceledOnTouchOutside(false);
-            progress.show();
+            //final ProgressDialog progress = new ProgressDialog(LoginActivity.this);
+            //progress.setMessage("正在登录中...");
+            //progress.setCanceledOnTouchOutside(false);
+            //progress.show();
 
             User user = new User();
             String password = Md5Utils.encode(pwd);
@@ -58,7 +63,7 @@ public class LoginActivity extends AppCompatActivity
                         if (e == null) {
                             SPUtils.putString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
                             SPUtils.putBoolean(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
-
+                            Log.i(TAG, "Login success");
                             onSubmitLoginBtnClick();
                         } else {
                             SPUtils.clear(LoginActivity.this, Constants.SP_FILE_NAME);
@@ -78,7 +83,7 @@ public class LoginActivity extends AppCompatActivity
                     }
                 });
 
-            progress.dismiss();
+            //progress.dismiss();
         } else {
             // 需要手动登录
             setContentView(R.layout.activity_login);
@@ -112,6 +117,8 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onSubmitLoginBtnClick() {
+
+        Log.i(TAG, "Start MapsActivity");
         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
         startActivity(intent);
         finish();

@@ -217,6 +217,8 @@ public class EditActivity extends AppCompatActivity implements
                 case "3":
                     radioGroup.check(R.id.user_sex_secret);
                     break;
+                default:
+                    break;
             }
         } else {
             radioGroup.check(R.id.user_sex_secret);
@@ -235,6 +237,8 @@ public class EditActivity extends AppCompatActivity implements
                         break;
                     case R.id.user_sex_secret:
                         SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "3");
+                        break;
+                    default:
                         break;
                 }
             }

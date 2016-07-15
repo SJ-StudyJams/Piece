@@ -51,6 +51,7 @@ import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.model.User;
+import com.sealiu.piece.service.PieceMainService;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.io.IOException;
@@ -550,4 +551,10 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        Intent intent = new Intent(this, PieceMainService.class);
+        stopService(intent);
+        super.onDestroy();
+    }
 }
