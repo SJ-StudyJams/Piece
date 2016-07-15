@@ -10,9 +10,6 @@ import android.widget.ImageView;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.LoginRegister.LoginActivity;
-import com.sealiu.piece.controller.Maps.MapsActivity;
-import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.utils.SPUtils;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -81,11 +78,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                                     public void onAnimationEnd(Animation animation) {
                                         pg4.setVisibility(View.VISIBLE);
                                         finish();
-                                        if (SPUtils.getBoolean(SplashScreenActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false)) {
-                                            startActivity(new Intent(SplashScreenActivity.this, MapsActivity.class));
-                                        } else {
-                                            startActivity(new Intent(SplashScreenActivity.this, LoginActivity.class));
-                                        }
+                                        startActivity(new Intent(SplashScreenActivity.this, LoginActivity.class));
                                     }
 
                                     @Override
