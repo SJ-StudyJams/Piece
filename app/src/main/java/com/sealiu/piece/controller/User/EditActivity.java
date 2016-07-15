@@ -11,8 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -31,12 +29,11 @@ import android.widget.RadioGroup;
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
+import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.URL;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
@@ -146,37 +143,8 @@ public class EditActivity extends AppCompatActivity implements
 
         //显示头像
         if (!headPicture.equals("")) {
-            final Handler handler = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    if (msg.what == 0x9527) {
-                        //显示下载之后的图片
-                        headPictureIV.setImageBitmap(bitmap);
-                    }
-                }
-            };
-
-            new Thread() {
-                @Override
-                public void run() {
-                    super.run();
-                    try {
-                        URL url = new URL(headPicture);
-                        //打开URL对应的资源输入流
-                        InputStream inputStream = url.openStream();
-                        //从InputStream流中解析出图片
-                        bitmap = BitmapFactory.decodeStream(inputStream);
-                        //发送消息，通知UI组件显示图片
-                        handler.sendEmptyMessage(0x9527);
-                        //关闭输入流
-                        inputStream.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }.start();
-
+            BitmapUtils bitmapUtils = new BitmapUtils();
+            bitmapUtils.disPlay(headPictureIV, headPicture);
         }
 
         //显示手机号
@@ -293,6 +261,8 @@ public class EditActivity extends AppCompatActivity implements
             case R.id.user_pwd:
                 new EditPwdFragment().show(getSupportFragmentManager(), "Edit_Password");
                 break;
+            default:
+                break;
         }
     }
 
@@ -406,7 +376,9 @@ public class EditActivity extends AppCompatActivity implements
 
     // 修改密码对话框（确定修改）
     @Override
-    public void onEditPwdDialogPositiveClick(DialogFragment dialog) {
+    public void onEditPwdDialogPositiveClick(DialogFragment dialog, String pwd) {
+        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
+
     }
 
     // 修改密码对话框（取消修改）

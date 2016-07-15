@@ -553,8 +553,8 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        Intent intent = new Intent(this, PieceMainService.class);
-        stopService(intent);
+        //Intent intent = new Intent(this, PieceMainService.class);
+        //stopService(intent);
         super.onDestroy();
     }
 }

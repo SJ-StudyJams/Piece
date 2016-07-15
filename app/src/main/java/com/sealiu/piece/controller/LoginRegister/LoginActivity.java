@@ -27,20 +27,22 @@ public class LoginActivity extends AppCompatActivity
 
     private static final String TAG = "LoginActivity";
     private FragmentManager fm = getSupportFragmentManager();
+    private ProgressDialog progress;
 
     private ScrollView scrollView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //启动MainService
-        Intent intent1 = new Intent(this, PieceMainService.class);
-        startService(intent1);
+        //Intent intent1 = new Intent(this, PieceMainService.class);
+        //startService(intent1);
         Log.i(TAG, "onCreate");
 
         scrollView = (ScrollView) findViewById(R.id.login_form);
 
         String username = SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, null);
         String pwd = SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
+        Log.i(TAG, "" + pwd);
 
         if (!isOutOfDate()
                 && !SPUtils.getString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "").equals("")
@@ -48,10 +50,10 @@ public class LoginActivity extends AppCompatActivity
                 && username != null
                 && pwd != null) {
             //距上次登录没有超过1个月，objectId不为空，且用户为登录状态，则自动登录
-            //final ProgressDialog progress = new ProgressDialog(LoginActivity.this);
-            //progress.setMessage("正在登录中...");
-            //progress.setCanceledOnTouchOutside(false);
-            //progress.show();
+            progress = new ProgressDialog(LoginActivity.this);
+            progress.setMessage("正在登录中...");
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
 
             User user = new User();
             String password = Md5Utils.encode(pwd);
@@ -83,7 +85,6 @@ public class LoginActivity extends AppCompatActivity
                     }
                 });
 
-            //progress.dismiss();
         } else {
             // 需要手动登录
             setContentView(R.layout.activity_login);
@@ -117,7 +118,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onSubmitLoginBtnClick() {
-
+        progress.dismiss();
         Log.i(TAG, "Start MapsActivity");
         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
         startActivity(intent);

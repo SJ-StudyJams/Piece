@@ -37,14 +37,10 @@ public class EditPwdFragment extends DialogFragment {
     private EditText old_pwd_ET, new_pwd_ET, repeat_pwd_ET;
     private String old_pwd, new_pwd, repeat_pwd;
     private String encryptOldPassword, encryptNewPassword;
-    private Button change_Password;
     private static final String TAG = "EditPwdFragment";
-    private UserInfoSync userInfoSync = new UserInfoSync();
-    private User user2;
-    private BmobUser user = new BmobUser();
 
     public interface EditPwdDialogListener {
-        void onEditPwdDialogPositiveClick(DialogFragment dialog);
+        void onEditPwdDialogPositiveClick(DialogFragment dialog, String pwd);
 
         void onEditPwdDialogNegativeClick(DialogFragment dialog);
     }
@@ -109,7 +105,7 @@ public class EditPwdFragment extends DialogFragment {
                 repeat_pwd = repeat_pwd_ET.getText().toString();
                 Log.i(TAG, "repeat new password:" + repeat_pwd);
 
-                final String password = user2.getPwd();
+                final String password = SPUtils.getString(getContext(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
 
                 // 原密码错误
                 if (!password.equals(old_pwd)) {
@@ -126,15 +122,13 @@ public class EditPwdFragment extends DialogFragment {
                 // 修改密码
                 try {
                     encryptOldPassword = Md5Utils.encode(old_pwd);
+                    Log.i(TAG, "" + encryptOldPassword);
                     encryptNewPassword = Md5Utils.encode(new_pwd);
                     BmobUser.updateCurrentUserPassword(encryptOldPassword, encryptNewPassword, new UpdateListener() {
                         @Override
                         public void done(BmobException e) {
                             if (e == null) {
-                                if (new_pwd != null) {
-                                    SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, new_pwd);
-                                    Log.i(TAG, "password update");
-                                }
+                                listener.onEditPwdDialogPositiveClick(EditPwdFragment.this, new_pwd);
                             } else {
                                 Log.e(TAG, e.toString());
                                 String content = Constants.createErrorInfo(e.getErrorCode()) + " 错误码：" + e.getErrorCode();
@@ -146,7 +140,6 @@ public class EditPwdFragment extends DialogFragment {
                     e.printStackTrace();
                 }
                 Snackbar.make(EditActivity.layoutScroll, "密码修改成功，下次登录请使用新密码", Snackbar.LENGTH_LONG).show();
-                listener.onEditPwdDialogPositiveClick(EditPwdFragment.this);
             }
         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override

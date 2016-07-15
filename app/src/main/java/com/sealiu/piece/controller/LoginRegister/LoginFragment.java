@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,6 +88,7 @@ public class LoginFragment extends Fragment {
 
                 user.setUsername(username);
                 encryptPassword = Md5Utils.encode(pwd);
+                Log.i(TAG, "" + encryptPassword);
                 user.setPassword(encryptPassword);
 
                 // ProgressDialog
@@ -112,6 +114,7 @@ public class LoginFragment extends Fragment {
                             SPUtils.clear(getActivity(), Constants.SP_FILE_NAME);
                             String content = Constants.createErrorInfo(e.getErrorCode()) + " 错误码：" + e.getErrorCode();
                             Snackbar.make(view, content, Snackbar.LENGTH_LONG).show();
+                            progress.dismiss();
                         }
                     }
                 });
