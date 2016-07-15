@@ -43,6 +43,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.LoginRegister.LoginActivity;
+import com.sealiu.piece.controller.Piece.PiecesActivity;
 import com.sealiu.piece.controller.Piece.WritePieceActivity;
 import com.sealiu.piece.controller.Settings.MyPreferenceActivity;
 import com.sealiu.piece.controller.User.UserActivity;
@@ -75,12 +76,18 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int PERMISSIONS_REQUEST_FINE_COARSE_LOCATION = 2;
     private static final int WRITE_PIECE_REQUEST_CODE = 3;
     private static final int ERROR = 4;
+
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
+
     TextView displayCurrentPosition;
     TextView pieceNumberNear;
+    ImageButton findMyLocationBtn;
     ImageButton hideShowMoreInfoBtn;
     LinearLayout moreInfoLayout;
+    Button seeAllBtn;
+    FloatingActionButton writePieceBtn;
+
     private RelativeLayout snackBarHolderView;
     private GoogleMap mMap;
     private Double mCurrentLatitude, mCurrentLongitude;
@@ -100,10 +107,6 @@ public class MapsActivity extends AppCompatActivity implements
             e.printStackTrace();
         }
 
-        snackBarHolderView = (RelativeLayout) findViewById(R.id.content_holder);
-        displayCurrentPosition = (TextView) findViewById(R.id.position_info);
-        pieceNumberNear = (TextView) findViewById(R.id.piece_number_nearby);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -113,16 +116,21 @@ public class MapsActivity extends AppCompatActivity implements
                 .addApi(LocationServices.API)
                 .build();
 
-        final FloatingActionButton writePieceBtn = (FloatingActionButton) findViewById(R.id.write_piece_fab);
-        ImageButton findMyLocationBtn = (ImageButton) findViewById(R.id.find_my_location);
-        Button seeAllBtn = (Button) findViewById(R.id.see_all_btn);
-        hideShowMoreInfoBtn = (ImageButton) findViewById(R.id.hide_show);
+        snackBarHolderView = (RelativeLayout) findViewById(R.id.content_holder);
+        displayCurrentPosition = (TextView) findViewById(R.id.position_info);
+        pieceNumberNear = (TextView) findViewById(R.id.piece_number_nearby);
         moreInfoLayout = (LinearLayout) findViewById(R.id.more_info_panel);
+
+        writePieceBtn = (FloatingActionButton) findViewById(R.id.write_piece_fab);
+        findMyLocationBtn = (ImageButton) findViewById(R.id.find_my_location);
+        hideShowMoreInfoBtn = (ImageButton) findViewById(R.id.hide_show);
+        seeAllBtn = (Button) findViewById(R.id.see_all_btn);
+
 
         writePieceBtn.setOnClickListener(this);
         findMyLocationBtn.setOnClickListener(this);
-        seeAllBtn.setOnClickListener(this);
         hideShowMoreInfoBtn.setOnClickListener(this);
+        seeAllBtn.setOnClickListener(this);
 
     }
 
@@ -401,7 +409,14 @@ public class MapsActivity extends AppCompatActivity implements
                 }
                 break;
             case R.id.see_all_btn:
-
+                if (mCurrentLatitude != null) {
+                    Intent intent = new Intent(MapsActivity.this, PiecesActivity.class);
+                    intent.putExtra("lat", mCurrentLatitude);
+                    intent.putExtra("lng", mCurrentLongitude);
+                    startActivity(intent);
+                } else {
+                    Snackbar.make(snackBarHolderView, "无法获取你的位置", Snackbar.LENGTH_LONG).show();
+                }
                 break;
             default:
         }

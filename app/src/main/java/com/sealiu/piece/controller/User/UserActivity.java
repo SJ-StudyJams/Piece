@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -110,7 +109,6 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         query.findObjects(new FindListener<Piece>() {
             @Override
             public void done(List<Piece> list, BmobException e) {
-                Log.i(TAG, "共有Piece：" + list.size());
                 mAdapter = new PieceAdapter(list);
                 mRecyclerView.setAdapter(mAdapter);
             }//done

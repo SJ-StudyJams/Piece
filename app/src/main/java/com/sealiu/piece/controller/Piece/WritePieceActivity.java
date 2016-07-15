@@ -56,6 +56,7 @@ public class WritePieceActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle(R.string.write_piece);
 
         myLocationTV = (TextView) findViewById(R.id.my_location_name);
         nickNameTV = (TextView) findViewById(R.id.user_nickname);

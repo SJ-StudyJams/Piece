@@ -213,7 +213,8 @@
     <string name="fetching_location">定位中</string>
     <string name="write_piece">写纸条</string>
     <string name="send_piece">发送</string>
-    <string name="write_something">写点什么...</string>
+    <string name="write_something">写点什么吧</string>
+    <string name="pieces_nearby">附近的Pieces</string>
 
     <string-array name="visibility_arrays">
         <item>5km</item>
