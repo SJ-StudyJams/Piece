@@ -31,6 +31,7 @@ public class LoginFragment extends Fragment {
     private EditText et_account, et_pwd;
     private User user = new User();
     private String username, pwd, encryptPassword;
+    private ProgressDialog progress;
     private static final String TAG = "LoginFragment";
 
 
@@ -92,7 +93,7 @@ public class LoginFragment extends Fragment {
                 user.setPassword(encryptPassword);
 
                 // ProgressDialog
-                final ProgressDialog progress = new ProgressDialog(getActivity());
+                progress = new ProgressDialog(getActivity());
                 progress.setMessage("正在登录中...");
                 progress.setCanceledOnTouchOutside(false);
                 progress.show();
@@ -114,6 +115,7 @@ public class LoginFragment extends Fragment {
                             SPUtils.clear(getActivity(), Constants.SP_FILE_NAME);
                             String content = Constants.createErrorInfo(e.getErrorCode()) + " 错误码：" + e.getErrorCode();
                             Snackbar.make(view, content, Snackbar.LENGTH_LONG).show();
+                            Log.e(TAG, e.toString());
                             progress.dismiss();
                         }
                     }

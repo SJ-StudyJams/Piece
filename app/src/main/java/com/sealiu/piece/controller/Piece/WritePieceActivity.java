@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.Piece;
+import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.io.InputStream;
@@ -137,37 +138,10 @@ public class WritePieceActivity extends AppCompatActivity {
             nickNameTV.setText(nickName);
         }
 
-        final Handler handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if (msg.what == 0x9527) {
-                    //显示下载之后的图片
-                    headPictureIV.setImageBitmap(bitmap);
-                }
-            }
-        };
-
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                try {
-                    URL url = new URL(headPicture);
-                    //打开URL对应的资源输入流
-                    InputStream inputStream = url.openStream();
-                    //从InputStream流中解析出图片
-                    bitmap = BitmapFactory.decodeStream(inputStream);
-                    //发送消息，通知UI组件显示图片
-                    handler.sendEmptyMessage(0x9527);
-                    //关闭输入流
-                    inputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }.start();
-
+        if (headPicture != null) {
+            BitmapUtils bitmapUtils = new BitmapUtils();
+            bitmapUtils.disPlay(headPictureIV, headPicture);
+        }
     }
 
 }

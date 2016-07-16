@@ -131,7 +131,7 @@ public class RegisterActivity extends AppCompatActivity
                     SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
                     progress.dismiss();
 
-                    Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
+                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
