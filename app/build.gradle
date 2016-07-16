@@ -36,6 +36,7 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'com.google.android.gms:play-services-appindexing:9.2.0'
     compile 'com.android.support:multidex:1.0.1'
+    compile 'com.google.maps.android:android-maps-utils:0.4.3'
 
     //以下SDK开发者请根据需要自行选择
     //bmob-sdk：Bmob的android sdk包，包含了Bmob的数据存储、文件等服务，以下是最新的bmob-sdk:

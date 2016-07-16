@@ -39,8 +39,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.ClusterManager;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.LoginRegister.LoginActivity;
 import com.sealiu.piece.controller.Piece.PiecesActivity;
@@ -51,7 +50,6 @@ import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.model.User;
-import com.sealiu.piece.service.PieceMainService;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.io.IOException;
@@ -64,7 +62,6 @@ import cn.bmob.v3.listener.FindListener;
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import static com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
@@ -93,6 +90,8 @@ public class MapsActivity extends AppCompatActivity implements
     private GoogleMap mMap;
     private Double mCurrentLatitude, mCurrentLongitude;
     private String mCurrentLocationName;
+
+    private ClusterManager<ClusterMarkerLocation> clusterManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -316,7 +315,7 @@ public class MapsActivity extends AppCompatActivity implements
 
                 //初始化标记
                 initMarker();
-                mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
+                //mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 
                 try {
                     mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
@@ -450,6 +449,10 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     private void initMarker() {
+
+        clusterManager = new ClusterManager<ClusterMarkerLocation>(this, mMap);
+        mMap.setOnCameraChangeListener(clusterManager);
+
         //因为纸条的可见范围最大为100km，所以默认为100km
         double[] llRange = Common.GetAround(mCurrentLatitude, mCurrentLongitude, 100000);
 
@@ -493,16 +496,11 @@ public class MapsActivity extends AppCompatActivity implements
                             @Override
                             public void done(List<User> list, BmobException e) {
                                 if (e == null) {
-                                    MarkerOptions options = new MarkerOptions()
-                                            .position(new LatLng(p.getLatitude(), p.getLongitude()))
-                                            .title(list.get(0).getNickname())
-                                            .snippet(p.getContent() + "::" + p.getCreatedAt())
-                                            .flat(true);
-                                    mMap.addMarker(options);
+                                    LatLng ll = new LatLng(p.getLatitude(), p.getLongitude());
+                                    clusterManager.addItem(new ClusterMarkerLocation(ll));
                                 }
                             }
                         });
-
 
                     }
                 }//for
@@ -512,44 +510,44 @@ public class MapsActivity extends AppCompatActivity implements
         });
     }
 
-    class CustomInfoWindowAdapter implements InfoWindowAdapter {
-
-        private View mContents;
-
-        CustomInfoWindowAdapter() {
-            mContents = getLayoutInflater().inflate(R.layout.info_window_w, null);
-        }
-
-        @Override
-        public View getInfoWindow(Marker marker) {
-            return null;
-        }
-
-        @Override
-        public View getInfoContents(Marker marker) {
-            String title = marker.getTitle();
-            String snippet = marker.getSnippet();
-
-            String[] contentAndDate = snippet.split("::");
-
-            TextView nickname = (TextView) mContents.findViewById(R.id.info_window_nickname);
-            TextView content = (TextView) mContents.findViewById(R.id.info_window_content);
-            TextView time = (TextView) mContents.findViewById(R.id.info_window_time);
-
-            if (title != null)
-                nickname.setText(title);
-            else
-                nickname.setText("");
-
-            if (contentAndDate.length == 2) {
-                content.setText(contentAndDate[0]);
-                time.setText(contentAndDate[1]);
-            } else {
-                content.setText("");
-            }
-            return mContents;
-        }
-    }
+//    class CustomInfoWindowAdapter implements InfoWindowAdapter {
+//
+//        private View mContents;
+//
+//        CustomInfoWindowAdapter() {
+//            mContents = getLayoutInflater().inflate(R.layout.info_window_w, null);
+//        }
+//
+//        @Override
+//        public View getInfoWindow(Marker marker) {
+//            return null;
+//        }
+//
+//        @Override
+//        public View getInfoContents(Marker marker) {
+//            String title = marker.getTitle();
+//            String snippet = marker.getSnippet();
+//
+//            String[] contentAndDate = snippet.split("::");
+//
+//            TextView nickname = (TextView) mContents.findViewById(R.id.info_window_nickname);
+//            TextView content = (TextView) mContents.findViewById(R.id.info_window_content);
+//            TextView time = (TextView) mContents.findViewById(R.id.info_window_time);
+//
+//            if (title != null)
+//                nickname.setText(title);
+//            else
+//                nickname.setText("");
+//
+//            if (contentAndDate.length == 2) {
+//                content.setText(contentAndDate[0]);
+//                time.setText(contentAndDate[1]);
+//            } else {
+//                content.setText("");
+//            }
+//            return mContents;
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
