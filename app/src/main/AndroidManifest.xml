@@ -90,14 +90,13 @@
         <activity
             android:name=".controller.Settings.LicensesActivity"
             android:label="@string/pref_licenses_title" />
-
         <activity
             android:name=".controller.Piece.WritePieceActivity"
             android:label="@string/write_piece" />
-
         <activity android:name=".controller.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -105,9 +104,9 @@
             android:name=".controller.Piece.PiecesActivity"
             android:label="@string/pieces_nearby" />
 
-        <service android:name=".service.PieceMainService" >
+        <service android:name=".service.PieceMainService"></service>
 
-        </service>
+        <activity android:name=".controller.LoginRegister.ResetPwdActivity"></activity>
     </application>
 
 </manifest>

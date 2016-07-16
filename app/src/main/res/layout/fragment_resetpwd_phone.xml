@@ -15,21 +15,21 @@
             android:layout_weight="1">
 
             <EditText
-                android:id="@+id/reg_phone_or_email"
+                android:id="@+id/resetPwd_Phone_ET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_phone_or_email"
-                android:inputType="textEmailAddress"
+                android:hint="@string/register_phone"
+                android:inputType="phone"
                 android:maxLines="1"
                 android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
 
         <Button
-            android:id="@+id/fetch_code"
+            android:id="@+id/send_v"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/verified_code" />
+            android:text="@string/send_sms_code" />
     </LinearLayout>
 
 
@@ -38,10 +38,10 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/validating_code"
+            android:id="@+id/resetPwd_sms_ET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/validating_code"
+            android:hint="@string/sms_code"
             android:inputType="number"
             android:maxLines="1"
             android:singleLine="true" />
@@ -50,12 +50,10 @@
 
 
     <Button
-        android:id="@+id/reg_next_button"
-        style="?android:borderlessButtonStyle"
+        android:id="@+id/resetPwd_phone_Btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="16dp"
-        android:text="@string/reg_next_btn"
-        android:textColor="@color/colorAccent" />
+        android:text="@string/reset_pwd"/>
 </LinearLayout>

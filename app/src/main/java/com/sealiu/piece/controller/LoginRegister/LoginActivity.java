@@ -149,5 +149,9 @@ public class LoginActivity extends AppCompatActivity
                 .commit();
     }
 
+    @Override
+    public void onResetPasswordBtnClick() {
+        startActivity(new Intent(LoginActivity.this, ResetPwdActivity.class));
+    }
 }
 

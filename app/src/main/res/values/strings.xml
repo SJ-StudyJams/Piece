@@ -215,6 +215,13 @@
     <string name="send_piece">发送</string>
     <string name="write_something">写点什么吧</string>
     <string name="pieces_nearby">附近的Pieces</string>
+    <string name="send_reset_mail">发送重置邮件</string>
+    <string name="register_email">注册邮箱</string>
+    <string name="register_phone">注册手机号</string>
+    <string name="sms_code">验证码</string>
+    <string name="send_sms_code">发送验证码</string>
+    <string name="reset_pwd">重置密码</string>
+    <string name="verified_code">获取验证码</string>
 
     <string-array name="visibility_arrays">
         <item>5km</item>
