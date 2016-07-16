@@ -15,7 +15,6 @@ import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Maps.MapsActivity;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.User;
-import com.sealiu.piece.service.PieceMainService;
 import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
 
@@ -66,6 +65,7 @@ public class LoginActivity extends AppCompatActivity
                             SPUtils.putString(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
                             SPUtils.putBoolean(LoginActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
                             Log.i(TAG, "Login success");
+                            progress.dismiss();
                             onSubmitLoginBtnClick();
                         } else {
                             SPUtils.clear(LoginActivity.this, Constants.SP_FILE_NAME);
@@ -118,7 +118,6 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onSubmitLoginBtnClick() {
-        progress.dismiss();
         Log.i(TAG, "Start MapsActivity");
         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
         startActivity(intent);
