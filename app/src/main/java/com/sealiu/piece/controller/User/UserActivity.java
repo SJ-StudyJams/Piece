@@ -17,7 +17,6 @@ import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Piece.PieceAdapter;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.Piece;
-import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.util.List;
@@ -100,19 +99,20 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
             getSupportActionBar().setTitle(nickName);
         }
 
-        String userObjectId = User.getCurrentUser().getObjectId();
-
-        BmobQuery<Piece> query = new BmobQuery<>();
-        query.addWhereEqualTo("authorID", userObjectId);
-        query.setLimit(1000);
-        query.order("-createdAt,-updatedAt");
-        query.findObjects(new FindListener<Piece>() {
-            @Override
-            public void done(List<Piece> list, BmobException e) {
-                mAdapter = new PieceAdapter(list);
-                mRecyclerView.setAdapter(mAdapter);
-            }//done
-        });
+        String userObjectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
+        if (!userObjectId.equals("")) {
+            BmobQuery<Piece> query = new BmobQuery<>();
+            query.addWhereEqualTo("authorID", userObjectId);
+            query.setLimit(1000);
+            query.order("-createdAt,-updatedAt");
+            query.findObjects(new FindListener<Piece>() {
+                @Override
+                public void done(List<Piece> list, BmobException e) {
+                    mAdapter = new PieceAdapter(list);
+                    mRecyclerView.setAdapter(mAdapter);
+                }//done
+            });
+        }
     }
 
     @Override
