@@ -16,7 +16,9 @@ import android.widget.ScrollView;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Maps.MapsActivity;
+import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
@@ -36,11 +38,15 @@ public class RegisterActivity extends AppCompatActivity
 
     private final User user = new User();
 
+    private LoginUser loginUser;
+
     private ScrollView scrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //新建LoginUser对象
+        loginUser = new LoginUser();
 
         setContentView(R.layout.activity_register);
         scrollView = (ScrollView) findViewById(R.id.register_form);
@@ -124,11 +130,17 @@ public class RegisterActivity extends AppCompatActivity
             public void done(User u, BmobException e) {
                 if (e == null) {
                     //记录本次登录时间，设置登录标志位
-                    SPUtils.putLong(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, System.currentTimeMillis());
-                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
-                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
+                    //SPUtils.putLong(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, System.currentTimeMillis());
+                    //SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
+                    //SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
+                    //SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
+                    //SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
+                    loginUser.setLoginTime(System.currentTimeMillis());
+                    loginUser.setAutoLogin(true);
+                    loginUser.setObjectId(u.getObjectId());
+                    loginUser.setUsername(u.getUsername());
+                    loginUser.setPassword(pwd);
+
                     progress.dismiss();
 
                     Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
@@ -144,5 +156,11 @@ public class RegisterActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        UserInfoSync.saveLoginInfo(RegisterActivity.this, loginUser);
+        super.onDestroy();
     }
 }

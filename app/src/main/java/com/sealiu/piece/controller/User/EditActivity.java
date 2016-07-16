@@ -28,6 +28,7 @@ import android.widget.RadioGroup;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 import com.sealiu.piece.utils.SPUtils;
@@ -67,15 +68,18 @@ public class EditActivity extends AppCompatActivity implements
     private Uri previewUri;
     private String realPath;
     private Bitmap bitmap; // 用于保存从后台下载头像
+    private LoginUser loginUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+        loginUser = UserInfoSync.getLoginInfo(EditActivity.this);
 
         layoutScroll = (NestedScrollView) findViewById(R.id.scroll_view);
 
-        objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
+        //objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
+        objectId = loginUser.getObjectId();
 
         if (objectId.equals("")) {
             //获取当前用户
@@ -102,13 +106,20 @@ public class EditActivity extends AppCompatActivity implements
      * 显示个人资料内容，并设置监听函数修改资料
      */
     private void displayContent() {
-        String nickname = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, "");
-        String sex = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_SEX, "");
-        String bio = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_BIO, "");
-        String birth = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, "");
-        String phone = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, "");
-        String email = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, "");
-        final String headPicture = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, "");
+        //String nickname = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, "");
+        String nickname = loginUser.getNickname();
+        //String sex = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_SEX, "");
+        String sex = loginUser.getSex();
+        //String bio = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_BIO, "");
+        String bio = loginUser.getBio();
+        //String birth = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, "");
+        String birth = loginUser.getBirth();
+        //String phone = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, "");
+        String phone = loginUser.getMobilePhone();
+        //String email = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, "");
+        String email = loginUser.getEmail();
+        //final String headPicture = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, "");
+        String headPicture = loginUser.getAvatar();
 
         usernameET = (EditText) findViewById(R.id.user_name);
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.user_sex);
@@ -142,9 +153,13 @@ public class EditActivity extends AppCompatActivity implements
         }
 
         //显示头像
-        if (!headPicture.equals("")) {
-            BitmapUtils bitmapUtils = new BitmapUtils();
-            bitmapUtils.disPlay(headPictureIV, headPicture);
+        try {
+            if (headPicture != null) {
+                BitmapUtils bitmapUtils = new BitmapUtils();
+                bitmapUtils.disPlay(headPictureIV, headPicture);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         //显示手机号
@@ -198,13 +213,16 @@ public class EditActivity extends AppCompatActivity implements
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.user_sex_male:
-                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "1");
+                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "1");
+                        loginUser.setSex("1");
                         break;
                     case R.id.user_sex_female:
-                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "2");
+                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "2");
+                        loginUser.setSex("2");
                         break;
                     case R.id.user_sex_secret:
-                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "3");
+                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "3");
+                        loginUser.setSex("3");
                         break;
                     default:
                         break;
@@ -218,8 +236,10 @@ public class EditActivity extends AppCompatActivity implements
      * 如果修改了手机/邮箱，那么是否验证就会改变
      */
     private void updateVerifiedStatus() {
-        boolean isValidPhone = SPUtils.getBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false);
-        boolean isValidEmail = SPUtils.getBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, false);
+        //boolean isValidPhone = SPUtils.getBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false);
+        boolean isValidPhone = loginUser.isMobilePhoneNumberVerified();
+        //boolean isValidEmail = SPUtils.getBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, false);
+        boolean isValidEmail = loginUser.isEmailVerified();
 
         ImageView phoneIsValidIV = (ImageView) findViewById(R.id.phone_is_valid);
         ImageView emailIsValidIV = (ImageView) findViewById(R.id.email_is_valid);
@@ -269,14 +289,16 @@ public class EditActivity extends AppCompatActivity implements
     // 修改昵称对话框（确定修改）
     @Override
     public void onEditNameDialogPositiveClick(DialogFragment dialog, String newNickname, final String oldNickname) {
-        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, newNickname);
+        //SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, newNickname);
+        loginUser.setNickname(newNickname);
         usernameET.setText(newNickname);
 
         Snackbar.make(layoutScroll, "昵称修改成功", Snackbar.LENGTH_LONG)
                 .setAction("撤销", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, oldNickname);
+                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, oldNickname);
+                        loginUser.setNickname(oldNickname);
                         if (oldNickname.equals(""))
                             usernameET.setText("点击设置");
                         else
@@ -294,14 +316,16 @@ public class EditActivity extends AppCompatActivity implements
     // 修改个人简介对话框（确定修改）
     @Override
     public void onEditBioDialogPositiveClick(DialogFragment dialog, String newBio, final String oldBio) {
-        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_BIO, newBio);
+        //SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_BIO, newBio);
+        loginUser.setBio(newBio);
         bioET.setText(newBio);
 
         Snackbar.make(layoutScroll, "个人简介修改成功", Snackbar.LENGTH_LONG)
                 .setAction("撤销", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIO, oldBio);
+                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIO, oldBio);
+                        loginUser.setBio(oldBio);
                         if (oldBio.equals(""))
                             bioET.setText("点击设置");
                         else
@@ -319,8 +343,10 @@ public class EditActivity extends AppCompatActivity implements
     // 修改电话对话框（确定修改）
     @Override
     public void onEditPhoneDialogPositiveClick(DialogFragment dialog, String phone) {
-        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, phone);
-        SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false);
+        //SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, phone);
+        //SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false);
+        loginUser.setMobilePhone(phone);
+        loginUser.setMobilePhoneNumberVerified(false);
         //改变手机号的验证状态
         updateVerifiedStatus();
         Snackbar.make(layoutScroll, "手机号修改成功", Snackbar.LENGTH_LONG).show();
@@ -336,8 +362,10 @@ public class EditActivity extends AppCompatActivity implements
     // 修改邮箱对话框（确定修改）
     @Override
     public void onEditEmailDialogPositiveClick(DialogFragment dialog, String email) {
-        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, email);
-        SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, false);
+        //SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, email);
+        //SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, false);
+        loginUser.setEmail(email);
+        loginUser.setEmailVerified(false);
         //改变邮箱的验证状态
         updateVerifiedStatus();
         emailET.setText(email);
@@ -352,14 +380,16 @@ public class EditActivity extends AppCompatActivity implements
     // 修改生日对话框（确定修改）
     @Override
     public void onEditBirthDialogPositiveClick(DialogFragment dialog, String birthAfter, final String birthBefore) {
-        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birthAfter);
+        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birthAfter);
+        loginUser.setBirth(birthAfter);
         birthET.setText(birthAfter);
 
         Snackbar.make(layoutScroll, "生日修改成功", Snackbar.LENGTH_LONG)
                 .setAction("撤销", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birthBefore);
+                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birthBefore);
+                        loginUser.setBirth(birthBefore);
                         if (birthBefore.equals(""))
                             birthET.setText("点击设置");
                         else
@@ -377,7 +407,8 @@ public class EditActivity extends AppCompatActivity implements
     // 修改密码对话框（确定修改）
     @Override
     public void onEditPwdDialogPositiveClick(DialogFragment dialog, String pwd) {
-        SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
+        //SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
+        loginUser.setPassword(pwd);
 
     }
 
@@ -414,9 +445,10 @@ public class EditActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        UserInfoSync userInfoSync = new UserInfoSync();
+
         try {
-            userInfoSync.upload(this, objectId, Constants.SP_FILE_NAME);
+            UserInfoSync.saveLoginInfo(EditActivity.this, loginUser);
+            UserInfoSync.upload(this, objectId, Constants.SP_FILE_NAME);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -528,7 +560,8 @@ public class EditActivity extends AppCompatActivity implements
             @Override
             public void done(BmobException e) {
                 String headPictureUrl = bmobFile.getFileUrl();
-                SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, headPictureUrl);
+                //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, headPictureUrl);
+                loginUser.setAvatar(headPictureUrl);
                 progressDialog.dismiss();
                 Snackbar.make(layoutScroll, "上传成功 " + headPictureUrl, Snackbar.LENGTH_LONG).show();
             }

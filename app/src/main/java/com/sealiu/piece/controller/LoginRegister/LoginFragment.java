@@ -14,7 +14,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
@@ -30,6 +32,7 @@ public class LoginFragment extends Fragment {
 
     private EditText et_account, et_pwd;
     private User user = new User();
+    private LoginUser loginUser;
     private String username, pwd, encryptPassword;
     private ProgressDialog progress;
     private static final String TAG = "LoginFragment";
@@ -47,7 +50,7 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
-
+        loginUser = new LoginUser();
         et_account = (EditText) view.findViewById(R.id.login_phone_or_email);
         et_pwd = (EditText) view.findViewById(R.id.login_password);
 
@@ -103,11 +106,17 @@ public class LoginFragment extends Fragment {
                     public void done(User u, BmobException e) {
                         if (e == null) {
                             //记录本次登录时间，设置登录标志位
-                            SPUtils.putLong(getActivity(), Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, System.currentTimeMillis());
-                            SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
-                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
-                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
-                            SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
+                            //SPUtils.putLong(getActivity(), Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, System.currentTimeMillis());
+                            //SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
+                            //SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
+                            //SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
+                            //SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
+                            loginUser.setLoginTime(System.currentTimeMillis());
+                            loginUser.setAutoLogin(true);
+                            loginUser.setObjectId(u.getObjectId());
+                            loginUser.setUsername(u.getUsername());
+                            loginUser.setPassword(pwd);
+
                             progress.dismiss();
                             Listener listener = (Listener) getActivity();
                             listener.onSubmitLoginBtnClick();
@@ -124,5 +133,11 @@ public class LoginFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        UserInfoSync.saveLoginInfo(getContext(), loginUser);
+        super.onDestroyView();
     }
 }
