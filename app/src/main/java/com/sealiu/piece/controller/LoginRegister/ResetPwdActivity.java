@@ -166,9 +166,10 @@ public class ResetPwdActivity extends AppCompatActivity implements View.OnClickL
         animator.setDuration(500);
         animator.start(); }
 
-    /** * 下划线滑动到新的选项卡中
+    /** 下划线滑动到新的选项卡中
      * @param toPosition
      */
+
     private void movePositionX(int toPosition) {
         // TODO Auto-generated method stub
         movePositionX(toPosition, 0);
