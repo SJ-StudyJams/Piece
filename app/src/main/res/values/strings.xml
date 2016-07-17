@@ -222,6 +222,7 @@
     <string name="send_sms_code">发送验证码</string>
     <string name="reset_pwd">重置密码</string>
     <string name="verified_code">获取验证码</string>
+    <string name="layout_chooser">布局选择</string>
 
     <string-array name="visibility_arrays">
         <item>5km</item>

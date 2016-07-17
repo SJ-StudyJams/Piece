@@ -1,11 +1,16 @@
 package com.sealiu.piece.controller.Piece;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Maps.Common;
@@ -21,9 +26,17 @@ import cn.bmob.v3.listener.FindListener;
 public class PiecesActivity extends AppCompatActivity {
 
     private static final String TAG = "PiecesActivity";
+    private static final String LAYOUT_MANAGER_FLAG = "LayoutManager";
     double mLat;
     double mLng;
     List<Piece> mDataset;
+    Menu menu;
+    int[] drawableArray = new int[]{
+            R.drawable.ic_view_stream_white_24dp,
+            R.drawable.ic_view_module_white_24dp,
+            R.drawable.ic_view_quilt_white_24dp
+    };
+    int index;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -40,11 +53,15 @@ public class PiecesActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         mRecyclerView = (RecyclerView) findViewById(R.id.pieces_recycler_view);
         mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        index = savedInstanceState != null ? savedInstanceState.getInt(LAYOUT_MANAGER_FLAG) : 0;
 
         mDataset = new ArrayList<>();
         setAdapter();
@@ -91,5 +108,53 @@ public class PiecesActivity extends AppCompatActivity {
                 mRecyclerView.setAdapter(mAdapter);
             }//done
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_pieces, menu);
+        this.menu = menu;
+        setLayoutManager();
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_layout:
+                index = (index + 1) % 3;
+                setLayoutManager();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(LAYOUT_MANAGER_FLAG, index);
+    }
+
+    private void setLayoutManager() {
+        menu.findItem(R.id.menu_layout).setIcon(drawableArray[index]);
+        switch (index) {
+            case 0:
+                mLayoutManager = new LinearLayoutManager(this);
+                mRecyclerView.setLayoutManager(mLayoutManager);
+                break;
+            case 1:
+                mLayoutManager = new GridLayoutManager(this, 2);
+                mRecyclerView.setLayoutManager(mLayoutManager);
+                break;
+            case 2:
+                int orientation = this.getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    mLayoutManager = new StaggeredGridLayoutManager(3, 1);
+                } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    mLayoutManager = new StaggeredGridLayoutManager(2, 1);
+                }
+                mRecyclerView.setLayoutManager(mLayoutManager);
+                break;
+        }
     }
 }

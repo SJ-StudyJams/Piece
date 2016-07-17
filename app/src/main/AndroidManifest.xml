@@ -102,11 +102,15 @@
         </activity>
         <activity
             android:name=".controller.Piece.PiecesActivity"
-            android:label="@string/pieces_nearby" />
+            android:label="@string/pieces_nearby">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.Maps.MapsActivity" />
+        </activity>
 
-        <service android:name=".service.PieceMainService"></service>
+        <service android:name=".service.PieceMainService" />
 
-        <activity android:name=".controller.LoginRegister.ResetPwdActivity"></activity>
+        <activity android:name=".controller.LoginRegister.ResetPwdActivity" />
     </application>
 
 </manifest>
