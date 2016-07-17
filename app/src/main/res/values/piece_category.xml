@@ -1,9 +1,6 @@
 <resources>
     <string-array name="pieceCategory">
-        <item>小纸条</item>
-        <item>交友</item>
-        <item>活动</item>
-        <item>故事</item>
+        <item>纸条</item>
         <item>新闻</item>
         <item>天气</item>
         <!--<item>以后还会有‘交通信息’</item>-->
@@ -15,9 +12,6 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
     </string-array>
 
 </resources>
