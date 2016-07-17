@@ -223,6 +223,9 @@
     <string name="reset_pwd">重置密码</string>
     <string name="verified_code">获取验证码</string>
     <string name="layout_chooser">布局选择</string>
+    <string name="share_url">分享链接</string>
+    <string name="positive_btn">确定</string>
+    <string name="negative_btn">取消</string>
 
     <string-array name="visibility_arrays">
         <item>5km</item>

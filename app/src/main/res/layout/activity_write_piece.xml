@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_holder"
@@ -7,145 +7,244 @@
     android:layout_height="match_parent"
     tools:context="com.sealiu.piece.controller.Piece.WritePieceActivity">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:elevation="0dp">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>
-
     <RelativeLayout
-        android:id="@+id/user_info_panel"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/view"
-        android:background="@android:color/white"
-        android:padding="16dp">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/user_head_picture"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/face_background"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_face_black_24dp" />
 
-        <TextView
-            android:id="@+id/user_nickname"
-            android:layout_width="wrap_content"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/view"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="16dp"
-            android:layout_toEndOf="@+id/user_head_picture"
-            android:layout_toRightOf="@+id/user_head_picture"
-            android:text="nickname"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:elevation="0dp">
 
-        <Spinner
-            android:id="@+id/visibility"
-            android:layout_width="100dp"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/write_piece_card"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/user_head_picture"
-            android:layout_below="@+id/user_nickname"
-            android:layout_marginLeft="16dp"
-            android:layout_toEndOf="@+id/user_head_picture"
-            android:layout_toRightOf="@+id/user_head_picture"
-            android:entries="@array/visibility_arrays" />
+            android:layout_below="@+id/view"
+            android:layout_margin="16dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:id="@+id/user_info_panel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:id="@+id/user_head_picture"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/face_background"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_face_black_24dp" />
+
+                    <TextView
+                        android:id="@+id/user_nickname"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="16dp"
+                        android:layout_toEndOf="@+id/user_head_picture"
+                        android:layout_toRightOf="@+id/user_head_picture"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/visibility"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/user_head_picture"
+                        android:layout_below="@+id/user_nickname"
+                        android:layout_marginLeft="16dp"
+                        android:layout_toEndOf="@+id/user_head_picture"
+                        android:layout_toRightOf="@+id/user_head_picture"
+                        android:entries="@array/visibility_arrays" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/user_info_panel"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/piece_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:gravity="left"
+                        android:hint="@string/write_something"
+                        android:maxLines="10"
+                        android:minLines="5"
+                        android:padding="8dp"
+                        android:scrollbars="vertical"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/ic_person_pin_circle_black_24dp" />
+
+                        <TextView
+                            android:id="@+id/my_location_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:paddingLeft="8dp"
+                            android:text="@string/fetching_location" />
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/writePiecePanelBg"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/add_image_btn"
+                            style="?attr/borderlessButtonStyle"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:clickable="true"
+                            android:src="@drawable/ic_image_gray_24dp" />
+
+                        <ImageButton
+                            android:id="@+id/add_link_btn"
+                            style="?attr/borderlessButtonStyle"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:src="@drawable/ic_insert_link_gray_24dp" />
+
+                        <ImageButton
+                            style="?attr/borderlessButtonStyle"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_margin="16dp"
+                            android:src="@drawable/ic_voice_gray_24dp"
+                            android:visibility="gone" />
+
+                        <ImageButton
+                            style="?attr/borderlessButtonStyle"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_margin="16dp"
+                            android:src="@drawable/ic_videocam_gray_24px"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/write_piece_card"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/link_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/link_content"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/colorPrimaryDark" />
+
+                    <ImageButton
+                        android:id="@+id/delete_link"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_clear_black_24dp" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/image_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/colorPrimaryDark"
+                        android:padding="8dp"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/textOrIcon" />
+
+                    <ImageButton
+                        android:id="@+id/delete_image"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="8dp"
+                        android:src="@drawable/ic_clear_black_24dp" />
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/user_info_panel"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:orientation="vertical">
-
-        <EditText
-            android:id="@+id/piece_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:gravity="left"
-            android:hint="@string/write_something"
-            android:maxLines="10"
-            android:minLines="10"
-            android:padding="8dp"
-            android:scrollbars="vertical"
-            android:textSize="14sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:src="@drawable/ic_person_pin_circle_black_24dp" />
-
-            <TextView
-                android:id="@+id/my_location_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingLeft="8dp"
-                android:text="@string/fetching_location" />
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/writePiecePanelBg"
-            android:orientation="horizontal">
-
-            <ImageButton
-                style="?attr/borderlessButtonStyle"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_margin="16dp"
-                android:clickable="true"
-                android:src="@drawable/ic_image_gray_24dp" />
-
-            <ImageButton
-                style="?attr/borderlessButtonStyle"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_margin="16dp"
-                android:src="@drawable/ic_insert_link_gray_24dp" />
-
-            <ImageButton
-                style="?attr/borderlessButtonStyle"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_margin="16dp"
-                android:src="@drawable/ic_voice_gray_24dp" />
-
-            <ImageButton
-                style="?attr/borderlessButtonStyle"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_margin="16dp"
-                android:src="@drawable/ic_videocam_gray_24px" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-
-</RelativeLayout>
+</android.support.v4.widget.NestedScrollView>

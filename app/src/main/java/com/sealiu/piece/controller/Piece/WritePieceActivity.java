@@ -1,20 +1,19 @@
 package com.sealiu.piece.controller.Piece;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -24,36 +23,35 @@ import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 import com.sealiu.piece.utils.SPUtils;
 
-import java.io.InputStream;
-import java.net.URL;
-
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
 
-public class WritePieceActivity extends AppCompatActivity {
+public class WritePieceActivity extends AppCompatActivity implements
+        UrlFragment.UrlListener, View.OnClickListener {
 
     private static final String TAG = "WritePieceActivity";
     private static final int ERROR = 4;
-
+    ImageButton addLinkBtn;
+    ImageButton addImageBtn;
+    CardView linkCard;
+    TextView linkContent;
+    ImageButton linkDeleteBtn;
+    CardView imageCard;
     private Double mLatitude, mLongitude;
     private String mLocationName;
-
     private TextView myLocationTV;
     private ImageView headPictureIV;
     private TextView nickNameTV;
     private Spinner visibilitySpinner;
-    private EditText piectContentET;
-
-    private RelativeLayout snackBarHolderView;
-
-    private Bitmap bitmap;
+    private EditText pieceContentET;
+    private NestedScrollView snackBarHolderView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_piece);
 
-        snackBarHolderView = (RelativeLayout) findViewById(R.id.layout_holder);
+        snackBarHolderView = (NestedScrollView) findViewById(R.id.layout_holder);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -63,10 +61,22 @@ public class WritePieceActivity extends AppCompatActivity {
         nickNameTV = (TextView) findViewById(R.id.user_nickname);
         headPictureIV = (ImageView) findViewById(R.id.user_head_picture);
         visibilitySpinner = (Spinner) findViewById(R.id.visibility);
-        piectContentET = (EditText) findViewById(R.id.piece_content);
+        pieceContentET = (EditText) findViewById(R.id.piece_content);
 
+        linkCard = (CardView) findViewById(R.id.link_card);
+        linkContent = (TextView) findViewById(R.id.link_content);
+        linkDeleteBtn = (ImageButton) findViewById(R.id.delete_link);
+
+        imageCard = (CardView) findViewById(R.id.image_card);
+
+        addImageBtn = (ImageButton) findViewById(R.id.add_image_btn);
+        addLinkBtn = (ImageButton) findViewById(R.id.add_link_btn);
+
+        addImageBtn.setOnClickListener(this);
+        addLinkBtn.setOnClickListener(this);
+
+        linkDeleteBtn.setOnClickListener(this);
         initUI();
-
 
     }
 
@@ -83,7 +93,7 @@ public class WritePieceActivity extends AppCompatActivity {
                 // 发送编写的Piece
 
                 final String objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
-                final String pieceContent = piectContentET.getText().toString();
+                final String pieceContent = pieceContentET.getText().toString();
                 final int visibilityPosition = visibilitySpinner.getSelectedItemPosition();
 
                 if (pieceContent.equals("")) {
@@ -144,4 +154,30 @@ public class WritePieceActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onUrlPositiveClick(String url) {
+        Log.i(TAG, url);
+        linkCard.setVisibility(View.VISIBLE);
+        linkContent.setText(url);
+    }
+
+    @Override
+    public void onUrlNegativeClick() {
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.add_image_btn:
+                break;
+            case R.id.add_link_btn:
+                new UrlFragment().show(getSupportFragmentManager(), "url");
+                break;
+            case R.id.delete_link:
+                linkContent.setText("");
+                linkCard.setVisibility(View.GONE);
+                break;
+        }
+    }
 }
