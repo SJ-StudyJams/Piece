@@ -104,7 +104,7 @@ public class PiecesActivity extends AppCompatActivity {
                         mDataset.add(p);
                     }
                 }//for
-                mAdapter = new PieceAdapter(list);
+                mAdapter = new PieceAdapter(mDataset);
                 mRecyclerView.setAdapter(mAdapter);
             }//done
         });
