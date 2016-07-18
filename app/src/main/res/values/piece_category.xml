@@ -3,7 +3,7 @@
         <item>纸条</item>
         <item>新闻</item>
         <item>天气</item>
-        <!--<item>以后还会有‘交通信息’</item>-->
+        <item>交通信息</item>
         <item>广告</item>
     </string-array>
 
@@ -12,6 +12,7 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
+        <item>5</item>
     </string-array>
 
 </resources>
