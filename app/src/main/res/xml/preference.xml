@@ -54,9 +54,6 @@
             android:icon="@drawable/ic_announcement_black_24dp"
             android:key="pref_feedback_key"
             android:title="@string/pref_feedback_title">
-            <intent
-                android:targetClass="com.sealiu.piece.controller.Settings.FeedbackActivity"
-                android:targetPackage="com.sealiu.piece" />
         </Preference>
 
         <!--<Preference-->

@@ -1,6 +1,7 @@
 package com.sealiu.piece.controller.Settings;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -10,7 +11,8 @@ import android.support.v7.widget.Toolbar;
 
 import com.sealiu.piece.R;
 
-public class MyPreferenceActivity extends AppCompatActivity {
+public class MyPreferenceActivity extends AppCompatActivity implements
+        MyPreferenceFragment.MyPreferenceFragmentListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,43 +34,31 @@ public class MyPreferenceActivity extends AppCompatActivity {
         getFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, new MyPreferenceFragment())
                 .commit();
+
     }
 
-    // MyPreferenceFragment
-    public static class MyPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.preference);
+    @Override
+    public void onAboutClick() {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, new AboutPreferenceFragment()).addToBackStack(null)
+                .commit();
+    }
 
-            Preference aboutPreference = findPreference("pref_about_key");
+    @Override
+    public void onFeedbackClick() {
+        String s = "Debug-infos:";
+        s += "\nOS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
+        s += "\nOS API Level: " + android.os.Build.VERSION.SDK_INT;
+        s += "\nDevice: " + android.os.Build.DEVICE;
+        s += "\nModel (and Product): " + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")\n";
 
-            aboutPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    getActivity().getFragmentManager().beginTransaction()
-                            .replace(R.id.content_frame, new AboutPreferenceFragment()).addToBackStack(null)
-                            .commit();
-                    return true;
-                }
-            });
-
-//            Preference logoutPreference = findPreference("pref_logout_key");
-//            logoutPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-//                @Override
-//                public boolean onPreferenceClick(Preference preference) {
-//                    Log.i("Preference", String.valueOf(preference.getKey()));
-//
-//                    // 有bug，退出到登录页面之后，点击back按钮，有回到MapsActivity ==!
-//                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
-//                    SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_AUTO_LOGIN, false);
-//                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                    startActivity(intent);
-//                    getActivity().finish();
-//                    return true;
-//                }
-//            });
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"sealiu0217@gmail.com"});
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Piece应用反馈");
+        intent.putExtra(Intent.EXTRA_TEXT, s);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
         }
     }
 
