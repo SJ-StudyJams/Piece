@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Piece;
+import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -40,8 +41,12 @@ public class PieceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 viewHolder = new ViewHolder(v1);
                 break;
             case 2:
-                View v2 = inflater.inflate(R.layout.piece_images, parent, false);
+                View v2 = inflater.inflate(R.layout.piece_url, parent, false);
                 viewHolder = new ViewHolder2(v2);
+                break;
+            case 3:
+                View v3 = inflater.inflate(R.layout.piece_images, parent, false);
+                viewHolder = new ViewHolder3(v3);
                 break;
             default:
                 View v = inflater.inflate(R.layout.piece_words, parent, false);
@@ -65,11 +70,15 @@ public class PieceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 ViewHolder2 holder2 = (ViewHolder2) holder;
                 holder2.mContentTextView.setText(mDataset.get(position).getContent());
                 holder2.mCreatedAtTextView.setText(mDataset.get(position).getCreatedAt());
-                String imageUrl = mDataset.get(position).getImage() == null ? "" : mDataset.get(position).getImage();
-                if (!imageUrl.equals("")) {
-                    Bitmap bitmap = downloadPic(imageUrl);
-                    if (bitmap != null)
-                        holder2.mImage.setImageBitmap(bitmap);
+                holder2.mUrlTextView.setText(mDataset.get(position).getUrl());
+                break;
+            case 3:
+                ViewHolder3 holder3 = (ViewHolder3) holder;
+                holder3.mContentTextView.setText(mDataset.get(position).getContent());
+                holder3.mCreatedAtTextView.setText(mDataset.get(position).getCreatedAt());
+                if (mDataset.get(position).getImage() != null) {
+                    BitmapUtils bitmapUtils = new BitmapUtils();
+                    bitmapUtils.disPlay(holder3.mImageView, mDataset.get(position).getImage());
                 }
                 break;
         }
@@ -84,7 +93,7 @@ public class PieceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemViewType(int position) {
         int type = mDataset.get(position).getType();
-        if (type == 1 || type == 2) return type;
+        if (type == 1 || type == 2 || type == 3) return type;
         else return 1;
     }
 
@@ -131,13 +140,26 @@ public class PieceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public static class ViewHolder2 extends RecyclerView.ViewHolder {
         public TextView mContentTextView;
         public TextView mCreatedAtTextView;
-        public ImageView mImage;
+        public TextView mUrlTextView;
 
         public ViewHolder2(View v) {
             super(v);
             mContentTextView = (TextView) v.findViewById(R.id.piece_content);
             mCreatedAtTextView = (TextView) v.findViewById(R.id.piece_createdAt);
-            mImage = (ImageView) v.findViewById(R.id.piece_image);
+            mUrlTextView = (TextView) v.findViewById(R.id.piece_url);
+        }
+    }
+
+    public static class ViewHolder3 extends RecyclerView.ViewHolder {
+        public TextView mContentTextView;
+        public TextView mCreatedAtTextView;
+        public ImageView mImageView;
+
+        public ViewHolder3(View v) {
+            super(v);
+            mContentTextView = (TextView) v.findViewById(R.id.piece_content);
+            mCreatedAtTextView = (TextView) v.findViewById(R.id.piece_createdAt);
+            mImageView = (ImageView) v.findViewById(R.id.piece_image);
         }
     }
 }
