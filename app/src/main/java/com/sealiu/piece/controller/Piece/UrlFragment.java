@@ -87,7 +87,6 @@ public class UrlFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 String url = urlEditText.getText().toString();
 
-
                 if (!url.equals("Http://") && isValidURL(url)) {
                     listener.onUrlPositiveClick(url);
                     dismiss();
