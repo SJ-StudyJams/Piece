@@ -39,6 +39,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.ClusterManager;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.LoginRegister.LoginActivity;
@@ -62,12 +63,17 @@ import cn.bmob.v3.listener.FindListener;
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import static com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+import static com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener;
+import static com.google.maps.android.clustering.ClusterManager.OnClusterItemInfoWindowClickListener;
 
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         ConnectionCallbacks,
         OnConnectionFailedListener,
-        View.OnClickListener {
+        View.OnClickListener,
+        OnClusterItemClickListener<ClusterMarkerLocation>,
+        OnClusterItemInfoWindowClickListener<ClusterMarkerLocation> {
 
     private static final String TAG = "MapsActivity";
     private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 1;
@@ -92,6 +98,7 @@ public class MapsActivity extends AppCompatActivity implements
     private String mCurrentLocationName;
 
     private ClusterManager<ClusterMarkerLocation> clusterManager;
+    private ClusterMarkerLocation clickedClusterItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,9 +107,8 @@ public class MapsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         // 从bmob后台同步用户信息到sp文件中存储
-        UserInfoSync sync = new UserInfoSync();
         try {
-            sync.getUserInfo(this, Constants.SP_FILE_NAME, SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, null));
+            UserInfoSync.getUserInfo(this, Constants.SP_FILE_NAME, SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, null));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -135,22 +141,6 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i(TAG, "onActivityResult");
-        switch (requestCode) {
-            case WRITE_PIECE_REQUEST_CODE:
-                if (resultCode == RESULT_OK) {
-                    Snackbar.make(snackBarHolderView, "发送成功", Snackbar.LENGTH_LONG).show();
-                } else if (resultCode == ERROR) {
-                    int errorCode = data.getIntExtra("errorCode", 0);
-                    Snackbar.make(snackBarHolderView, "发送失败 错误码：" + Constants.createErrorInfo(errorCode), Snackbar.LENGTH_LONG).show();
-                }
-                break;
-            default:
-        }
-    }
-
-    @Override
     protected void onResume() {
         Log.i(TAG, "onResume");
         super.onResume();
@@ -166,58 +156,6 @@ public class MapsActivity extends AppCompatActivity implements
         Log.i(TAG, "onStart");
         super.onStart();
         mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.i(TAG, "onStop");
-        super.onStop();
-        MapStateManager mgr = new MapStateManager(this);
-        mgr.saveMapState(mMap);
-        mGoogleApiClient.disconnect();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "onCreateOptionsMenu");
-        getMenuInflater().inflate(R.menu.menu_map, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.settings_menu_title:
-                startActivity(new Intent(MapsActivity.this, MyPreferenceActivity.class));
-                break;
-            case R.id.user_menu_title:
-                startActivity(new Intent(MapsActivity.this, UserActivity.class));
-                break;
-            case R.id.switch_menu_title:
-                new AlertDialog.Builder(this)
-                        .setTitle("退出账户")
-                        .setMessage("执行该操作后你需要重新登录")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                SPUtils.putBoolean(MapsActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
-                                startActivity(new Intent(MapsActivity.this, LoginActivity.class));
-                                finish();
-                            }
-                        })
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        }).show();
-                break;
-            default:
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -315,7 +253,7 @@ public class MapsActivity extends AppCompatActivity implements
 
                 //初始化标记
                 initMarker();
-                //mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
+                clusterManager.getMarkerCollection().setOnInfoWindowAdapter(new CustomInfoWindowAdapter());
 
                 try {
                     mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
@@ -357,10 +295,62 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.i(TAG, "onCreateOptionsMenu");
+        getMenuInflater().inflate(R.menu.menu_map, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.settings_menu_title:
+                startActivity(new Intent(MapsActivity.this, MyPreferenceActivity.class));
+                break;
+            case R.id.user_menu_title:
+                startActivity(new Intent(MapsActivity.this, UserActivity.class));
+                break;
+            case R.id.switch_menu_title:
+                new AlertDialog.Builder(this)
+                        .setTitle("退出账户")
+                        .setMessage("执行该操作后你需要重新登录")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                SPUtils.putBoolean(MapsActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
+                                startActivity(new Intent(MapsActivity.this, LoginActivity.class));
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        }).show();
+                break;
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i(TAG, "onStop");
+        super.onStop();
+        MapStateManager mgr = new MapStateManager(this);
+        mgr.saveMapState(mMap);
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.write_piece_fab:
-                if (isValidLocation()) {
+                if (mCurrentLatitude != null && mCurrentLongitude != null && mCurrentLocationName != null) {
                     Intent intent = new Intent(MapsActivity.this, WritePieceActivity.class);
                     intent.putExtra("LAT", mCurrentLatitude);
                     intent.putExtra("LNG", mCurrentLongitude);
@@ -422,6 +412,22 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i(TAG, "onActivityResult");
+        switch (requestCode) {
+            case WRITE_PIECE_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    Snackbar.make(snackBarHolderView, "发送成功", Snackbar.LENGTH_LONG).show();
+                } else if (resultCode == ERROR) {
+                    int errorCode = data.getIntExtra("errorCode", 0);
+                    Snackbar.make(snackBarHolderView, "发送失败 错误码：" + Constants.createErrorInfo(errorCode), Snackbar.LENGTH_LONG).show();
+                }
+                break;
+            default:
+        }
+    }
+
     /**
      * 获取指定经纬度的地理位置名称
      */
@@ -444,14 +450,17 @@ public class MapsActivity extends AppCompatActivity implements
             mMap.moveCamera(update);
     }
 
-    private boolean isValidLocation() {
-        return (mCurrentLatitude != null && mCurrentLongitude != null && mCurrentLocationName != null);
-    }
-
     private void initMarker() {
 
-        clusterManager = new ClusterManager<ClusterMarkerLocation>(this, mMap);
+        Log.i(TAG, "initMarker");
+        clusterManager = new ClusterManager<>(this, mMap);
+        clusterManager.setOnClusterItemInfoWindowClickListener(this);
+        clusterManager.setOnClusterItemClickListener(this);
+
         mMap.setOnCameraChangeListener(clusterManager);
+        mMap.setOnMarkerClickListener(clusterManager);
+        mMap.setInfoWindowAdapter(clusterManager.getMarkerManager());
+        mMap.setOnInfoWindowClickListener(clusterManager);
 
         //因为纸条的可见范围最大为100km，所以默认为100km
         double[] llRange = Common.GetAround(mCurrentLatitude, mCurrentLongitude, 100000);
@@ -497,7 +506,10 @@ public class MapsActivity extends AppCompatActivity implements
                             public void done(List<User> list, BmobException e) {
                                 if (e == null) {
                                     LatLng ll = new LatLng(p.getLatitude(), p.getLongitude());
-                                    clusterManager.addItem(new ClusterMarkerLocation(ll));
+                                    ClusterMarkerLocation item = new ClusterMarkerLocation(ll,
+                                            list.get(0).getNickname(),
+                                            p.getContent() + "::" + p.getCreatedAt());
+                                    clusterManager.addItem(item);
                                 }
                             }
                         });
@@ -510,44 +522,17 @@ public class MapsActivity extends AppCompatActivity implements
         });
     }
 
-//    class CustomInfoWindowAdapter implements InfoWindowAdapter {
-//
-//        private View mContents;
-//
-//        CustomInfoWindowAdapter() {
-//            mContents = getLayoutInflater().inflate(R.layout.info_window_w, null);
-//        }
-//
-//        @Override
-//        public View getInfoWindow(Marker marker) {
-//            return null;
-//        }
-//
-//        @Override
-//        public View getInfoContents(Marker marker) {
-//            String title = marker.getTitle();
-//            String snippet = marker.getSnippet();
-//
-//            String[] contentAndDate = snippet.split("::");
-//
-//            TextView nickname = (TextView) mContents.findViewById(R.id.info_window_nickname);
-//            TextView content = (TextView) mContents.findViewById(R.id.info_window_content);
-//            TextView time = (TextView) mContents.findViewById(R.id.info_window_time);
-//
-//            if (title != null)
-//                nickname.setText(title);
-//            else
-//                nickname.setText("");
-//
-//            if (contentAndDate.length == 2) {
-//                content.setText(contentAndDate[0]);
-//                time.setText(contentAndDate[1]);
-//            } else {
-//                content.setText("");
-//            }
-//            return mContents;
-//        }
-//    }
+    @Override
+    public boolean onClusterItemClick(ClusterMarkerLocation item) {
+        clickedClusterItem = item;
+        return false;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(ClusterMarkerLocation item) {
+        Snackbar.make(snackBarHolderView, item.getTitle() + item.getSnippet(), Snackbar.LENGTH_LONG).show();
+        //打开纸条的详情页
+    }
 
     @Override
     protected void onDestroy() {
@@ -555,4 +540,35 @@ public class MapsActivity extends AppCompatActivity implements
         //stopService(intent);
         super.onDestroy();
     }
+
+    class CustomInfoWindowAdapter implements InfoWindowAdapter {
+
+        private View mContents;
+
+        CustomInfoWindowAdapter() {
+            mContents = getLayoutInflater().inflate(R.layout.info_window_w, null);
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            TextView nickname = (TextView) mContents.findViewById(R.id.info_window_nickname);
+            TextView content = (TextView) mContents.findViewById(R.id.info_window_content);
+            TextView time = (TextView) mContents.findViewById(R.id.info_window_time);
+
+            if (clickedClusterItem != null) {
+                String[] snippets = clickedClusterItem.getSnippet().split("::");
+
+                nickname.setText(clickedClusterItem.getTitle());
+                content.setText(snippets[0]);
+                time.setText(snippets[1]);
+            }
+            return mContents;
+        }
+    }
+
 }
