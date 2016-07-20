@@ -24,17 +24,10 @@ import com.sealiu.piece.utils.SPUtils;
  * on 7/6/2016.
  */
 public class EditPhoneFragment extends DialogFragment{
-    private String phoneBefore, password;
-    private TextView phoneTV, passwordTV;
-
-    public interface EditPhoneDialogListener {
-        void onEditPhoneDialogPositiveClick(DialogFragment dialog, String phone);
-
-        void onEditPhoneDialogNegativeClick(DialogFragment dialog);
-    }
-
     // Use this instance of the interface to deliver action events
     EditPhoneDialogListener eListener;
+    private String phoneBefore, password;
+    private TextView phoneTV, passwordTV;
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
@@ -75,12 +68,15 @@ public class EditPhoneFragment extends DialogFragment{
         final View view = inflater.inflate(R.layout.dialog_edit_phone, null);
         builder.setView(view);
 
-        phoneBefore = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, null);
+        phoneBefore = getArguments().getString("phone");
         password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
 
 
         phoneTV = (TextView) view.findViewById(R.id.edit_user_phone);
         passwordTV = (TextView) view.findViewById(R.id.edit_user_phone_password);
+
+        if (phoneBefore!=null)
+            phoneTV.setText(phoneBefore);
 
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
@@ -117,6 +113,12 @@ public class EditPhoneFragment extends DialogFragment{
         });
 
         return builder.create();
+    }
+
+    public interface EditPhoneDialogListener {
+        void onEditPhoneDialogPositiveClick(DialogFragment dialog, String phone);
+
+        void onEditPhoneDialogNegativeClick(DialogFragment dialog);
     }
 
 }

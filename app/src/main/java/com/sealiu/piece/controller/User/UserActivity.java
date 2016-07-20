@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -78,7 +77,6 @@ public class UserActivity extends AppCompatActivity {
 
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
         Set<String> piecesSet = SP.getStringSet("pref_piece_nearby_key", null);
-        Log.i(TAG, "允许接收小纸条类型：" + piecesSet.toString());
         if (piecesSet != null && piecesSet.contains("5")) {
             // 广告
             AdView mAdView = (AdView) findViewById(R.id.adView);

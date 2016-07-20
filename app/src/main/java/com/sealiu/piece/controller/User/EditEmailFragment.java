@@ -23,17 +23,10 @@ import com.sealiu.piece.utils.SPUtils;
  * on 7/7/2016.
  */
 public class EditEmailFragment extends DialogFragment {
-    private String emailBefore, password;
-    private TextView emailTV, passwordTV;
-
-    public interface EditEmailDialogListener {
-        void onEditEmailDialogPositiveClick(DialogFragment dialog, String email);
-
-        void onEditEmailDialogNegativeClick(DialogFragment dialog);
-    }
-
     // Use this instance of the interface to deliver action events
     EditEmailDialogListener eListener;
+    private String emailBefore, password;
+    private TextView emailTV, passwordTV;
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
@@ -74,11 +67,14 @@ public class EditEmailFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_edit_email, null);
         builder.setView(view);
 
-        emailBefore = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_EMAIL, null);
+        emailBefore = getArguments().getString("email");
         password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
 
         emailTV = (TextView) view.findViewById(R.id.edit_user_email);
         passwordTV = (TextView) view.findViewById(R.id.edit_user_password);
+
+        if (emailBefore != null)
+            emailTV.setText(emailBefore);
 
         final EditEmailDialogListener listener = (EditEmailDialogListener) getActivity();
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -94,7 +90,7 @@ public class EditEmailFragment extends DialogFragment {
                     return;
                 }
 
-                if (emailBefore.equals(emailAfter)) {
+                if (emailBefore != null && emailBefore.equals(emailAfter)) {
                     Snackbar.make(EditActivity.layoutScroll, "填写的邮箱和之前一致，邮箱没有修改", Snackbar.LENGTH_LONG).show();
                     return;
                 }
@@ -114,5 +110,11 @@ public class EditEmailFragment extends DialogFragment {
         });
 
         return builder.create();
+    }
+
+    public interface EditEmailDialogListener {
+        void onEditEmailDialogPositiveClick(DialogFragment dialog, String email);
+
+        void onEditEmailDialogNegativeClick(DialogFragment dialog);
     }
 }
