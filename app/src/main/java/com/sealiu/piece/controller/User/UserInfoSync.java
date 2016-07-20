@@ -14,6 +14,7 @@ import java.util.List;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
 
 /**
@@ -69,17 +70,15 @@ public class UserInfoSync {
      *
      * @param context  上下文对象
      * @param filename SP 文件名
-     * @param username 需要查询用户的用户名
+     * @param objectid 需要查询用户的用户名
      */
-    public static void getUserInfo(final Context context, final String filename, String username) throws Exception {
+    public static void getUserInfo(final Context context, final String filename, String objectid) throws Exception {
 
         BmobQuery<User> query = new BmobQuery<User>();
-        query.addWhereEqualTo(Constants.SP_USERNAME, username);
-        query.findObjects(new FindListener<User>() {
+        query.getObject(objectid, new QueryListener<User>() {
             @Override
-            public void done(List<User> list, BmobException e) {
+            public void done(User user, BmobException e) {
                 if (e == null) {
-                    User user = list.get(0);
                     String username1 = user.getUsername();
                     String nickname = user.getNickname();
                     String email = user.getEmail();
@@ -90,16 +89,16 @@ public class UserInfoSync {
                     String birth = user.getBirth();
                     String sex = user.getUser_sex();
                     String avatar = user.getPicture();
-                    Log.i("query", null + username1);
-                    Log.i("query", null + nickname);
-                    Log.i("query", null + email);
-                    Log.i("query", null + phone);
+                    Log.i("query", "" + username1);
+                    Log.i("query", "" + nickname);
+                    Log.i("query", "" + email);
+                    Log.i("query", "" + phone);
                     Log.i("query", "" + ev);
                     Log.i("query", "" + pv);
-                    Log.i("query", null + bio);
-                    Log.i("query", null + sex);
-                    Log.i("query", null + birth);
-                    Log.i("query", null + avatar);
+                    Log.i("query", "" + bio);
+                    Log.i("query", "" + sex);
+                    Log.i("query", "" + birth);
+                    Log.i("query", "" + avatar);
                     SPUtils.putString(context, filename, Constants.SP_USERNAME, username1);
                     SPUtils.putString(context, filename, Constants.SP_NICKNAME, nickname);
                     SPUtils.putString(context, filename, Constants.SP_BIO, bio);
@@ -110,9 +109,6 @@ public class UserInfoSync {
                     SPUtils.putBoolean(context, filename, Constants.SP_IS_VALID_EMAIL, ev);
                     SPUtils.putBoolean(context, filename, Constants.SP_IS_VALID_PHONE_NUMBER, pv);
                     SPUtils.putString(context, filename, Constants.SP_HEAD_PICTURE, avatar);
-
-                } else {
-                    e.printStackTrace();
                 }
             }
         });

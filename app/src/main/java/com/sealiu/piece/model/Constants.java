@@ -82,7 +82,7 @@ public class Constants {
     //登陆与否（开放游客身份后，可以使用这个来判断是否登录）
     public static final String SP_IS_LOGIN = "isLogin";
     //_user objectId
-    public static final String SP_USER_OBJECT_ID = "userObjectId";
+    public static final String SP_USER_OBJECT_ID = "objectId";
     //Email
     public static final String SP_EMAIL = "email";
     //Email 是否验证

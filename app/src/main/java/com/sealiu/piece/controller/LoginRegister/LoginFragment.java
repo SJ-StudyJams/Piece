@@ -62,21 +62,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         Button submitLoginBtn = (Button) view.findViewById(R.id.submit_login_btn);
         Button resetPwdBtn = (Button) view.findViewById(R.id.find_pwd);
 
-        //thirdPartLoginBtn.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View view) {
-        //        Listener listener = (Listener) getActivity();
-        //        listener.onThirdPartLoginBtnClick();
-        //    }
-        //});
-
-        //backRegisterBtn.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View view) {
-        //        Listener listener = (Listener) getActivity();
-        //        listener.onBackRegisterBtnClick();
-        //    }
-        //});
         thirdPartLoginBtn.setOnClickListener(this);
         backRegisterBtn.setOnClickListener(this);
         resetPwdBtn.setOnClickListener(this);
@@ -111,9 +96,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 }
 
                 user.setUsername(username);
-                encryptPassword = Md5Utils.encode(pwd);
-                Log.i(TAG, "" + encryptPassword);
-                user.setPassword(encryptPassword);
+                user.setPassword(pwd);
 
                 // ProgressDialog
                 progress = new ProgressDialog(getActivity());
@@ -126,11 +109,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                     public void done(User u, BmobException e) {
                         if (e == null) {
                             //记录本次登录时间，设置登录标志位
-                            //SPUtils.putLong(getActivity(), Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, System.currentTimeMillis());
-                            //SPUtils.putBoolean(getActivity(), Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
-                            //SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
-                            //SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
-                            //SPUtils.putString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
                             loginUser.setLoginTime(System.currentTimeMillis());
                             loginUser.setAutoLogin(true);
                             loginUser.setObjectId(u.getObjectId());

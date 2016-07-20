@@ -67,7 +67,6 @@ public class EditActivity extends AppCompatActivity implements
     private String objectId;
     private Uri previewUri;
     private String realPath;
-    private Bitmap bitmap; // 用于保存从后台下载头像
     private LoginUser loginUser;
 
     @Override
@@ -78,7 +77,6 @@ public class EditActivity extends AppCompatActivity implements
 
         layoutScroll = (NestedScrollView) findViewById(R.id.scroll_view);
 
-        //objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
         objectId = loginUser.getObjectId();
 
         if (objectId.equals("")) {
@@ -106,19 +104,12 @@ public class EditActivity extends AppCompatActivity implements
      * 显示个人资料内容，并设置监听函数修改资料
      */
     private void displayContent() {
-        //String nickname = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, "");
         String nickname = loginUser.getNickname();
-        //String sex = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_SEX, "");
         String sex = loginUser.getSex();
-        //String bio = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_BIO, "");
         String bio = loginUser.getBio();
-        //String birth = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, "");
         String birth = loginUser.getBirth();
-        //String phone = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, "");
         String phone = loginUser.getMobilePhone();
-        //String email = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, "");
         String email = loginUser.getEmail();
-        //final String headPicture = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, "");
         String headPicture = loginUser.getAvatar();
 
         usernameET = (EditText) findViewById(R.id.user_name);
@@ -132,21 +123,21 @@ public class EditActivity extends AppCompatActivity implements
 
 
         //显示昵称
-        if (nickname.equals("")) {
+        if (nickname == null) {
             usernameET.setText("点击设置");
         } else {
             usernameET.setText(nickname);
         }
 
         //显示个人简介
-        if (bio.equals("")) {
+        if (bio == null) {
             bioET.setText("点击设置");
         } else {
             bioET.setText(bio);
         }
 
         //显示生日
-        if (birth.equals("")) {
+        if (birth == null) {
             birthET.setText("点击设置");
         } else {
             birthET.setText(birth);
@@ -163,14 +154,14 @@ public class EditActivity extends AppCompatActivity implements
         }
 
         //显示手机号
-        if (phone.equals("")) {
+        if (phone == null) {
             phoneET.setText("点击设置");
         } else {
             phoneET.setText(phone);
         }
 
         //显示邮箱
-        if (email.equals("")) {
+        if (email == null) {
             emailET.setText("点击设置");
         } else {
             emailET.setText(email);
@@ -189,7 +180,7 @@ public class EditActivity extends AppCompatActivity implements
         changePwdBTN.setOnClickListener(this);
 
         //显示性别
-        if (!sex.equals("")) {
+        if (sex != null) {
             switch (sex) {
                 case "1":
                     radioGroup.check(R.id.user_sex_male);

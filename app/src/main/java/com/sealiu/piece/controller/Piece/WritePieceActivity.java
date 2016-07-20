@@ -24,7 +24,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 import com.sealiu.piece.utils.SPUtils;
@@ -65,11 +67,14 @@ public class WritePieceActivity extends AppCompatActivity implements
     private Spinner visibilitySpinner;
     private EditText pieceContentET;
     private NestedScrollView snackBarHolderView;
+    private LoginUser loginUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_piece);
+
+        loginUser = UserInfoSync.getLoginInfo(WritePieceActivity.this);
 
         snackBarHolderView = (NestedScrollView) findViewById(R.id.layout_holder);
 
@@ -116,7 +121,7 @@ public class WritePieceActivity extends AppCompatActivity implements
             case R.id.menu_send_piece:
                 // 发送编写的Piece
 
-                String objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
+                String objectId = loginUser.getObjectId();
                 String pieceContent = pieceContentET.getText().toString();
                 int visibilityPosition = visibilitySpinner.getSelectedItemPosition();
 
@@ -183,17 +188,21 @@ public class WritePieceActivity extends AppCompatActivity implements
         String detailPosition = mLocationName + " (" + mLatitude + " ," + mLongitude + ")";
         myLocationTV.setText(detailPosition);
 
-        String nickName = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, "");
-        final String headPicture = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, "");
+        String nickName = loginUser.getNickname();
+        String headPicture = loginUser.getAvatar();
 
 
         if (!nickName.equals("")) {
             nickNameTV.setText(nickName);
         }
 
-        if (headPicture != null) {
-            BitmapUtils bitmapUtils = new BitmapUtils();
-            bitmapUtils.disPlay(headPictureIV, headPicture);
+        try {
+            if (headPicture != null) {
+                BitmapUtils bitmapUtils = new BitmapUtils();
+                bitmapUtils.disPlay(headPictureIV, headPicture);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

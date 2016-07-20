@@ -15,6 +15,7 @@ public class LoginUser {
     private String mobilePhone;
     private String sex;
     private String avatar;
+    private boolean login;
     private boolean emailVerified;
     private boolean mobilePhoneNumberVerified;
     private boolean autoLogin;
@@ -130,5 +131,13 @@ public class LoginUser {
 
     public void setLoginTime(long loginTime) {
         this.loginTime = loginTime;
+    }
+
+    public boolean isLogin() {
+        return login;
+    }
+
+    public void setLogin(boolean login) {
+        this.login = login;
     }
 }
