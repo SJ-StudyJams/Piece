@@ -12,7 +12,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.EditText;
 
 import com.sealiu.piece.R;
 
@@ -24,7 +24,7 @@ public class EditNameFragment extends DialogFragment {
     // Use this instance of the interface to deliver action events
     EditNameDialogListener eListener;
     private String nicknameBefore;
-    private TextView nicknameTV;
+    private EditText nicknameET;
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
@@ -67,15 +67,17 @@ public class EditNameFragment extends DialogFragment {
 
         nicknameBefore = getArguments().getString("nickname");
 
-        nicknameTV = (TextView) view.findViewById(R.id.edit_nickname);
+        nicknameET = (EditText) view.findViewById(R.id.edit_nickname);
 
-        if (nicknameBefore != null)
-            nicknameTV.setText(nicknameBefore);
+        if (nicknameBefore != null) {
+            nicknameET.setText(nicknameBefore);
+            nicknameET.setSelection(nicknameBefore.length());
+        }
 
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                String nicknameString = nicknameTV.getText().toString();
+                String nicknameString = nicknameET.getText().toString();
                 if (nicknameString.equals(nicknameBefore)) {
                     Snackbar.make(EditActivity.layoutScroll, "填写的昵称和之前一致，昵称没有修改", Snackbar.LENGTH_LONG).show();
                     return;

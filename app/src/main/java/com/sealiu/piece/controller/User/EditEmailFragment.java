@@ -12,7 +12,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.EditText;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
@@ -26,7 +26,7 @@ public class EditEmailFragment extends DialogFragment {
     // Use this instance of the interface to deliver action events
     EditEmailDialogListener eListener;
     private String emailBefore, password;
-    private TextView emailTV, passwordTV;
+    private EditText emailET, passwordET;
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
@@ -70,20 +70,21 @@ public class EditEmailFragment extends DialogFragment {
         emailBefore = getArguments().getString("email");
         password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
 
-        emailTV = (TextView) view.findViewById(R.id.edit_user_email);
-        passwordTV = (TextView) view.findViewById(R.id.edit_user_password);
+        emailET = (EditText) view.findViewById(R.id.edit_user_email);
+        passwordET = (EditText) view.findViewById(R.id.edit_user_password);
 
-        if (emailBefore != null)
-            emailTV.setText(emailBefore);
-
+        if (emailBefore != null) {
+            emailET.setText(emailBefore);
+            emailET.setSelection(emailBefore.length());
+        }
         final EditEmailDialogListener listener = (EditEmailDialogListener) getActivity();
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
 
-                String passwordString = passwordTV.getText().toString();
-                String emailAfter = emailTV.getText().toString();
+                String passwordString = passwordET.getText().toString();
+                String emailAfter = emailET.getText().toString();
 
                 if (!passwordString.equals(password)) {
                     Snackbar.make(EditActivity.layoutScroll, "密码不正确", Snackbar.LENGTH_LONG).show();

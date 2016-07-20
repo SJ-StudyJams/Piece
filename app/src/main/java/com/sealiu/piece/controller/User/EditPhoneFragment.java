@@ -12,7 +12,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.EditText;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
@@ -27,7 +27,7 @@ public class EditPhoneFragment extends DialogFragment{
     // Use this instance of the interface to deliver action events
     EditPhoneDialogListener eListener;
     private String phoneBefore, password;
-    private TextView phoneTV, passwordTV;
+    private EditText phoneET, passwordET;
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
@@ -72,19 +72,20 @@ public class EditPhoneFragment extends DialogFragment{
         password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
 
 
-        phoneTV = (TextView) view.findViewById(R.id.edit_user_phone);
-        passwordTV = (TextView) view.findViewById(R.id.edit_user_phone_password);
+        phoneET = (EditText) view.findViewById(R.id.edit_user_phone);
+        passwordET = (EditText) view.findViewById(R.id.edit_user_phone_password);
 
-        if (phoneBefore!=null)
-            phoneTV.setText(phoneBefore);
-
+        if (phoneBefore != null) {
+            phoneET.setText(phoneBefore);
+            phoneET.setSelection(phoneBefore.length());
+        }
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
 
-                String passwordString = passwordTV.getText().toString();
-                String phoneAfter = phoneTV.getText().toString();
+                String passwordString = passwordET.getText().toString();
+                String phoneAfter = phoneET.getText().toString();
 
                 if (!password.equals(passwordString)) {
                     Snackbar.make(EditActivity.layoutScroll, "密码不正确", Snackbar.LENGTH_LONG).show();

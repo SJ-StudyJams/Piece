@@ -12,7 +12,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.EditText;
 
 import com.sealiu.piece.R;
 
@@ -25,7 +25,7 @@ public class EditBioFragment extends DialogFragment {
     // Use this instance of the interface to deliver action events
     EditBioDialogListener eListener;
     private String bioBefore;
-    private TextView bioTV;
+    private EditText bioET;
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
@@ -67,16 +67,17 @@ public class EditBioFragment extends DialogFragment {
         builder.setView(view);
 
         bioBefore = getArguments().getString("bio");
-        bioTV = (TextView) view.findViewById(R.id.edit_bio);
+        bioET = (EditText) view.findViewById(R.id.edit_bio);
 
-        if (bioBefore != null)
-            bioTV.setText(bioBefore);
-
+        if (bioBefore != null) {
+            bioET.setText(bioBefore);
+            bioET.setSelection(bioBefore.length());
+        }
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                String bioString = bioTV.getText().toString();
+                String bioString = bioET.getText().toString();
                 // 执行bio输入内容的检查，以后要加上字数限制。
                 if (bioString.equals(bioBefore)) {
                     Snackbar.make(EditActivity.layoutScroll, "填写的个人简介和之前一致，个人简介没有修改", Snackbar.LENGTH_LONG).show();
