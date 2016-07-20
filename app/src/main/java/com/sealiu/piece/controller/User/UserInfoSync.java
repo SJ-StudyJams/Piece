@@ -8,11 +8,8 @@ import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
 
-import java.util.List;
-
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
 
@@ -141,8 +138,8 @@ public class UserInfoSync {
             if (loginInfo.getMobilePhone() != null) {
                 SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, loginInfo.getMobilePhone());
             }
-            if (loginInfo.getPicture() != null) {
-                SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, loginInfo.getPicture());
+            if (loginInfo.getAvatar() != null) {
+                SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, loginInfo.getAvatar());
             }
 
             if (loginInfo.getSex() != null) {
@@ -177,7 +174,7 @@ public class UserInfoSync {
         loginInfo.setEmail(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_EMAIL, null));
         loginInfo.setMobilePhone(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, null));
         loginInfo.setSex(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_SEX, null));
-        loginInfo.setPicture(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, null));
+        loginInfo.setAvatar(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, null));
         loginInfo.setEmailVerified(SPUtils.getBoolean(context, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, false));
         loginInfo.setMobilePhoneNumberVerified(SPUtils.getBoolean(context, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false));
         loginInfo.setAutoLogin(SPUtils.getBoolean(context, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false));
