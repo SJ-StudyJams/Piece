@@ -31,7 +31,6 @@ import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
-import com.sealiu.piece.utils.SPUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -249,25 +248,41 @@ public class EditActivity extends AppCompatActivity implements
     //实现控件的监听，打开对应的对话框
     @Override
     public void onClick(View view) {
+        Bundle bundle = new Bundle();
         switch (view.getId()) {
             case R.id.user_name:
-                new EditNameFragment().show(getSupportFragmentManager(), "Edit_Name");
+                EditNameFragment editNameFragment = new EditNameFragment();
+                bundle.putString("nickname", loginUser.getNickname());
+                editNameFragment.setArguments(bundle);
+                editNameFragment.show(getSupportFragmentManager(), "Edit_Name");
                 break;
             case R.id.user_bio:
-                new EditBioFragment().show(getSupportFragmentManager(), "Edit_Bio");
+                EditBioFragment editBioFragment = new EditBioFragment();
+                bundle.putString("bio", loginUser.getBio());
+                editBioFragment.setArguments(bundle);
+                editBioFragment.show(getSupportFragmentManager(), "Edit_Bio");
                 break;
             case R.id.user_birth:
-                new EditBirthFragment().show(getSupportFragmentManager(), "Edit_Birth");
+                EditBirthFragment editBirthFragment = new EditBirthFragment();
+                bundle.putString("birth", loginUser.getBirth());
+                editBirthFragment.setArguments(bundle);
+                editBirthFragment.show(getSupportFragmentManager(), "Edit_Birth");
                 break;
             case R.id.head_picture:
                 PickPictureFragment ppFragment = new PickPictureFragment();
                 ppFragment.show(getSupportFragmentManager(), "Pick_Picture");
                 break;
             case R.id.user_phone:
-                new EditPhoneFragment().show(getSupportFragmentManager(), "Edit_Phone");
+                EditPhoneFragment editPhoneFragment = new EditPhoneFragment();
+                bundle.putString("phone", loginUser.getMobilePhone());
+                editPhoneFragment.setArguments(bundle);
+                editPhoneFragment.show(getSupportFragmentManager(), "Edit_Phone");
                 break;
             case R.id.user_email:
-                new EditEmailFragment().show(getSupportFragmentManager(), "Edit_Email");
+                EditEmailFragment editEmailFragment = new EditEmailFragment();
+                bundle.putString("email", loginUser.getEmail());
+                editEmailFragment.setArguments(bundle);
+                editEmailFragment.show(getSupportFragmentManager(), "Edit_Email");
                 break;
             case R.id.user_pwd:
                 new EditPwdFragment().show(getSupportFragmentManager(), "Edit_Password");
