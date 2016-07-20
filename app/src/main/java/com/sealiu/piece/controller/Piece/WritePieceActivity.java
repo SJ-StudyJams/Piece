@@ -186,12 +186,11 @@ public class WritePieceActivity extends AppCompatActivity implements
         String nickName = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, "");
         final String headPicture = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, "");
 
-
         if (!nickName.equals("")) {
             nickNameTV.setText(nickName);
         }
 
-        if (headPicture != null) {
+        if (!headPicture.equals("")) {
             BitmapUtils bitmapUtils = new BitmapUtils();
             bitmapUtils.disPlay(headPictureIV, headPicture);
         }

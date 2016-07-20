@@ -31,7 +31,6 @@ import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
-import com.sealiu.piece.utils.SPUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -81,7 +80,7 @@ public class EditActivity extends AppCompatActivity implements
         //objectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
         objectId = loginUser.getObjectId();
 
-        if (objectId.equals("")) {
+        if (objectId == null) {
             //获取当前用户
             BmobUser bmobUser = User.getCurrentUser();
             //获取objectId
@@ -132,21 +131,21 @@ public class EditActivity extends AppCompatActivity implements
 
 
         //显示昵称
-        if (nickname.equals("")) {
+        if (nickname == null) {
             usernameET.setText("点击设置");
         } else {
             usernameET.setText(nickname);
         }
 
         //显示个人简介
-        if (bio.equals("")) {
+        if (bio == null) {
             bioET.setText("点击设置");
         } else {
             bioET.setText(bio);
         }
 
         //显示生日
-        if (birth.equals("")) {
+        if (birth == null) {
             birthET.setText("点击设置");
         } else {
             birthET.setText(birth);
@@ -163,14 +162,14 @@ public class EditActivity extends AppCompatActivity implements
         }
 
         //显示手机号
-        if (phone.equals("")) {
+        if (phone == null) {
             phoneET.setText("点击设置");
         } else {
             phoneET.setText(phone);
         }
 
         //显示邮箱
-        if (email.equals("")) {
+        if (email == null) {
             emailET.setText("点击设置");
         } else {
             emailET.setText(email);
@@ -189,7 +188,7 @@ public class EditActivity extends AppCompatActivity implements
         changePwdBTN.setOnClickListener(this);
 
         //显示性别
-        if (!sex.equals("")) {
+        if (sex != null) {
             switch (sex) {
                 case "1":
                     radioGroup.check(R.id.user_sex_male);
