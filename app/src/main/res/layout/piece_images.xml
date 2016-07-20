@@ -1,47 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    android:layout_marginTop="16dp">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/piece_image"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:scaleType="centerCrop" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_weight="2">
 
             <TextView
                 android:id="@+id/piece_content"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:text="Medium Text"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/primaryText" />
 
             <TextView
                 android:id="@+id/piece_createdAt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
+                android:layout_alignParentBottom="true"
                 android:text="Small Text"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-        </LinearLayout>
+                android:textColor="@color/disabledText"
+                android:textSize="12sp" />
 
+        </RelativeLayout>
 
+        <ImageView
+            android:id="@+id/piece_image"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:scaleType="centerCrop" />
     </LinearLayout>
 
-</android.support.v7.widget.CardView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/dividers" />
+</RelativeLayout>
