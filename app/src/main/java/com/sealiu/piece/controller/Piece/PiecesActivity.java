@@ -1,7 +1,9 @@
 package com.sealiu.piece.controller.Piece;
 
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,13 +13,17 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Maps.Common;
 import com.sealiu.piece.model.Piece;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
@@ -65,6 +71,16 @@ public class PiecesActivity extends AppCompatActivity {
 
         mDataset = new ArrayList<>();
         setAdapter();
+
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
+        Set<String> piecesSet = SP.getStringSet("pref_piece_nearby_key", null);
+        if (piecesSet != null && piecesSet.contains("5")) {
+            // 广告
+            AdView mAdView = (AdView) findViewById(R.id.adView);
+            mAdView.setVisibility(View.VISIBLE);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }
     }
 
     private void setAdapter() {

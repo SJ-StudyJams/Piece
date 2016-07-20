@@ -1,8 +1,10 @@
 package com.sealiu.piece.controller.User;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -10,10 +12,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Piece.PieceAdapter;
 import com.sealiu.piece.model.Constants;
@@ -21,6 +26,7 @@ import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.util.List;
+import java.util.Set;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
@@ -69,6 +75,17 @@ public class UserActivity extends AppCompatActivity {
 
         // fetch data, and set adapter
         initUI();
+
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
+        Set<String> piecesSet = SP.getStringSet("pref_piece_nearby_key", null);
+        Log.i(TAG, "允许接收小纸条类型：" + piecesSet.toString());
+        if (piecesSet != null && piecesSet.contains("5")) {
+            // 广告
+            AdView mAdView = (AdView) findViewById(R.id.adView);
+            mAdView.setVisibility(View.VISIBLE);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }
     }
 
     /**
