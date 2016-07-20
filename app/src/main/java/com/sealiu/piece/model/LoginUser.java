@@ -14,7 +14,7 @@ public class LoginUser {
     private String email;
     private String mobilePhone;
     private String sex;
-    private String avatar;
+    private String picture;
     private boolean emailVerified;
     private boolean mobilePhoneNumberVerified;
     private boolean autoLogin;
@@ -92,12 +92,12 @@ public class LoginUser {
         this.mobilePhone = mobilePhone;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getPicture() {
+        return picture;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public boolean isEmailVerified() {

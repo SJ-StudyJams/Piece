@@ -15,8 +15,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.utils.SPUtils;
 
 
 /**
@@ -24,17 +22,10 @@ import com.sealiu.piece.utils.SPUtils;
  * on 2016/7/4.
  */
 public class EditBioFragment extends DialogFragment {
-    private String bioBefore;
-    private TextView bioTV;
-
-    public interface EditBioDialogListener {
-        void onEditBioDialogPositiveClick(DialogFragment dialog, String newBio, String oldBio);
-
-        void onEditBioDialogNegativeClick(DialogFragment dialog);
-    }
-
     // Use this instance of the interface to deliver action events
     EditBioDialogListener eListener;
+    private String bioBefore;
+    private TextView bioTV;
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
@@ -75,10 +66,10 @@ public class EditBioFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_edit_bio, null);
         builder.setView(view);
 
-        bioBefore = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_BIO, "");
+        bioBefore = getArguments().getString("bio");
         bioTV = (TextView) view.findViewById(R.id.edit_bio);
 
-        if (!bioBefore.equals(""))
+        if (bioBefore != null)
             bioTV.setText(bioBefore);
 
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -108,5 +99,11 @@ public class EditBioFragment extends DialogFragment {
         });
 
         return builder.create();
+    }
+
+    public interface EditBioDialogListener {
+        void onEditBioDialogPositiveClick(DialogFragment dialog, String newBio, String oldBio);
+
+        void onEditBioDialogNegativeClick(DialogFragment dialog);
     }
 }

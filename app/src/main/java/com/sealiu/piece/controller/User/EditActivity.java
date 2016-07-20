@@ -66,7 +66,6 @@ public class EditActivity extends AppCompatActivity implements
     private String objectId;
     private Uri previewUri;
     private String realPath;
-    private Bitmap bitmap; // 用于保存从后台下载头像
     private LoginUser loginUser;
 
     @Override
@@ -118,7 +117,7 @@ public class EditActivity extends AppCompatActivity implements
         //String email = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, "");
         String email = loginUser.getEmail();
         //final String headPicture = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, "");
-        String headPicture = loginUser.getAvatar();
+        String headPicture = loginUser.getPicture();
 
         usernameET = (EditText) findViewById(R.id.user_name);
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.user_sex);
@@ -153,7 +152,7 @@ public class EditActivity extends AppCompatActivity implements
 
         //显示头像
         try {
-            if (headPicture != null) {
+            if (headPicture != null && !headPicture.equals("")) {
                 BitmapUtils bitmapUtils = new BitmapUtils();
                 bitmapUtils.disPlay(headPictureIV, headPicture);
             }
@@ -257,25 +256,41 @@ public class EditActivity extends AppCompatActivity implements
     //实现控件的监听，打开对应的对话框
     @Override
     public void onClick(View view) {
+        Bundle bundle = new Bundle();
         switch (view.getId()) {
             case R.id.user_name:
-                new EditNameFragment().show(getSupportFragmentManager(), "Edit_Name");
+                EditNameFragment editNameFragment = new EditNameFragment();
+                bundle.putString("nickname", loginUser.getNickname());
+                editNameFragment.setArguments(bundle);
+                editNameFragment.show(getSupportFragmentManager(), "Edit_Name");
                 break;
             case R.id.user_bio:
-                new EditBioFragment().show(getSupportFragmentManager(), "Edit_Bio");
+                EditBioFragment editBioFragment = new EditBioFragment();
+                bundle.putString("bio", loginUser.getBio());
+                editBioFragment.setArguments(bundle);
+                editBioFragment.show(getSupportFragmentManager(), "Edit_Bio");
                 break;
             case R.id.user_birth:
-                new EditBirthFragment().show(getSupportFragmentManager(), "Edit_Birth");
+                EditBirthFragment editBirthFragment = new EditBirthFragment();
+                bundle.putString("birth", loginUser.getBirth());
+                editBirthFragment.setArguments(bundle);
+                editBirthFragment.show(getSupportFragmentManager(), "Edit_Birth");
                 break;
             case R.id.head_picture:
                 PickPictureFragment ppFragment = new PickPictureFragment();
                 ppFragment.show(getSupportFragmentManager(), "Pick_Picture");
                 break;
             case R.id.user_phone:
-                new EditPhoneFragment().show(getSupportFragmentManager(), "Edit_Phone");
+                EditPhoneFragment editPhoneFragment = new EditPhoneFragment();
+                bundle.putString("phone", loginUser.getMobilePhone());
+                editPhoneFragment.setArguments(bundle);
+                editPhoneFragment.show(getSupportFragmentManager(), "Edit_Phone");
                 break;
             case R.id.user_email:
-                new EditEmailFragment().show(getSupportFragmentManager(), "Edit_Email");
+                EditEmailFragment editEmailFragment = new EditEmailFragment();
+                bundle.putString("email", loginUser.getEmail());
+                editEmailFragment.setArguments(bundle);
+                editEmailFragment.show(getSupportFragmentManager(), "Edit_Email");
                 break;
             case R.id.user_pwd:
                 new EditPwdFragment().show(getSupportFragmentManager(), "Edit_Password");
@@ -298,7 +313,7 @@ public class EditActivity extends AppCompatActivity implements
                     public void onClick(View view) {
                         //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, oldNickname);
                         loginUser.setNickname(oldNickname);
-                        if (oldNickname.equals(""))
+                        if (oldNickname == null)
                             usernameET.setText("点击设置");
                         else
                             usernameET.setText(oldNickname);
@@ -325,7 +340,7 @@ public class EditActivity extends AppCompatActivity implements
                     public void onClick(View view) {
                         //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIO, oldBio);
                         loginUser.setBio(oldBio);
-                        if (oldBio.equals(""))
+                        if (oldBio == null)
                             bioET.setText("点击设置");
                         else
                             bioET.setText(oldBio);
@@ -389,7 +404,7 @@ public class EditActivity extends AppCompatActivity implements
                     public void onClick(View view) {
                         //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birthBefore);
                         loginUser.setBirth(birthBefore);
-                        if (birthBefore.equals(""))
+                        if (birthBefore == null)
                             birthET.setText("点击设置");
                         else
                             birthET.setText(birthBefore);
@@ -560,7 +575,7 @@ public class EditActivity extends AppCompatActivity implements
             public void done(BmobException e) {
                 String headPictureUrl = bmobFile.getFileUrl();
                 //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, headPictureUrl);
-                loginUser.setAvatar(headPictureUrl);
+                loginUser.setPicture(headPictureUrl);
                 progressDialog.dismiss();
                 Snackbar.make(layoutScroll, "上传成功 " + headPictureUrl, Snackbar.LENGTH_LONG).show();
             }

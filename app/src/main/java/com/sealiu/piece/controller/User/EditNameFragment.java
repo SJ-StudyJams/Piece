@@ -15,25 +15,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.utils.SPUtils;
 
 /**
  * Created by liuyang
  * on 2016/7/4.
  */
 public class EditNameFragment extends DialogFragment {
-    private String nicknameBefore;
-    private TextView nicknameTV;
-
-    public interface EditNameDialogListener {
-        void onEditNameDialogPositiveClick(DialogFragment dialog, String newNickname, String oldNickname);
-
-        void onEditNameDialogNegativeClick(DialogFragment dialog);
-    }
-
     // Use this instance of the interface to deliver action events
     EditNameDialogListener eListener;
+    private String nicknameBefore;
+    private TextView nicknameTV;
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
@@ -74,10 +65,11 @@ public class EditNameFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_edit_name, null);
         builder.setView(view);
 
-        nicknameBefore = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_NICKNAME, "");
+        nicknameBefore = getArguments().getString("nickname");
+
         nicknameTV = (TextView) view.findViewById(R.id.edit_nickname);
 
-        if (!nicknameBefore.equals(""))
+        if (nicknameBefore != null)
             nicknameTV.setText(nicknameBefore);
 
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -105,5 +97,11 @@ public class EditNameFragment extends DialogFragment {
         });
 
         return builder.create();
+    }
+
+    public interface EditNameDialogListener {
+        void onEditNameDialogPositiveClick(DialogFragment dialog, String newNickname, String oldNickname);
+
+        void onEditNameDialogNegativeClick(DialogFragment dialog);
     }
 }

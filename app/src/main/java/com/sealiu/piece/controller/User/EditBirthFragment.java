@@ -8,32 +8,21 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.DatePicker;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.utils.SPUtils;
 
 /**
  * Created by art2cat
  * on 7/7/2016.
  */
 public class EditBirthFragment extends DialogFragment {
-    private String birthBefore, birthAfter;
-    private int yearBefore, monthBefore, dayBefore;
-
-    public interface EditBirthDialogListener {
-        void onEditBirthDialogPositiveClick(DialogFragment dialog, String birthAfter, String birthBefore);
-
-        void onEditBirthDialogNegativeClick(DialogFragment dialog);
-    }
-
     // Use this instance of the interface to deliver action events
     EditBirthDialogListener eListener;
+    private String birthBefore, birthAfter;
+    private int yearBefore, monthBefore, dayBefore;
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
@@ -50,18 +39,6 @@ public class EditBirthFragment extends DialogFragment {
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            DisplayMetrics dm = new DisplayMetrics();
-            getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-            dialog.getWindow()
-                    .setLayout((int) (dm.widthPixels * 0.85), ViewGroup.LayoutParams.WRAP_CONTENT);
-        }
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -75,8 +52,8 @@ public class EditBirthFragment extends DialogFragment {
         builder.setView(view);
 
         final DatePicker datePicker = (DatePicker) view.findViewById(R.id.date_Picker);
-        birthBefore = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_BIRTH, "");
-        if (!birthBefore.equals("")) {
+        birthBefore = getArguments().getString("birth");
+        if (birthBefore != null) {
             try {
                 //将字符串分割成字符串集合
                 String[] birthS = birthBefore.split("-");
@@ -93,9 +70,9 @@ public class EditBirthFragment extends DialogFragment {
                 e.printStackTrace();
             }
         } else {
-            yearBefore = 1970;
-            monthBefore = 6;
-            dayBefore = 30;
+            yearBefore = 1999;
+            monthBefore = 0;
+            dayBefore = 1;
         }
 
         // 初始化birthAfter，否则没有选择日期，直接点击确定时，birthAfter 为null
@@ -134,5 +111,11 @@ public class EditBirthFragment extends DialogFragment {
         });
 
         return builder.create();
+    }
+
+    public interface EditBirthDialogListener {
+        void onEditBirthDialogPositiveClick(DialogFragment dialog, String birthAfter, String birthBefore);
+
+        void onEditBirthDialogNegativeClick(DialogFragment dialog);
     }
 }
