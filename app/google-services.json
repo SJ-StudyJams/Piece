@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "262104224218",
+    "firebase_url": "https://sapient-biplane-135123.firebaseio.com",
+    "project_id": "sapient-biplane-135123",
+    "storage_bucket": "sapient-biplane-135123.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262104224218:android:5ffa2a2f0a6d9da8",
+        "android_client_info": {
+          "package_name": "com.sealiu.piece"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "262104224218-8qgdvhh8fuao73vuh5dru7jagv9ljd0o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzRAbc6t3bj8Q9CqtFrfzGVxtUG1CrcEQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
