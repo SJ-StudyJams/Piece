@@ -1,10 +1,8 @@
 package com.sealiu.piece.utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.math.BigInteger;
+
+import android.util.Base64;
+
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -13,13 +11,13 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
 
 /**
- * Created by art2c on 7/7/2016.
+ * Created by art2cat
+ * on 7/7/2016.
  */
 public class RSAUtils {
     private final static String KEY_PAIR = "RSA";
@@ -28,7 +26,7 @@ public class RSAUtils {
     /**
      * 随机生成RSA密钥对(默认密钥长度为1024)
      *
-     * @return
+     * @return 返回生成的RSA密钥对
      */
     public static KeyPair generateRSAKeyPair()
     {
@@ -87,10 +85,10 @@ public class RSAUtils {
      * 用私钥解密
      *
      * @param encryptedData
-     *            经过encryptedData()加密返回的byte数据
+     *            经过encryptedData()
      * @param privateKey
      *            私钥
-     * @return
+     * @return 加密返回的byte数据
      */
     public static byte[] decryptData(byte[] encryptedData, PrivateKey privateKey)
     {
@@ -105,79 +103,6 @@ public class RSAUtils {
         }
     }
 
-    /**
-     * 通过公钥byte[](publicKey.getEncoded())将公钥还原，适用于RSA算法
-     *
-     * @param keyBytes
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
-     */
-    public static PublicKey getPublicKey(byte[] keyBytes) throws NoSuchAlgorithmException,
-            InvalidKeySpecException
-    {
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_PAIR);
-        PublicKey publicKey = keyFactory.generatePublic(keySpec);
-        return publicKey;
-    }
-
-    /**
-     * 通过私钥byte[]将公钥还原，适用于RSA算法
-     *
-     * @param keyBytes
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
-     */
-    public static PrivateKey getPrivateKey(byte[] keyBytes) throws NoSuchAlgorithmException,
-            InvalidKeySpecException
-    {
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_PAIR);
-        PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
-        return privateKey;
-    }
-
-    /**
-     * 使用N、e值还原公钥
-     *
-     * @param modulus
-     * @param publicExponent
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
-     */
-    public static PublicKey getPublicKey(String modulus, String publicExponent)
-            throws NoSuchAlgorithmException, InvalidKeySpecException
-    {
-        BigInteger bigIntModulus = new BigInteger(modulus);
-        BigInteger bigIntPrivateExponent = new BigInteger(publicExponent);
-        RSAPublicKeySpec keySpec = new RSAPublicKeySpec(bigIntModulus, bigIntPrivateExponent);
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_PAIR);
-        PublicKey publicKey = keyFactory.generatePublic(keySpec);
-        return publicKey;
-    }
-
-    /**
-     * 使用N、d值还原私钥
-     *
-     * @param modulus
-     * @param privateExponent
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
-     */
-    public static PrivateKey getPrivateKey(String modulus, String privateExponent)
-            throws NoSuchAlgorithmException, InvalidKeySpecException
-    {
-        BigInteger bigIntModulus = new BigInteger(modulus);
-        BigInteger bigIntPrivateExponent = new BigInteger(privateExponent);
-        RSAPublicKeySpec keySpec = new RSAPublicKeySpec(bigIntModulus, bigIntPrivateExponent);
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_PAIR);
-        PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
-        return privateKey;
-    }
 
     /**
      * 从字符串中加载公钥
@@ -191,7 +116,7 @@ public class RSAUtils {
     {
         try
         {
-            byte[] buffer = Base64Utils.decode(publicKeyStr);
+            byte[] buffer = Base64.decode(publicKeyStr, 0);
             KeyFactory keyFactory = KeyFactory.getInstance(KEY_PAIR);
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(buffer);
             return keyFactory.generatePublic(keySpec);
@@ -211,15 +136,15 @@ public class RSAUtils {
      * 从字符串中加载私钥<br>
      * 加载时使用的是PKCS8EncodedKeySpec（PKCS#8编码的Key指令）。
      *
-     * @param privateKeyStr
-     * @return
+     * @param privateKeyStr 私钥字符串
+     * @return 返回解密后的私钥
      * @throws Exception
      */
     public static PrivateKey loadPrivateKey(String privateKeyStr) throws Exception
     {
         try
         {
-            byte[] buffer = Base64Utils.decode(privateKeyStr);
+            byte[] buffer = Base64.decode(privateKeyStr, 0);
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(buffer);
             KeyFactory keyFactory = KeyFactory.getInstance(KEY_PAIR);
             return keyFactory.generatePrivate(keySpec);
@@ -233,59 +158,6 @@ public class RSAUtils {
         {
             throw new Exception("私钥数据为空");
         }
-    }
-
-    /**
-     * 从文件中输入流中加载公钥
-     *
-     * @param in
-     *            公钥输入流
-     * @throws Exception
-     *             加载公钥时产生的异常
-     */
-    public static PublicKey loadPublicKey(InputStream in) throws Exception
-    {
-        try
-        {
-            return loadPublicKey(readKey(in));
-        } catch (IOException e)
-        {
-            throw new Exception("公钥数据流读取错误");
-        } catch (NullPointerException e)
-        {
-            throw new Exception("公钥输入流为空");
-        }
-    }
-
-
-
-    /**
-     * 读取密钥信息
-     *  --------------------
-     *  	CONTENT
-     *  --------------------
-     * @param in
-     * @return
-     * @throws IOException
-     */
-    private static String readKey(InputStream in) throws IOException
-    {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String readLine = null;
-        StringBuilder sb = new StringBuilder();
-        while ((readLine = br.readLine()) != null)
-        {
-            if (readLine.charAt(0) == '-')
-            {
-                continue;
-            } else
-            {
-                sb.append(readLine);
-                sb.append('\r');
-            }
-        }
-
-        return sb.toString();
     }
 
 }
