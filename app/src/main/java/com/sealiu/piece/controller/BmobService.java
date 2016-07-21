@@ -11,9 +11,16 @@ import cn.bmob.v3.listener.SaveListener;
  * on 16-7-21.
  */
 public class BmobService {
+    private User user;
+    private LoginUser loginUser;
 
-    public LoginUser login(final LoginUser loginUser, String username, final String pwd) {
-        User user = new User();
+    public BmobService(LoginUser loginUser) {
+        super();
+        user = new User();
+        this.loginUser = loginUser;
+    }
+
+    public LoginUser login(String username, final String pwd) {
         user.setUsername(username);
         user.setPassword(pwd);
         user.login(new SaveListener<User>() {
@@ -29,7 +36,7 @@ public class BmobService {
                     loginUser.setLogin(true);
                 } else {
                     loginUser.setLogin(false);
-                    loginUser.setErrormsg(e.toString());
+                    loginUser.setErrorMsg(e.getErrorCode());
                 }
             }
         });

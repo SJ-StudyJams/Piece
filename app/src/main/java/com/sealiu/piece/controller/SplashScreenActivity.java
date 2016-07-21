@@ -51,27 +51,10 @@ public class SplashScreenActivity extends AppCompatActivity {
                 && pwd != null) {
             //距上次登录没有超过1个月，objectId不为空，且用户为登录状态，则自动登录
 
-            User user = new User();
-            user.setUsername(username);
-            user.setPassword(pwd);
-            user.login(new SaveListener<User>() {
-                @Override
-                public void done(User u, BmobException e) {
-                    if (e == null) {
-                        loginUser.setLogin(true);
-                        Log.i(TAG, "Login success");
-
-                    } else {
-
-                        Log.i(TAG, "login undone");
-                        Log.e(TAG, e.toString());
-                        loginUser.setLogin(false);
-                        Toast.makeText(SplashScreenActivity.this, "登录失败：" + e.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
+            BmobService bmobService = new BmobService(loginUser);
+            loginUser = bmobService.login(username, pwd);
         }
+
         iv1 = (ImageView) findViewById(R.id.imageView1);
         iv2 = (ImageView) findViewById(R.id.imageView2);
         iv3 = (ImageView) findViewById(R.id.imageView3);
@@ -104,7 +87,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         pg2.setVisibility(View.VISIBLE);
-                        Animation upAndDown3 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.up_down);
+                        Animation upAndDown3 = AnimationUtils.loadAnimation(getBaseContext(),
+                                R.anim.up_down);
 
                         iv3.startAnimation(upAndDown3);
                         upAndDown3.setAnimationListener(new Animation.AnimationListener() {
@@ -115,7 +99,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                             @Override
                             public void onAnimationEnd(Animation animation) {
                                 pg3.setVisibility(View.VISIBLE);
-                                Animation upAndDown4 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.up_down);
+                                Animation upAndDown4 = AnimationUtils.loadAnimation(getBaseContext(),
+                                        R.anim.up_down);
 
                                 iv4.startAnimation(upAndDown4);
                                 upAndDown4.setAnimationListener(new Animation.AnimationListener() {
@@ -130,9 +115,17 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                                         Log.i("TAG", "" + loginUser.isLogin() );
                                         if (loginUser.isLogin()) {
-                                            startActivity(new Intent(SplashScreenActivity.this, MapsActivity.class));
+                                            Log.i(TAG, "Login success");
+                                            startActivity(new Intent(SplashScreenActivity.this,
+                                                    MapsActivity.class));
                                         } else {
-                                            startActivity(new Intent(SplashScreenActivity.this, LoginActivity.class));
+                                            String content = Constants
+                                                    .createErrorInfo(loginUser.getErrorMsg())
+                                                    + " 错误码：" + loginUser.getErrorMsg();
+                                            Toast.makeText(SplashScreenActivity.this, content,
+                                                    Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(SplashScreenActivity.this,
+                                                    LoginActivity.class));
                                         }
                                     }
 

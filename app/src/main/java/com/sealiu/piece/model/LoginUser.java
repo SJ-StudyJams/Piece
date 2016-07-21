@@ -15,7 +15,7 @@ public class LoginUser {
     private String mobilePhone;
     private String sex;
     private String avatar;
-    private String errormsg;
+    private int errorMsg;
     private boolean login;
     private boolean emailVerified;
     private boolean mobilePhoneNumberVerified;
@@ -142,11 +142,11 @@ public class LoginUser {
         this.login = login;
     }
 
-    public String getErrormsg() {
-        return errormsg;
+    public int getErrorMsg() {
+        return errorMsg;
     }
 
-    public void setErrormsg(String errormsg) {
-        this.errormsg = errormsg;
+    public void setErrorMsg(int errorMsg) {
+        this.errorMsg = errorMsg;
     }
 }

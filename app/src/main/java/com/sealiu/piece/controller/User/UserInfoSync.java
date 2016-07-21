@@ -66,12 +66,12 @@ public class UserInfoSync {
      *
      * @param context  上下文对象
      * @param filename SP 文件名
-     * @param objectid 需要查询用户的用户名
+     * @param objectId 需要查询用户的用户名
      */
-    public static void getUserInfo(final Context context, final String filename, String objectid) throws Exception {
+    public static void getUserInfo(final Context context, final String filename, String objectId) throws Exception {
 
         BmobQuery<User> query = new BmobQuery<User>();
-        query.getObject(objectid, new QueryListener<User>() {
+        query.getObject(objectId, new QueryListener<User>() {
             @Override
             public void done(User user, BmobException e) {
                 if (e == null) {

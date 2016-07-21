@@ -14,12 +14,16 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.BmobService;
 import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -95,38 +99,36 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                     return;
                 }
 
-                user.setUsername(username);
-                user.setPassword(pwd);
-
                 // ProgressDialog
                 progress = new ProgressDialog(getActivity());
                 progress.setMessage("正在登录中...");
                 progress.setCanceledOnTouchOutside(false);
                 progress.show();
 
-                user.login(new SaveListener<User>() {
-                    @Override
-                    public void done(User u, BmobException e) {
-                        if (e == null) {
-                            //记录本次登录时间，设置登录标志位
-                            loginUser.setLoginTime(System.currentTimeMillis());
-                            loginUser.setAutoLogin(true);
-                            loginUser.setObjectId(u.getObjectId());
-                            loginUser.setUsername(u.getUsername());
-                            loginUser.setPassword(pwd);
+                loginUser = new LoginUser();
+                BmobService bmobService = new BmobService(loginUser);
+                loginUser = bmobService.login(username, pwd);
 
+                //延时1秒执行判断是否登录成功
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (loginUser.isLogin()) {
                             progress.dismiss();
                             Listener listener = (Listener) getActivity();
                             listener.onSubmitLoginBtnClick();
                         } else {
-                            SPUtils.clear(getActivity(), Constants.SP_FILE_NAME);
-                            String content = Constants.createErrorInfo(e.getErrorCode()) + " 错误码：" + e.getErrorCode();
-                            Snackbar.make(view, content, Snackbar.LENGTH_LONG).show();
-                            Log.e(TAG, e.toString());
                             progress.dismiss();
+                            SPUtils.clear(getActivity(), Constants.SP_FILE_NAME);
+                            String content = Constants.createErrorInfo(loginUser.getErrorMsg())
+                                    + " 错误码：" + loginUser.getErrorMsg();
+                            Snackbar.make(view, content, Snackbar.LENGTH_LONG).show();
+                            Log.e(TAG, "登录失败" + loginUser.getErrorMsg());
                         }
                     }
-                });
+                }, 1000);
+
                 break;
             case R.id.find_pwd:
                 listener.onResetPasswordBtnClick();

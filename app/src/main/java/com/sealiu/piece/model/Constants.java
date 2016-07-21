@@ -28,6 +28,9 @@ public class Constants {
     public static String createErrorInfo(Integer errorCode) {
         String errorInfo;
         switch (errorCode) {
+            case 101:
+                errorInfo = "用户名或密码错误";
+                break;
             case 109:
                 errorInfo = "缺少登录信息";
                 break;
