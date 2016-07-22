@@ -1,14 +1,24 @@
 package com.sealiu.piece.controller.Maps;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -54,12 +64,16 @@ import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobRealTimeData;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.ValueEventListener;
 
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -92,14 +106,18 @@ public class MapsActivity extends AppCompatActivity implements
     LinearLayout moreInfoLayout;
     Button seeAllBtn;
     FloatingActionButton writePieceBtn;
-
+    SharedPreferences SP;
+    BmobRealTimeData data = new BmobRealTimeData();
     private RelativeLayout snackBarHolderView;
     private GoogleMap mMap;
     private Double mCurrentLatitude, mCurrentLongitude;
     private String mCurrentLocationName;
-
     private ClusterManager<ClusterMarkerLocation> clusterManager;
     private ClusterMarkerLocation clickedClusterItem;
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, MapsActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +158,7 @@ public class MapsActivity extends AppCompatActivity implements
         hideShowMoreInfoBtn.setOnClickListener(this);
         seeAllBtn.setOnClickListener(this);
 
+        initRealTimeData();
     }
 
     @Override
@@ -541,6 +560,95 @@ public class MapsActivity extends AppCompatActivity implements
         //Intent intent = new Intent(this, PieceMainService.class);
         //stopService(intent);
         super.onDestroy();
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public void showNotification(String title, String content) {
+        Intent intent = MapsActivity.newIntent(this);
+        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
+        Notification.Builder builder = new Notification.Builder(this);
+
+        builder.setContentTitle(title)
+                .setContentText(content)
+                .setSmallIcon(R.drawable.ic_insert_drive_file_black_24dp)
+                .setContentIntent(pIntent)
+                .setAutoCancel(true)
+                .setLights(Color.BLUE, 3000, 3000);
+
+        SP = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isVoice = SP.getBoolean("pref_notification_voice_key", true);
+
+        Log.i(TAG, "#### isVoice:" + isVoice);
+        if (isVoice) {
+            String ringtone = SP.getString("pref_ringtone_key", null);
+            Log.i(TAG, "#### ringtone:" + ringtone);
+            if (ringtone != null) {
+                Uri soundUri = Uri.parse(ringtone);
+                builder.setSound(soundUri);
+            }
+
+            boolean isVibrate = SP.getBoolean("pref_vibrate_key", true);
+            Log.i(TAG, "#### isVibrate:" + isVibrate);
+            if (isVibrate) {
+                builder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
+            }
+
+        }
+
+        Notification notification = builder.build();
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0, notification);
+    }
+
+    private void initRealTimeData() {
+        data.start(new ValueEventListener() {
+            @Override
+            public void onConnectCompleted(Exception e) {
+                Log.d(TAG, "连接成功:" + data.isConnected());
+                if (data.isConnected())
+                    data.subTableUpdate("Piece");
+            }
+
+            @Override
+            public void onDataChange(JSONObject jsonObject) {
+                Log.i(TAG, "(" + jsonObject.optString("action") + ")" + "数据：" + jsonObject);
+                JSONObject jsonData = jsonObject.optJSONObject("data");
+                String authorID = jsonData.optString("authorID");
+                if (!User.getCurrentUser().getObjectId().equals(authorID)) {
+                    boolean flag = false;
+                    String pieceContent = jsonData.optString("content");
+                    Double pieceLat = jsonData.optDouble("latitude");
+                    Double pieceLng = jsonData.optDouble("longitude");
+                    Integer visibility = jsonData.optInt("visibility");
+                    Double distance = Common.GetDistance(pieceLat, pieceLng, mCurrentLatitude, mCurrentLongitude);
+
+                    switch (visibility) {
+                        case 0:
+                            if (distance <= 5000)
+                                flag = true;
+                            break;
+                        case 1:
+                            if (distance <= 20000)
+                                flag = true;
+                            break;
+                        case 2:
+                            if (distance <= 60000)
+                                flag = true;
+                            break;
+                        case 3:
+                            if (distance <= 100000)
+                                flag = true;
+                            break;
+                    }
+
+                    if (flag)
+                        showNotification("附近有新的 Piece", pieceContent);
+                }
+            }
+        });
     }
 
     class CustomInfoWindowAdapter implements InfoWindowAdapter {
