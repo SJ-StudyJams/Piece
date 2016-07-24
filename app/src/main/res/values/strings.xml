@@ -833,4 +833,5 @@ http://www.gnu.org/philosophy/why-not-lgpl.html."</string>
 
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="pieces_detail">Piece 详情</string>
+    <string name="phone">手机号</string>
 </resources>

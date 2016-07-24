@@ -121,10 +121,7 @@ public class EditPwdFragment extends DialogFragment {
 
                 // 修改密码
                 try {
-                    encryptOldPassword = Md5Utils.encode(old_pwd);
-                    Log.i(TAG, "" + encryptOldPassword);
-                    encryptNewPassword = Md5Utils.encode(new_pwd);
-                    BmobUser.updateCurrentUserPassword(encryptOldPassword, encryptNewPassword, new UpdateListener() {
+                    BmobUser.updateCurrentUserPassword(old_pwd, repeat_pwd, new UpdateListener() {
                         @Override
                         public void done(BmobException e) {
                             if (e == null) {

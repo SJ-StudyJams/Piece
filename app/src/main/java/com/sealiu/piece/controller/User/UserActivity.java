@@ -124,7 +124,7 @@ public class UserActivity extends AppCompatActivity {
         //获取用户信息
         loginUser = UserInfoSync.getLoginInfo(UserActivity.this);
         String nickName = loginUser.getNickname();
-        Log.i(TAG, nickName);
+        Log.i(TAG, "" + nickName);
         CollapsingToolbarLayout collapsingToolbarLayout =
                 (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         if (nickName != null) {

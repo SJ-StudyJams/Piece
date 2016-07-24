@@ -125,6 +125,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                                         Log.i("TAG", "" + loginUser.isLogin());
                                         if (flag) {
                                             Log.i(TAG, "Login success");
+                                            UserInfoSync.saveLoginInfo(SplashScreenActivity.this, loginUser);
                                             startActivity(new Intent(SplashScreenActivity.this,
                                                     MapsActivity.class));
                                         } else {
@@ -159,15 +160,10 @@ public class SplashScreenActivity extends AppCompatActivity {
             public void onAnimationRepeat(Animation animation) {
             }
         });
-
-
     }
-
-
 
     @Override
     protected void onDestroy() {
-        UserInfoSync.saveLoginInfo(SplashScreenActivity.this, loginUser);
         super.onDestroy();
     }
 

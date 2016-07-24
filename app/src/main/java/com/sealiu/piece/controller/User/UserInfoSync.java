@@ -10,6 +10,7 @@ import com.sealiu.piece.utils.SPUtils;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
 
@@ -29,6 +30,7 @@ public class UserInfoSync {
      */
     public static void upload(final Context context, String objectId, final String filename) throws Exception {
         String nickname, bio, sex, birth, email, phone_number, picture;
+        boolean pv, ev;
         nickname = SPUtils.getString(context, filename, Constants.SP_NICKNAME, null);
         bio = SPUtils.getString(context, filename, Constants.SP_BIO, null);
         sex = SPUtils.getString(context, filename, Constants.SP_SEX, null);
@@ -36,6 +38,8 @@ public class UserInfoSync {
         email = SPUtils.getString(context, filename, Constants.SP_EMAIL, null);
         phone_number = SPUtils.getString(context, filename, Constants.SP_PHONE_NUMBER, null);
         picture = SPUtils.getString(context, filename, Constants.SP_HEAD_PICTURE, null);
+        pv = SPUtils.getBoolean(context, filename, Constants.SP_IS_VALID_PHONE_NUMBER, false);
+        ev = SPUtils.getBoolean(context, filename, Constants.SP_IS_VALID_EMAIL, false);
 
         long loginTime = SPUtils.getLong(context, filename, Constants.SP_LOGIN_TIME, 0);
 
@@ -46,7 +50,9 @@ public class UserInfoSync {
         user.setBirth(birth);
         user.setUser_sex(sex);
         user.setEmail(email);
+        user.setMobilePhoneNumberVerified(ev);
         user.setMobilePhoneNumber(phone_number);
+        user.setMobilePhoneNumberVerified(pv);
         user.setLoginTime(loginTime);
 
         user.update(objectId, new UpdateListener() {
@@ -85,16 +91,16 @@ public class UserInfoSync {
                     String birth = user.getBirth();
                     String sex = user.getUser_sex();
                     String avatar = user.getPicture();
-                    Log.i("query", "" + username1);
-                    Log.i("query", "" + nickname);
-                    Log.i("query", "" + email);
-                    Log.i("query", "" + phone);
-                    Log.i("query", "" + ev);
-                    Log.i("query", "" + pv);
-                    Log.i("query", "" + bio);
-                    Log.i("query", "" + sex);
-                    Log.i("query", "" + birth);
-                    Log.i("query", "" + avatar);
+                    Log.i(TAG, "un:" + username1);
+                    Log.i(TAG, "nn:" + nickname);
+                    Log.i(TAG, "em:" + email);
+                    Log.i(TAG, "ph:" + phone);
+                    Log.i(TAG, "ev:" + ev);
+                    Log.i(TAG, "pv:" + pv);
+                    Log.i(TAG, "bi:" + bio);
+                    Log.i(TAG, "se:" + sex);
+                    Log.i(TAG, "br:" + birth);
+                    Log.i(TAG, "av:" + avatar);
                     SPUtils.putString(context, filename, Constants.SP_USERNAME, username1);
                     SPUtils.putString(context, filename, Constants.SP_NICKNAME, nickname);
                     SPUtils.putString(context, filename, Constants.SP_BIO, bio);
@@ -176,7 +182,7 @@ public class UserInfoSync {
         loginInfo.setSex(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_SEX, null));
         loginInfo.setAvatar(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, null));
         loginInfo.setEmailVerified(SPUtils.getBoolean(context, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, false));
-        loginInfo.setMobilePhoneNumberVerified(SPUtils.getBoolean(context, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false));
+        loginInfo.setMobilePhoneNumberVerified(SPUtils.getBoolean(context, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, true));
         loginInfo.setAutoLogin(SPUtils.getBoolean(context, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false));
         loginInfo.setLoginTime(SPUtils.getLong(context, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, 0));
         Log.i(TAG, "get LoginUser info");

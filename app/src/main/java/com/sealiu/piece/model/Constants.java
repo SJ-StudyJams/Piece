@@ -34,14 +34,17 @@ public class Constants {
             case 109:
                 errorInfo = "缺少登录信息";
                 break;
+            case 201:
+                errorInfo = "原密码错误";
+                break;
+            case 202:
+                errorInfo = "邮箱已经存在";
+                break;
             case 207:
                 errorInfo = "验证码不正确";
                 break;
             case 209:
                 errorInfo = "手机号码已经存在";
-                break;
-            case 202:
-                errorInfo = "邮箱已经存在";
                 break;
             case 10010:
                 errorInfo = "该手机号发送短信达到限制";

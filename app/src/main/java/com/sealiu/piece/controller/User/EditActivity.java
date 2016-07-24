@@ -20,6 +20,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import cn.bmob.sms.listener.VerifySMSCodeListener;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,6 +36,8 @@ import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import cn.bmob.sms.BmobSMS;
+import cn.bmob.sms.listener.VerifySMSCodeListener;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
@@ -154,7 +157,7 @@ public class EditActivity extends AppCompatActivity implements
         }
 
         //显示手机号
-        if (phone == null) {
+        if (phone == null || phone.equals("")) {
             phoneET.setText("点击设置");
         } else {
             phoneET.setText(phone);
@@ -204,15 +207,12 @@ public class EditActivity extends AppCompatActivity implements
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.user_sex_male:
-                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "1");
                         loginUser.setSex("1");
                         break;
                     case R.id.user_sex_female:
-                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "2");
                         loginUser.setSex("2");
                         break;
                     case R.id.user_sex_secret:
-                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_SEX, "3");
                         loginUser.setSex("3");
                         break;
                     default:
@@ -227,23 +227,22 @@ public class EditActivity extends AppCompatActivity implements
      * 如果修改了手机/邮箱，那么是否验证就会改变
      */
     private void updateVerifiedStatus() {
-        //boolean isValidPhone = SPUtils.getBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false);
         boolean isValidPhone = loginUser.isMobilePhoneNumberVerified();
-        //boolean isValidEmail = SPUtils.getBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, false);
         boolean isValidEmail = loginUser.isEmailVerified();
 
         ImageView phoneIsValidIV = (ImageView) findViewById(R.id.phone_is_valid);
         ImageView emailIsValidIV = (ImageView) findViewById(R.id.email_is_valid);
 
-        if (isValidPhone)
+        if (isValidPhone) {
             phoneIsValidIV.setVisibility(View.VISIBLE);
-        else
+        } else {
             phoneIsValidIV.setVisibility(View.INVISIBLE);
-
-        if (isValidEmail)
+        }
+        if (isValidEmail) {
             emailIsValidIV.setVisibility(View.VISIBLE);
-        else
+        } else {
             emailIsValidIV.setVisibility(View.INVISIBLE);
+        }
     }
 
     //实现控件的监听，打开对应的对话框
@@ -296,7 +295,6 @@ public class EditActivity extends AppCompatActivity implements
     // 修改昵称对话框（确定修改）
     @Override
     public void onEditNameDialogPositiveClick(DialogFragment dialog, String newNickname, final String oldNickname) {
-        //SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, newNickname);
         loginUser.setNickname(newNickname);
         usernameET.setText(newNickname);
 
@@ -304,7 +302,6 @@ public class EditActivity extends AppCompatActivity implements
                 .setAction("撤销", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, oldNickname);
                         loginUser.setNickname(oldNickname);
                         if (oldNickname.equals(""))
                             usernameET.setText("点击设置");
@@ -323,7 +320,6 @@ public class EditActivity extends AppCompatActivity implements
     // 修改个人简介对话框（确定修改）
     @Override
     public void onEditBioDialogPositiveClick(DialogFragment dialog, String newBio, final String oldBio) {
-        //SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_BIO, newBio);
         loginUser.setBio(newBio);
         bioET.setText(newBio);
 
@@ -331,7 +327,6 @@ public class EditActivity extends AppCompatActivity implements
                 .setAction("撤销", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIO, oldBio);
                         loginUser.setBio(oldBio);
                         if (oldBio.equals(""))
                             bioET.setText("点击设置");
@@ -349,15 +344,31 @@ public class EditActivity extends AppCompatActivity implements
 
     // 修改电话对话框（确定修改）
     @Override
-    public void onEditPhoneDialogPositiveClick(DialogFragment dialog, String phone) {
-        //SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_PHONE_NUMBER, phone);
-        //SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_PHONE_NUMBER, false);
-        loginUser.setMobilePhone(phone);
-        loginUser.setMobilePhoneNumberVerified(false);
-        //改变手机号的验证状态
-        updateVerifiedStatus();
-        Snackbar.make(layoutScroll, "手机号修改成功", Snackbar.LENGTH_LONG).show();
-        phoneET.setText(phone);
+    public void onEditPhoneDialogPositiveClick(DialogFragment dialog, final String phone, String smsCode) {
+
+
+        BmobSMS.verifySmsCode(this, phone, smsCode, new VerifySMSCodeListener() {
+            @Override
+            public void done(cn.bmob.sms.exception.BmobException e) {
+                if (e == null) {
+                    loginUser.setMobilePhoneNumberVerified(true);
+                    loginUser.setMobilePhone(phone);
+                    //改变手机号的验证状态
+                    updateVerifiedStatus();
+                    Snackbar.make(layoutScroll, "手机号验证成功", Snackbar.LENGTH_LONG).show();
+                    phoneET.setText(phone);
+                } else {
+                    loginUser.setMobilePhoneNumberVerified(false);
+                    loginUser.setMobilePhone(phone);
+                    //改变手机号的验证状态
+                    updateVerifiedStatus();
+                    String content = Constants.createErrorInfo(e.getErrorCode());
+                    Snackbar.make(layoutScroll, "手机号验证失败:" + content, Snackbar.LENGTH_LONG).show();
+                    phoneET.setText(phone);
+                }
+            }
+        });
+
     }
 
     // 修改电话对话框（取消修改）
@@ -369,8 +380,6 @@ public class EditActivity extends AppCompatActivity implements
     // 修改邮箱对话框（确定修改）
     @Override
     public void onEditEmailDialogPositiveClick(DialogFragment dialog, String email) {
-        //SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_EMAIL, email);
-        //SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.SP_IS_VALID_EMAIL, false);
         loginUser.setEmail(email);
         loginUser.setEmailVerified(false);
         //改变邮箱的验证状态
@@ -387,7 +396,6 @@ public class EditActivity extends AppCompatActivity implements
     // 修改生日对话框（确定修改）
     @Override
     public void onEditBirthDialogPositiveClick(DialogFragment dialog, String birthAfter, final String birthBefore) {
-        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birthAfter);
         loginUser.setBirth(birthAfter);
         birthET.setText(birthAfter);
 
@@ -395,7 +403,6 @@ public class EditActivity extends AppCompatActivity implements
                 .setAction("撤销", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_BIRTH, birthBefore);
                         loginUser.setBirth(birthBefore);
                         if (birthBefore.equals(""))
                             birthET.setText("点击设置");
@@ -414,7 +421,6 @@ public class EditActivity extends AppCompatActivity implements
     // 修改密码对话框（确定修改）
     @Override
     public void onEditPwdDialogPositiveClick(DialogFragment dialog, String pwd) {
-        //SPUtils.putString(this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
         loginUser.setPassword(pwd);
 
     }
