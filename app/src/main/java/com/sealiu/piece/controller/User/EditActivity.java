@@ -78,11 +78,12 @@ public class EditActivity extends AppCompatActivity implements
 
         objectId = loginUser.getObjectId();
 
-        if (objectId.equals("")) {
+        if (objectId == null || objectId.equals("")) {
             //获取当前用户
             BmobUser bmobUser = User.getCurrentUser();
             //获取objectId
             objectId = bmobUser.getObjectId();
+            loginUser.setObjectId(objectId);
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -569,7 +570,7 @@ public class EditActivity extends AppCompatActivity implements
                 //SPUtils.putString(EditActivity.this, Constants.SP_FILE_NAME, Constants.SP_HEAD_PICTURE, headPictureUrl);
                 loginUser.setAvatar(headPictureUrl);
                 progressDialog.dismiss();
-                Snackbar.make(layoutScroll, "上传成功 " + headPictureUrl, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(layoutScroll, "上传成功 ", Snackbar.LENGTH_LONG).show();
             }
 
             @Override
