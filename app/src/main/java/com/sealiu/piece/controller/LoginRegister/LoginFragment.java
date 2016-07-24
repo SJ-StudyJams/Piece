@@ -91,7 +91,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 progress.show();
 
                 loginUser = new LoginUser();
-                BmobService bmobService = new BmobService(loginUser);
+                BmobService bmobService = new BmobService(getContext(), loginUser);
                 loginUser = bmobService.login(username, pwd);
 
                 //延时1秒执行判断是否登录成功
