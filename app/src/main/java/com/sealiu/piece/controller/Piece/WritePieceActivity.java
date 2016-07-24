@@ -25,11 +25,9 @@ import android.widget.TextView;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.User.UserInfoSync;
-import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
-import com.sealiu.piece.utils.SPUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -190,10 +188,13 @@ public class WritePieceActivity extends AppCompatActivity implements
 
         String nickName = loginUser.getNickname();
         String headPicture = loginUser.getAvatar();
+        String username = loginUser.getUsername();
 
 
-        if (!nickName.equals("")) {
+        if (nickName != null) {
             nickNameTV.setText(nickName);
+        } else {
+            nickNameTV.setText(username);
         }
 
         try {
