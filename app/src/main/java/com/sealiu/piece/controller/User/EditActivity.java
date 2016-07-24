@@ -451,10 +451,18 @@ public class EditActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onDestroy() {
-
+    protected void onPause() {
         try {
             UserInfoSync.saveLoginInfo(EditActivity.this, loginUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        try {
             UserInfoSync.upload(this, objectId, Constants.SP_FILE_NAME);
         } catch (Exception e) {
             e.printStackTrace();

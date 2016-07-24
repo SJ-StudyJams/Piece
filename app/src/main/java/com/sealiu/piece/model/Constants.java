@@ -133,15 +133,4 @@ public class Constants {
      */
     public static final String IV_PARAMERER = "1020304050607080";
 
-    /**
-     * 此为Maps常量
-     */
-    public static final String MAPS_PREFS_NAME = "mapCameraState";
-    public static final String MAPS_LNG = "longitude";
-    public static final String MAPS_LAT = "latitude";
-    public static final String MAPS_ZOOM = "zoom";
-    public static final String MAPS_BEARING = "bearing";
-    public static final String MAPS_TILT = "tilt";
-    public static final String MAPS_MAP_TYPE = "mapType";
-
 }

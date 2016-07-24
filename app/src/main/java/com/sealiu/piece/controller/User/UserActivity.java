@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -76,6 +77,7 @@ public class UserActivity extends AppCompatActivity {
         index = savedInstanceState != null ? savedInstanceState.getInt(LAYOUT_MANAGER_FLAG) : 0;
 
         initUI();
+
         // fetch data, and set adapter
         setAdapter();
 
@@ -91,26 +93,44 @@ public class UserActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        Log.i(TAG, "onPause");
+        super.onPause();
+    }
+
+    @Override
     protected void onResume() {
         Log.i(TAG, "onResume");
         super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i(TAG, "onStop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onRestart() {
+        Log.i(TAG, "onRestart");
         initUI();
+        super.onRestart();
     }
 
     /**
      * 初始化界面显示
      */
     private void initUI() {
+        //获取用户信息
         loginUser = UserInfoSync.getLoginInfo(UserActivity.this);
         String nickName = loginUser.getNickname();
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            if (nickName != null && !nickName.equals("")) {
-                getSupportActionBar().setTitle(nickName);
-            } else {
-                getSupportActionBar().setTitle(loginUser.getUsername());
-            }
+        Log.i(TAG, nickName);
+        CollapsingToolbarLayout collapsingToolbarLayout =
+                (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        if (nickName != null) {
+            collapsingToolbarLayout.setTitle(nickName);
+        } else {
+            collapsingToolbarLayout.setTitle(loginUser.getUsername());
         }
     }
 

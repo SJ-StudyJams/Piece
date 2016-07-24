@@ -49,6 +49,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         String username = loginUser.getUsername();
         String pwd = loginUser.getPassword();
         Log.i(TAG, "" + pwd);
+        Log.i(TAG, "LOGIN" + loginUser.isAutoLogin());
+
 
         if (!isOutOfDate()
                 && loginUser.getObjectId() != null

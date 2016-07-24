@@ -112,7 +112,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                             Log.e(TAG, "登录失败" + loginUser.getErrorMsg());
                         }
                     }
-                }, 1000);
+                }, 3000);
 
                 break;
             case R.id.find_pwd:

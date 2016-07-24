@@ -342,7 +342,7 @@ public class MapsActivity extends AppCompatActivity implements
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 BmobUser.logOut();
-                                SPUtils.putBoolean(MapsActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
+                                SPUtils.clear(MapsActivity.this, Constants.SP_FILE_NAME);
                                 startActivity(new Intent(MapsActivity.this, LoginActivity.class));
                                 finish();
                             }
