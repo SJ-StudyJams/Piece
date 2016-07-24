@@ -122,14 +122,14 @@ public class EditActivity extends AppCompatActivity implements
 
 
         //显示昵称
-        if (nickname == null) {
+        if (nickname == null || nickname.equals("")) {
             usernameET.setText("点击设置");
         } else {
             usernameET.setText(nickname);
         }
 
         //显示个人简介
-        if (bio == null) {
+        if (bio == null || bio.equals("")) {
             bioET.setText("点击设置");
         } else {
             bioET.setText(bio);

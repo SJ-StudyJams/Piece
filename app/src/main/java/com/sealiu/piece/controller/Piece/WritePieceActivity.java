@@ -191,7 +191,7 @@ public class WritePieceActivity extends AppCompatActivity implements
         String username = loginUser.getUsername();
 
 
-        if (nickName != null) {
+        if (nickName != null && !nickName.equals("")) {
             nickNameTV.setText(nickName);
         } else {
             nickNameTV.setText(username);

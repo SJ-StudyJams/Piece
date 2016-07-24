@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,9 +21,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Piece.PieceAdapter;
-import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.Piece;
-import com.sealiu.piece.utils.SPUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -50,8 +50,11 @@ public class UserActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    private LoginUser loginUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -72,8 +75,9 @@ public class UserActivity extends AppCompatActivity {
         // set LayoutManager
         index = savedInstanceState != null ? savedInstanceState.getInt(LAYOUT_MANAGER_FLAG) : 0;
 
-        // fetch data, and set adapter
         initUI();
+        // fetch data, and set adapter
+        setAdapter();
 
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
         Set<String> piecesSet = SP.getStringSet("pref_piece_nearby_key", null);
@@ -86,21 +90,33 @@ public class UserActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        Log.i(TAG, "onResume");
+        super.onResume();
+        initUI();
+    }
+
     /**
      * 初始化界面显示
      */
     private void initUI() {
-
-        String nickName = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, "");
-
+        loginUser = UserInfoSync.getLoginInfo(UserActivity.this);
+        String nickName = loginUser.getNickname();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(nickName);
+            if (nickName != null && !nickName.equals("")) {
+                getSupportActionBar().setTitle(nickName);
+            } else {
+                getSupportActionBar().setTitle(loginUser.getUsername());
+            }
         }
+    }
 
-        String userObjectId = SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, "");
-        if (!userObjectId.equals("")) {
+    private void setAdapter() {
+        String userObjectId = loginUser.getObjectId();
+        if (userObjectId != null) {
             BmobQuery<Piece> query = new BmobQuery<>();
             query.addWhereEqualTo("authorID", userObjectId);
             query.setLimit(1000);
