@@ -101,6 +101,9 @@
         <service android:name=".service.PieceMainService" />
 
         <activity android:name=".controller.LoginRegister.ResetPwdActivity" />
+        <activity
+            android:name=".controller.Piece.PieceDetailActivity"
+            android:label="@string/pieces_detail" />
     </application>
 
 </manifest>

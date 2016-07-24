@@ -32,6 +32,10 @@ public class Piece extends BmobObject {
     //5km, 20km, 60km, 100km (分别为：0，1，2，3)
     private Integer visibility;
 
+    public Piece() {
+        super();
+    }
+
     public Piece(String authorID, String content, Double lat, Double lng, Integer visib) {
         this.authorID = authorID;
         this.content = content;

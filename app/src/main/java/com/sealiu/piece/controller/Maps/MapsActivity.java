@@ -53,6 +53,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.ClusterManager;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.LoginRegister.LoginActivity;
+import com.sealiu.piece.controller.Piece.PieceDetailActivity;
 import com.sealiu.piece.controller.Piece.PiecesActivity;
 import com.sealiu.piece.controller.Piece.WritePieceActivity;
 import com.sealiu.piece.controller.Settings.MyPreferenceActivity;
@@ -529,7 +530,7 @@ public class MapsActivity extends AppCompatActivity implements
                                     LatLng ll = new LatLng(p.getLatitude(), p.getLongitude());
                                     ClusterMarkerLocation item = new ClusterMarkerLocation(ll,
                                             list.get(0).getNickname(),
-                                            p.getContent() + "::" + p.getCreatedAt());
+                                            p.getContent() + "::" + p.getCreatedAt() + "::" + p.getObjectId());
                                     clusterManager.addItem(item);
                                 }
                             }
@@ -551,8 +552,12 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onClusterItemInfoWindowClick(ClusterMarkerLocation item) {
-        Snackbar.make(snackBarHolderView, item.getTitle() + item.getSnippet(), Snackbar.LENGTH_LONG).show();
+        //Snackbar.make(snackBarHolderView, item.getTitle() + item.getSnippet(), Snackbar.LENGTH_LONG).show();
         //打开纸条的详情页
+        Intent intent = new Intent(this, PieceDetailActivity.class);
+        intent.putExtra("authorName", item.getTitle());
+        intent.putExtra("snippet", item.getSnippet());
+        startActivity(intent);
     }
 
     @Override
