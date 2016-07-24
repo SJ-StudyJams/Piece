@@ -1,7 +1,12 @@
 package com.sealiu.piece.controller;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.User;
+import com.sealiu.piece.utils.SPUtils;
 
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -13,11 +18,13 @@ import cn.bmob.v3.listener.SaveListener;
 public class BmobService {
     private User user;
     private LoginUser loginUser;
+    private Context context;
 
-    public BmobService(LoginUser loginUser) {
+    public BmobService(Context context, LoginUser loginUser) {
         super();
         user = new User();
         this.loginUser = loginUser;
+        this.context = context;
     }
 
     public LoginUser login(String username, final String pwd) {
@@ -33,8 +40,11 @@ public class BmobService {
                     loginUser.setObjectId(user.getObjectId());
                     loginUser.setUsername(user.getUsername());
                     loginUser.setPassword(pwd);
+                    SPUtils.putBoolean(context, Constants.SP_FILE_NAME, "login", true);
                     loginUser.setLogin(true);
+                    Log.d("BmobService", "Login done");
                 } else {
+                    SPUtils.putBoolean(context, Constants.SP_FILE_NAME, "login", false);
                     loginUser.setLogin(false);
                     loginUser.setErrorMsg(e.getErrorCode());
                 }

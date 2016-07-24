@@ -1,5 +1,9 @@
 package com.sealiu.piece.model;
 
+import android.content.Context;
+
+import com.sealiu.piece.utils.SPUtils;
+
 /**
  * Created by art2cat
  * on 16-7-16.

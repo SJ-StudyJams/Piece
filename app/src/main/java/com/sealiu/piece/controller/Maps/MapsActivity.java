@@ -72,6 +72,7 @@ import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobRealTimeData;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.ValueEventListener;
@@ -340,6 +341,7 @@ public class MapsActivity extends AppCompatActivity implements
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+                                BmobUser.logOut();
                                 SPUtils.putBoolean(MapsActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, false);
                                 startActivity(new Intent(MapsActivity.this, LoginActivity.class));
                                 finish();
