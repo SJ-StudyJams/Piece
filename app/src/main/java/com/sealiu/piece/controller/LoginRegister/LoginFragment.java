@@ -19,39 +19,24 @@ import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.User;
-import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
-
 /**
  * Created by liuyang
  * on 2016/7/2.
  */
-public class LoginFragment extends Fragment implements View.OnClickListener{
+public class LoginFragment extends Fragment implements View.OnClickListener {
 
+    private static final String TAG = "LoginFragment";
     private View view;
     private EditText et_account, et_pwd;
     private User user = new User();
     private LoginUser loginUser;
     private String username, pwd, encryptPassword;
     private ProgressDialog progress;
-    private static final String TAG = "LoginFragment";
-
-
-    public interface Listener {
-        void onSubmitLoginBtnClick();
-
-        void onBackRegisterBtnClick();
-
-        void onThirdPartLoginBtnClick();
-
-        void onResetPasswordBtnClick();
-    }
 
     @Nullable
     @Override
@@ -143,5 +128,15 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     public void onDestroyView() {
         UserInfoSync.saveLoginInfo(getContext(), loginUser);
         super.onDestroyView();
+    }
+
+    public interface Listener {
+        void onSubmitLoginBtnClick();
+
+        void onBackRegisterBtnClick();
+
+        void onThirdPartLoginBtnClick();
+
+        void onResetPasswordBtnClick();
     }
 }

@@ -15,12 +15,11 @@ import android.util.Log;
 import android.widget.ScrollView;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.controller.Maps.MapsActivity;
+import com.sealiu.piece.controller.SplashScreenActivity;
 import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.User;
-import com.sealiu.piece.utils.Md5Utils;
 import com.sealiu.piece.utils.SPUtils;
 
 import cn.bmob.v3.exception.BmobException;
@@ -32,12 +31,9 @@ public class RegisterActivity extends AppCompatActivity
 
     private static final String TAG = "RegisterActivity";
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 123;
-    private String encryptPassword;
-
-    private FragmentManager fm = getSupportFragmentManager();
-
     private final User user = new User();
-
+    private String encryptPassword;
+    private FragmentManager fm = getSupportFragmentManager();
     private LoginUser loginUser;
 
     private ScrollView scrollView;
@@ -110,7 +106,7 @@ public class RegisterActivity extends AppCompatActivity
     @Override
     public void onCompleteRegisterBtnClick(final String pwd) {
         //try {
-            //encryptPassword = Md5Utils.encode(pwd);
+        //encryptPassword = Md5Utils.encode(pwd);
         //} catch (Exception e) {
         //    e.printStackTrace();
         //}
@@ -130,11 +126,11 @@ public class RegisterActivity extends AppCompatActivity
             public void done(User u, BmobException e) {
                 if (e == null) {
                     //记录本次登录时间，设置登录标志位
-                    //SPUtils.putLong(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, System.currentTimeMillis());
-                    //SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
-                    //SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
-                    //SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
-                    //SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
+                    SPUtils.putLong(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, System.currentTimeMillis());
+                    SPUtils.putBoolean(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_IS_LOGIN, true);
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, u.getObjectId());
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_USERNAME, u.getUsername());
+                    SPUtils.putString(RegisterActivity.this, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, pwd);
                     loginUser.setLoginTime(System.currentTimeMillis());
                     loginUser.setAutoLogin(true);
                     loginUser.setObjectId(u.getObjectId());
@@ -143,7 +139,7 @@ public class RegisterActivity extends AppCompatActivity
 
                     progress.dismiss();
 
-                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                    Intent intent = new Intent(RegisterActivity.this, SplashScreenActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
