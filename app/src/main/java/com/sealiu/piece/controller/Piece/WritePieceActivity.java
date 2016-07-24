@@ -305,7 +305,7 @@ public class WritePieceActivity extends AppCompatActivity implements
             public void done(BmobException e) {
                 realPath = bmobFile.getFileUrl();
                 progressDialog.dismiss();
-                Snackbar.make(snackBarHolderView, "上传成功 " + realPath, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(snackBarHolderView, "上传成功 ", Snackbar.LENGTH_LONG).show();
             }
 
             @Override
