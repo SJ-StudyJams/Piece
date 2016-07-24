@@ -4,7 +4,6 @@ package com.sealiu.piece.controller.LoginRegister;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,15 +12,7 @@ import android.widget.ScrollView;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Maps.MapsActivity;
-import com.sealiu.piece.controller.User.UserInfoSync;
-import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.LoginUser;
-import com.sealiu.piece.model.User;
-import com.sealiu.piece.utils.Md5Utils;
-import com.sealiu.piece.utils.SPUtils;
-
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
 
 public class LoginActivity extends AppCompatActivity
         implements LoginFragment.Listener {
@@ -66,14 +57,14 @@ public class LoginActivity extends AppCompatActivity
         startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
     }
 
-    @Override
-    public void onThirdPartLoginBtnClick() {
-        Fragment fragment = new ThirdPartFragment();
-        fm.beginTransaction()
-                .replace(R.id.content_frame, fragment, "ThirdPart")
-                .addToBackStack("ThirdPart")
-                .commit();
-    }
+//    @Override
+//    public void onThirdPartLoginBtnClick() {
+//        Fragment fragment = new ThirdPartFragment();
+//        fm.beginTransaction()
+//                .replace(R.id.content_frame, fragment, "ThirdPart")
+//                .addToBackStack("ThirdPart")
+//                .commit();
+//    }
 
     @Override
     public void onResetPasswordBtnClick() {

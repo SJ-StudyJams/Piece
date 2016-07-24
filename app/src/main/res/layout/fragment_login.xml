@@ -13,9 +13,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/prompt_phone_or_email"
+            android:inputType="textAutoComplete"
             android:maxLines="1"
-            android:singleLine="true"
-            android:inputType="textAutoComplete" />
+            android:singleLine="true" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -36,25 +36,26 @@
 
     <Button
         android:id="@+id/find_pwd"
+        style="?android:borderlessButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="?android:borderlessButtonStyle"
         android:text="@string/find_pwd"
-        android:textColor="@color/colorAccent"  />
+        android:textColor="@color/secondaryText" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="end"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/third_part_login_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            style="?android:borderlessButtonStyle"
-            android:text="@string/third_part_login"
-            android:textColor="@color/colorAccent" />
+        <!--<Button-->
+        <!--android:id="@+id/third_part_login_btn"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--style="?android:borderlessButtonStyle"-->
+        <!--android:text="@string/third_part_login"-->
+        <!--android:textColor="@color/colorAccent" />-->
 
         <Button
             android:id="@+id/back_register_button"

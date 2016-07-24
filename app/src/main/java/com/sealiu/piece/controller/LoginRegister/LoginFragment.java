@@ -46,12 +46,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         et_account = (EditText) view.findViewById(R.id.login_phone_or_email);
         et_pwd = (EditText) view.findViewById(R.id.login_password);
 
-        Button thirdPartLoginBtn = (Button) view.findViewById(R.id.third_part_login_btn);
+//        Button thirdPartLoginBtn = (Button) view.findViewById(R.id.third_part_login_btn);
         Button backRegisterBtn = (Button) view.findViewById(R.id.back_register_button);
         Button submitLoginBtn = (Button) view.findViewById(R.id.submit_login_btn);
         Button resetPwdBtn = (Button) view.findViewById(R.id.find_pwd);
 
-        thirdPartLoginBtn.setOnClickListener(this);
+//        thirdPartLoginBtn.setOnClickListener(this);
         backRegisterBtn.setOnClickListener(this);
         resetPwdBtn.setOnClickListener(this);
 
@@ -65,9 +65,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public void onClick(final View view) {
         Listener listener = (Listener) getActivity();
         switch (view.getId()) {
-            case R.id.third_part_login_btn:
-                listener.onThirdPartLoginBtnClick();
-                break;
+//            case R.id.third_part_login_btn:
+//                listener.onThirdPartLoginBtnClick();
+//                break;
             case R.id.back_register_button:
                 listener.onBackRegisterBtnClick();
                 break;
@@ -135,7 +135,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
         void onBackRegisterBtnClick();
 
-        void onThirdPartLoginBtnClick();
+//        void onThirdPartLoginBtnClick();
 
         void onResetPasswordBtnClick();
     }
