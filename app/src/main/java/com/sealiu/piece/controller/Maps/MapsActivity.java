@@ -25,20 +25,28 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.SimpleShowcaseEventListener;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -117,6 +125,9 @@ public class MapsActivity extends AppCompatActivity implements
     private ClusterManager<ClusterMarkerLocation> clusterManager;
     private ClusterMarkerLocation clickedClusterItem;
 
+    private ShowcaseView showcaseView;
+    private int counter = 0;
+
     public static Intent newIntent(Context context) {
         return new Intent(context, MapsActivity.class);
     }
@@ -172,6 +183,12 @@ public class MapsActivity extends AppCompatActivity implements
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        if (SPUtils.getBoolean(this, Constants.SP_FILE_NAME, Constants.FIRST_RUN, true)) {
+            SPUtils.putBoolean(this, Constants.SP_FILE_NAME, Constants.FIRST_RUN, false);
+            counter = 0;
+            firstLaunch();
+        }
     }
 
     @Override
@@ -658,6 +675,56 @@ public class MapsActivity extends AppCompatActivity implements
         });
     }
 
+    private void firstLaunch() {
+
+        RelativeLayout.LayoutParams lps = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lps.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        lps.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        int margin = ((Number) (getResources().getDisplayMetrics().density * 12)).intValue();
+        lps.setMargins(margin, margin, margin, margin);
+
+        Button customButton = (Button) getLayoutInflater().inflate(R.layout.view_custom_button, null);
+        MultiEventListener multiEventListener = new MultiEventListener(new ShakeButtonListener(customButton));
+
+        showcaseView = new ShowcaseView.Builder(this)
+                .withMaterialShowcase()
+                .setTarget(new ViewTarget(findViewById(R.id.find_my_location)))
+                .setContentTitle(getString(R.string.location))
+                .setContentText(getString(R.string.location_info))
+                .setStyle(R.style.CustomShowcaseTheme)
+                .setShowcaseEventListener(multiEventListener)
+                .replaceEndButton(customButton)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        switch (counter) {
+                            case 0:
+                                showcaseView.setShowcase(new ViewTarget(hideShowMoreInfoBtn), true);
+                                showcaseView.setContentTitle(getString(R.string.more_info));
+                                showcaseView.setContentText(getString(R.string.more_info_text));
+                                break;
+                            case 1:
+                                showcaseView.setShowcase(new ViewTarget(writePieceBtn), true);
+                                showcaseView.setContentTitle(getString(R.string.write_piece));
+                                showcaseView.setContentText(getString(R.string.write_piece_text));
+                                break;
+                            case 2:
+                                showcaseView.setTarget(Target.NONE);
+                                showcaseView.setContentTitle(getString(R.string.app_name));
+                                showcaseView.setContentText(getString(R.string.welcome));
+                                showcaseView.setButtonText(getString(R.string.close));
+                                break;
+                            case 3:
+                                showcaseView.hide();
+                                break;
+                        }
+                        counter++;
+                    }
+                })
+                .build();
+        showcaseView.setButtonPosition(lps);
+    }
+
     class CustomInfoWindowAdapter implements InfoWindowAdapter {
 
         private View mContents;
@@ -688,4 +755,36 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
+    private class ShakeButtonListener extends SimpleShowcaseEventListener {
+        private final Button button;
+
+        public ShakeButtonListener(Button button) {
+            this.button = button;
+        }
+
+        @Override
+        public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+            int translation = getResources().getDimensionPixelOffset(R.dimen.touch_button_wobble);
+            ViewCompat.animate(button)
+                    .translationXBy(translation)
+                    .setInterpolator(new WobblyInterpolator(3));
+        }
+    }
+
+    private class WobblyInterpolator implements Interpolator {
+
+        private final double CONVERT_TO_RADS = 2 * Math.PI;
+        private final int cycles;
+
+        public WobblyInterpolator(int cycles) {
+            this.cycles = cycles;
+        }
+
+        @Override
+        public float getInterpolation(float proportion) {
+            double sin = Math.sin(cycles * proportion * CONVERT_TO_RADS);
+            return (float) sin;
+        }
+
+    }
 }
