@@ -114,6 +114,9 @@ public class Constants {
             case 109:
                 errorInfo = "缺少登录信息";
                 break;
+            case 201:
+                errorInfo = "原密码错误";
+                break;
             case 207:
                 errorInfo = "验证码不正确";
                 break;

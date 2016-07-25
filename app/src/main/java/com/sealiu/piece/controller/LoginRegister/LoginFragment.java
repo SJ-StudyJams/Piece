@@ -103,6 +103,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                             progress.dismiss();
                             Listener listener = (Listener) getActivity();
                             listener.onSubmitLoginBtnClick();
+                            UserInfoSync.saveLoginInfo(getContext(), loginUser);
                         } else {
                             progress.dismiss();
                             SPUtils.clear(getActivity(), Constants.SP_FILE_NAME);
@@ -126,7 +127,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onDestroyView() {
-        UserInfoSync.saveLoginInfo(getContext(), loginUser);
         super.onDestroyView();
     }
 

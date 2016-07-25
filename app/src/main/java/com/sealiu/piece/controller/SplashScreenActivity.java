@@ -129,11 +129,11 @@ public class SplashScreenActivity extends AppCompatActivity {
                                             startActivity(new Intent(SplashScreenActivity.this,
                                                     MapsActivity.class));
                                         } else {
-                                            String content = Constants
-                                                    .createErrorInfo(loginUser.getErrorMsg())
-                                                    + " 错误码：" + loginUser.getErrorMsg();
-                                            Toast.makeText(SplashScreenActivity.this, content,
-                                                    Toast.LENGTH_SHORT).show();
+                                            //String content = Constants
+                                            //        .createErrorInfo(loginUser.getErrorMsg())
+                                            //+ " 错误码：" + loginUser.getErrorMsg();
+                                            //Toast.makeText(SplashScreenActivity.this, content,
+                                            //        Toast.LENGTH_SHORT).show();
                                             startActivity(new Intent(SplashScreenActivity.this, LoginActivity.class));
                                         }
                                     }

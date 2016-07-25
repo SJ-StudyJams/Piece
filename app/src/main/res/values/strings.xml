@@ -178,4 +178,5 @@
     <string name="write_piece_text">点击按钮，立即在当前位置留下一张纸条。并且可以自定义可见范围，图片链接任你发！</string>
     <string name="welcome">尽情使用吧！</string>
     <string name="close">关闭</string>
+    <string name="phone">手机号</string>
 </resources>
