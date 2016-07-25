@@ -21,6 +21,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import cn.bmob.sms.listener.VerifySMSCodeListener;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,7 +38,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import cn.bmob.sms.BmobSMS;
-import cn.bmob.sms.listener.VerifySMSCodeListener;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
@@ -123,7 +123,6 @@ public class EditActivity extends AppCompatActivity implements
         phoneET = (EditText) findViewById(R.id.user_phone);
         emailET = (EditText) findViewById(R.id.user_email);
         Button changePwdBTN = (Button) findViewById(R.id.user_pwd);
-
 
         //显示昵称
         if (nickname == null || nickname.equals("")) {
@@ -345,7 +344,6 @@ public class EditActivity extends AppCompatActivity implements
     // 修改电话对话框（确定修改）
     @Override
     public void onEditPhoneDialogPositiveClick(DialogFragment dialog, final String phone, String smsCode) {
-
 
         BmobSMS.verifySmsCode(this, phone, smsCode, new VerifySMSCodeListener() {
             @Override

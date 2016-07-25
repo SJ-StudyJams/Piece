@@ -105,15 +105,6 @@ public class RegisterActivity extends AppCompatActivity
     // 完成注册
     @Override
     public void onCompleteRegisterBtnClick(final String pwd) {
-        //try {
-        //encryptPassword = Md5Utils.encode(pwd);
-        //} catch (Exception e) {
-        //    e.printStackTrace();
-        //}
-
-        Log.i(TAG, "" + encryptPassword);
-
-        //User设置加密后密码
         user.setPassword(pwd);
         // 注册
         final ProgressDialog progress = new ProgressDialog(RegisterActivity.this);

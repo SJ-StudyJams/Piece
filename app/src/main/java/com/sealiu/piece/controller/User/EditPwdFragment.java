@@ -13,14 +13,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.model.User;
-import com.sealiu.piece.utils.Md5Utils;
-import com.sealiu.piece.utils.SPUtils;
+import com.sealiu.piece.model.LoginUser;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
@@ -36,7 +33,7 @@ public class EditPwdFragment extends DialogFragment {
     //private User user;
     private EditText old_pwd_ET, new_pwd_ET, repeat_pwd_ET;
     private String old_pwd, new_pwd, repeat_pwd;
-    private String encryptOldPassword, encryptNewPassword;
+    private LoginUser loginUser;
     private static final String TAG = "EditPwdFragment";
 
     public interface EditPwdDialogListener {
@@ -87,8 +84,9 @@ public class EditPwdFragment extends DialogFragment {
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         final View view = inflater.inflate(R.layout.dialog_edit_pwd, null);
-
         builder.setView(view);
+
+        loginUser = UserInfoSync.getLoginInfo(getActivity());
         old_pwd_ET = (EditText) view.findViewById(R.id.edit_old_pwd);
         new_pwd_ET = (EditText) view.findViewById(R.id.edit_new_pwd);
         repeat_pwd_ET = (EditText) view.findViewById(R.id.edit_repeat_new_pwd);
@@ -105,7 +103,7 @@ public class EditPwdFragment extends DialogFragment {
                 repeat_pwd = repeat_pwd_ET.getText().toString();
                 Log.i(TAG, "repeat new password:" + repeat_pwd);
 
-                final String password = SPUtils.getString(getContext(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
+                String password = loginUser.getPassword();
 
                 // 原密码错误
                 if (!password.equals(old_pwd)) {

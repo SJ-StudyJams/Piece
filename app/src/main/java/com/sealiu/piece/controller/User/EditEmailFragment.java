@@ -15,8 +15,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.utils.SPUtils;
+import com.sealiu.piece.model.LoginUser;
 
 /**
  * Created by art2cat
@@ -67,8 +66,9 @@ public class EditEmailFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_edit_email, null);
         builder.setView(view);
 
+        LoginUser loginUser = UserInfoSync.getLoginInfo(getActivity());
         emailBefore = getArguments().getString("email");
-        password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
+        password = loginUser.getPassword();
 
         emailET = (EditText) view.findViewById(R.id.edit_user_email);
         passwordET = (EditText) view.findViewById(R.id.edit_user_password);
@@ -96,7 +96,7 @@ public class EditEmailFragment extends DialogFragment {
                     return;
                 }
 
-                Snackbar.make(EditActivity.layoutScroll, "邮箱修改成功，激活邮件已发送", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(EditActivity.layoutScroll, "邮箱修改成功", Snackbar.LENGTH_LONG).show();
 
                 listener.onEditEmailDialogPositiveClick(
                         EditEmailFragment.this,

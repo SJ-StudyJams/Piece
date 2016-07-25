@@ -6,6 +6,7 @@ import android.util.Log;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.User;
+import com.sealiu.piece.utils.AESUtils;
 import com.sealiu.piece.utils.SPUtils;
 
 import cn.bmob.v3.BmobQuery;
@@ -126,9 +127,15 @@ public class UserInfoSync {
             if (loginInfo.getUsername() != null) {
                 SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_USERNAME, loginInfo.getUsername());
             }
-            if (loginInfo.getPassword() != null) {
-                SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, loginInfo.getPassword());
+            try {
+                if (loginInfo.getPassword() != null) {
+                    String password = AESUtils.encrypt(loginInfo.getPassword());
+                    SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, password);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
             if (loginInfo.getNickname() != null) {
                 SPUtils.putString(context, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, loginInfo.getNickname());
             }
@@ -173,7 +180,14 @@ public class UserInfoSync {
 
         loginInfo.setObjectId(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null));
         loginInfo.setUsername(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_USERNAME, null));
-        loginInfo.setPassword(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null));
+
+        try {
+            String password = AESUtils.decrypt(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null));
+            loginInfo.setPassword(password);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         loginInfo.setNickname(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_NICKNAME, null));
         loginInfo.setBio(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_BIO, null));
         loginInfo.setBirth(SPUtils.getString(context, Constants.SP_FILE_NAME, Constants.SP_BIRTH, null));

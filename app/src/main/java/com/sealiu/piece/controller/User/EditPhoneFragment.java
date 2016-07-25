@@ -17,7 +17,7 @@ import android.widget.EditText;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.utils.SPUtils;
+import com.sealiu.piece.model.LoginUser;
 
 import cn.bmob.sms.BmobSMS;
 import cn.bmob.sms.exception.BmobException;
@@ -32,7 +32,7 @@ public class EditPhoneFragment extends DialogFragment{
     // Use this instance of the interface to deliver action events
     EditPhoneDialogListener eListener;
     private String phoneBefore, password, smsCode, phoneAfter;
-    private EditText phoneBfET, phoneAfET, passwordET, smsCodeET;
+    private EditText phoneAfET, passwordET, smsCodeET;
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
@@ -73,11 +73,10 @@ public class EditPhoneFragment extends DialogFragment{
         final View view = inflater.inflate(R.layout.dialog_edit_phone, null);
         builder.setView(view);
 
+        LoginUser loginUser = UserInfoSync.getLoginInfo(getActivity());
         phoneBefore = getArguments().getString("phone");
-        password = SPUtils.getString(getActivity(), Constants.SP_FILE_NAME, Constants.SP_PASSWORD, null);
+        password = loginUser.getPassword();
 
-
-        //phoneBfET = (EditText) view.findViewById(R.id.edit_user_before_phone);
         phoneAfET = (EditText) view.findViewById(R.id.edit_user_after_phone);
         smsCodeET = (EditText) view.findViewById(R.id.edit_user_smsCode);
         passwordET = (EditText) view.findViewById(R.id.edit_user_password);
