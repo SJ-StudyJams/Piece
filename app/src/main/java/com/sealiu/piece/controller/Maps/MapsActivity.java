@@ -55,10 +55,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.LoginRegister.LoginActivity;
 import com.sealiu.piece.controller.Piece.PieceDetailActivity;
@@ -68,7 +73,6 @@ import com.sealiu.piece.controller.Settings.MyPreferenceActivity;
 import com.sealiu.piece.controller.User.UserActivity;
 import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.model.LoginUser;
 import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
@@ -503,6 +507,8 @@ public class MapsActivity extends AppCompatActivity implements
         mMap.setInfoWindowAdapter(clusterManager.getMarkerManager());
         mMap.setOnInfoWindowClickListener(clusterManager);
 
+        clusterManager.setRenderer(new MyIconRender(this, mMap, clusterManager));
+
         //因为纸条的可见范围最大为100km，所以默认为100km
         double[] llRange = Common.GetAround(mCurrentLatitude, mCurrentLongitude, 100000);
 
@@ -786,5 +792,23 @@ public class MapsActivity extends AppCompatActivity implements
             return (float) sin;
         }
 
+    }
+
+    public class MyIconRender extends DefaultClusterRenderer<ClusterMarkerLocation> {
+
+        public MyIconRender(Context context, GoogleMap map, ClusterManager<ClusterMarkerLocation> clusterManager) {
+            super(context, map, clusterManager);
+        }
+
+        @Override
+        protected void onBeforeClusterRendered(Cluster<ClusterMarkerLocation> cluster, MarkerOptions markerOptions) {
+            super.onBeforeClusterRendered(cluster, markerOptions);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(ClusterMarkerLocation item, MarkerOptions markerOptions) {
+            BitmapDescriptor markerDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.ic_custom_marker);
+            markerOptions.icon(markerDescriptor);
+        }
     }
 }
