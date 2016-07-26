@@ -1,14 +1,20 @@
 package com.sealiu.piece.controller.Piece;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -42,21 +48,19 @@ public class WritePieceActivity extends AppCompatActivity implements
 
     private static final String TAG = "WritePieceActivity";
     private static final int ERROR = 4;
+    private static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 111;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 222;
     ImageButton addLinkBtn;
     ImageButton addImageBtn;
-
     ImageButton linkDeleteBtn;
     CardView linkCard;
     TextView linkContent;
-
     ImageButton imageDeleteBtn;
     CardView imageCard;
     ImageView imagePreview;
     TextView imagePath;
-
     Uri previewUri;
     private String realPath;
-
     private Double mLatitude, mLongitude;
     private String mLocationName;
     private TextView myLocationTV;
@@ -173,6 +177,30 @@ public class WritePieceActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_STORAGE);
+            }
+        }
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+            }
+        }
+    }
 
     /**
      * 初始化界面显示（头像，昵称，位置信息）

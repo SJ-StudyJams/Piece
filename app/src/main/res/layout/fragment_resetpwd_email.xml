@@ -6,9 +6,9 @@
 
 
     <android.support.design.widget.TextInputLayout
+        android:id="@+id/view2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/view2">
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/resetPwd_email"
@@ -21,13 +21,15 @@
 
     </android.support.design.widget.TextInputLayout>
 
-        <Button
-            android:id="@+id/fetch_code"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/send_reset_mail"
-            android:layout_below="@+id/view2"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/fetch_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/view2"
+        android:backgroundTint="@color/colorAccent"
+        android:text="@string/send_reset_mail"
+        android:textColor="@color/textOrIcon" />
 
 </RelativeLayout>

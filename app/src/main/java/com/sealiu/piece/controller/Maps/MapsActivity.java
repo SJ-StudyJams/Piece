@@ -807,7 +807,7 @@ public class MapsActivity extends AppCompatActivity implements
 
         @Override
         protected void onBeforeClusterItemRendered(ClusterMarkerLocation item, MarkerOptions markerOptions) {
-            BitmapDescriptor markerDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.ic_custom_marker);
+            BitmapDescriptor markerDescriptor = BitmapDescriptorFactory.fromResource(R.mipmap.ic_marker1);
             markerOptions.icon(markerDescriptor);
         }
     }

@@ -69,11 +69,13 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/resetPwd_phone_Btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="@string/reset_pwd"/>
+            android:backgroundTint="@color/colorAccent"
+            android:text="@string/reset_pwd"
+            android:textColor="@color/textOrIcon" />
     </LinearLayout>
 </LinearLayout>

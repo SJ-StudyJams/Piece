@@ -35,13 +35,13 @@
     </android.support.design.widget.TextInputLayout>
 
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/reg_complete_button"
-        style="?android:borderlessButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="16dp"
+        android:backgroundTint="@color/colorAccent"
         android:text="@string/complete_register"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@color/textOrIcon" />
 </LinearLayout>
