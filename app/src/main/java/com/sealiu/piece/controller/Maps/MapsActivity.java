@@ -144,7 +144,6 @@ public class MapsActivity extends AppCompatActivity implements
 
         // 从bmob后台同步用户信息到sp文件中存储
         try {
-            //LoginUser loginUser = UserInfoSync.getLoginInfo(this);
             UserInfoSync.getUserInfo(this, Constants.SP_FILE_NAME, SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null));
         } catch (Exception e) {
             e.printStackTrace();

@@ -34,8 +34,6 @@ public class ResetPwdActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_pwd);
         viewPager = (ViewPager) findViewById(R.id.resetPwd_viewPager);
-
-
         initView();
         initLine();
     }
