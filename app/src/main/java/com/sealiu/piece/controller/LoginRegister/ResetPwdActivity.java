@@ -1,6 +1,7 @@
 package com.sealiu.piece.controller.LoginRegister;
 
 import android.animation.ObjectAnimator;
+import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -33,6 +34,8 @@ public class ResetPwdActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_pwd);
         viewPager = (ViewPager) findViewById(R.id.resetPwd_viewPager);
+
+
         initView();
         initLine();
     }
@@ -49,10 +52,23 @@ public class ResetPwdActivity extends AppCompatActivity implements View.OnClickL
         int screenW = dm.widthPixels;
 
         /**
+         *
          * 重新设置下划线的宽度
          */
         ViewGroup.LayoutParams lp = line_tab.getLayoutParams();
-        lp.width = screenW / 2;
+        //获取屏幕方向，重置下划线的长度
+        if (this.getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_LANDSCAPE) {
+            Log.i(TAG, "land");
+            lp.width = screenW / 4;
+
+        } else if (this.getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_PORTRAIT) {
+            Log.i(TAG, "port");
+            lp.width = screenW / 2;
+
+        }
+
         line_tab.setLayoutParams(lp);
         moveOne = lp.width; // 滑动一个页面的距离
     }
@@ -74,7 +90,6 @@ public class ResetPwdActivity extends AppCompatActivity implements View.OnClickL
 
         tv_tab0.setTextColor(getResources().getColor(R.color.colorAccent));
         tv_tab1.setTextColor(getResources().getColor(R.color.secondaryText));
-        Log.i(TAG, "color change 3");
 
         tv_tab0.setOnClickListener(this);
         tv_tab1.setOnClickListener(this);
@@ -99,13 +114,11 @@ public class ResetPwdActivity extends AppCompatActivity implements View.OnClickL
                         movePositionX(0);
                         tv_tab0.setTextColor(getResources().getColor(R.color.colorAccent));
                         tv_tab1.setTextColor(getResources().getColor(R.color.secondaryText));
-                        Log.i(TAG, "color change 0");
                         break;
                     case 1:
                         movePositionX(1);
                         tv_tab0.setTextColor(getResources().getColor(R.color.secondaryText));
                         tv_tab1.setTextColor(getResources().getColor(R.color.colorAccent));
-                        Log.i(TAG, "color change 1");
                         break;
                     default:
                         break;
