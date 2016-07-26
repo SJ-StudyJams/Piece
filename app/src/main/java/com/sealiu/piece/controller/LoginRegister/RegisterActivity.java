@@ -1,15 +1,11 @@
 package com.sealiu.piece.controller.LoginRegister;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ScrollView;
@@ -30,9 +26,7 @@ public class RegisterActivity extends AppCompatActivity
         RegisterTwoFragment.CompleteRegisterListener {
 
     private static final String TAG = "RegisterActivity";
-    private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 123;
     private final User user = new User();
-    private String encryptPassword;
     private FragmentManager fm = getSupportFragmentManager();
     private LoginUser loginUser;
 
@@ -54,22 +48,6 @@ public class RegisterActivity extends AppCompatActivity
             fm.beginTransaction()
                     .add(R.id.content_frame, fragment, null)
                     .commit();
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // 动态申请权限
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_PHONE_STATE)) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_PHONE_STATE},
-                        MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
-            }
         }
     }
 

@@ -1,17 +1,19 @@
 package com.sealiu.piece.controller.Piece;
 
 import android.Manifest;
-import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -70,6 +72,7 @@ public class WritePieceActivity extends AppCompatActivity implements
     private EditText pieceContentET;
     private NestedScrollView snackBarHolderView;
     private LoginUser loginUser;
+    private boolean isNotAskAgain = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,27 +180,22 @@ public class WritePieceActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
-    protected void onStart() {
-        super.onStart();
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_READ_STORAGE);
-            }
-        }
-
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        for (int i = 0, len = permissions.length; i < len; i++) {
+            String permission = permissions[i];
+            if (grantResults[i] == PackageManager.PERMISSION_DENIED &&
+                    android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                boolean showRationale = shouldShowRequestPermissionRationale(permission);
+                if (!showRationale) {
+                    // 用户拒绝了带有“不再询问”的权限申请
+                    // ...
+                    isNotAskAgain = true;
+                } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permission)) {
+                    // 用户第一次拒绝了权限申请
+                    // 向用户解释我们为什么要申请这个权限
+                    showRationale(permission, R.string.permission_denied_storage);
+                }
             }
         }
     }
@@ -252,17 +250,50 @@ public class WritePieceActivity extends AppCompatActivity implements
         switch (view.getId()) {
             case R.id.add_image_btn:
                 //启动相册
-                File outputImage = new File(Environment.getExternalStorageDirectory(), "chooseImage.jpg");
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
-                previewUri = Uri.fromFile(outputImage);
+                    File outputImage = new File(Environment.getExternalStorageDirectory(), "chooseImage.jpg");
 
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, previewUri);
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, 1);
+                    previewUri = Uri.fromFile(outputImage);
+
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    intent.setType("image/*");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, previewUri);
+                    if (intent.resolveActivity(getPackageManager()) != null)
+                        startActivityForResult(intent, 1);
+                    else
+                        Snackbar.make(snackBarHolderView, "没有相册程序", Snackbar.LENGTH_LONG).show();
                 } else {
-                    Snackbar.make(snackBarHolderView, "没有相册程序", Snackbar.LENGTH_LONG).show();
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+                    } else {
+                        Snackbar.make(snackBarHolderView, "你拒绝了存储空间权限申请", Snackbar.LENGTH_LONG)
+                                .setAction("授予权限", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                        intent.setData(uri);
+                                        startActivityForResult(intent, 123);
+                                    }
+                                }).show();
+                    }
+                    if (isNotAskAgain) {
+                        Snackbar.make(snackBarHolderView, "你拒绝了存储空间权限申请", Snackbar.LENGTH_LONG)
+                                .setAction("授予权限", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                        intent.setData(uri);
+                                        startActivityForResult(intent, 123);
+                                    }
+                                }).show();
+                    }
                 }
                 break;
             case R.id.add_link_btn:
@@ -342,5 +373,27 @@ public class WritePieceActivity extends AppCompatActivity implements
                 progressDialog.setProgress(value);
             }
         });
+    }
+
+    private void showRationale(String permission, int permissionDenied) {
+
+        new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setTitle(permission)
+                .setMessage(getString(permissionDenied) + "。请重新授权！")
+                .setPositiveButton("重新授权", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ActivityCompat.requestPermissions(WritePieceActivity.this,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+                    }
+                })
+                .setNegativeButton("仍然拒绝", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                }).show();
     }
 }

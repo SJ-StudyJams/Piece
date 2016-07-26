@@ -6,10 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.LoginRegister.LoginActivity;
@@ -17,14 +15,7 @@ import com.sealiu.piece.controller.Maps.MapsActivity;
 import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.model.LoginUser;
-import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
-
-import java.util.Timer;
-import java.util.TimerTask;
-
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
 
 public class SplashScreenActivity extends AppCompatActivity {
 

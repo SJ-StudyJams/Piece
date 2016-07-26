@@ -179,4 +179,7 @@
     <string name="welcome">尽情使用吧！</string>
     <string name="close">关闭</string>
     <string name="phone">手机号</string>
+    <string name="permission_denied_location">但这是一个基于位置信息的通讯APP，所以你将无法正常使用本软件</string>
+    <string name="permission_denied_storage">APP无法读写存储空间，这样你将无法自定义头像，无法发送带附件的Piece信息</string>
+    <string name="permission_denied_phone_state">APP无法读取手机状态，这样你可能无法和服务器链接，无法注册和登录</string>
 </resources>

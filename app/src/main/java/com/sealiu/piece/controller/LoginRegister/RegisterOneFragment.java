@@ -1,11 +1,21 @@
 package com.sealiu.piece.controller.LoginRegister;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,18 +36,11 @@ import cn.bmob.sms.listener.VerifySMSCodeListener;
  */
 public class RegisterOneFragment extends Fragment {
     private static final String TAG = "RegisterOneFragment";
-
+    NextStepListener nextStepListener;
     private int flag = 0; // 手机号正确: 1  邮箱正确: 2
     private String phoneNumber = "";
     private View layoutView;
-
-    public interface NextStepListener {
-        void onNextBtnClick(int flag);
-
-        void onFetchCodeBtnClick(int flag, String phoneOrEmail);
-    }
-
-    NextStepListener nextStepListener;
+    private boolean isNotAskAgain = false;
 
     @Override
     public void onAttach(Context context) {
@@ -66,41 +69,76 @@ public class RegisterOneFragment extends Fragment {
         nextStepListener = listener;
         //---------------------------------------------------------------------------------
         //点击获取验证码后，检验手机号/邮箱地址是否合法，合法则发送验证码/激活邮件
-        fetchCodeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
 
-                String phoneOrEmail = regPhoneOrEmailET.getText().toString();
+            fetchCodeBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-                checkEmailOrPhone(phoneOrEmail);
+                    String phoneOrEmail = regPhoneOrEmailET.getText().toString();
 
-                switch (flag) {
-                    case 1:
-                        // 发送短信验证码
-                        phoneNumber = phoneOrEmail.substring(phoneOrEmail.length() - 11, phoneOrEmail.length());
-                        sendSMSCode(getActivity(), phoneNumber);
-                        break;
-                    case 2:
-                        // 发送邮箱验证码(后台自动发送)，不需要立即验证
-                        validatingCodeET.setText("验证邮件已发送，注册后请及时验证邮箱！");
-                        validatingCodeET.setFocusable(false);
-                        validatingCodeET.setClickable(false);
+                    checkEmailOrPhone(phoneOrEmail);
 
-                        // 避免发送验证码/激活邮件之后,修改手机号/邮箱. 虽然不会有影响.
-                        regPhoneOrEmailET.setFocusable(false);
-                        regPhoneOrEmailET.setClickable(false);
-                        listener.onFetchCodeBtnClick(flag, phoneOrEmail);
-                        break;
-                    default:
-                        Snackbar.make(view, "验证出现问题", Snackbar.LENGTH_SHORT)
-                                .setAction("Action", null).show();
-                        return;
+                    switch (flag) {
+                        case 1:
+                            // 发送短信验证码
+                            phoneNumber = phoneOrEmail.substring(phoneOrEmail.length() - 11, phoneOrEmail.length());
+                            sendSMSCode(getActivity(), phoneNumber);
+                            break;
+                        case 2:
+                            // 发送邮箱验证码(后台自动发送)，不需要立即验证
+                            validatingCodeET.setText("验证邮件已发送，注册后请及时验证邮箱！");
+                            validatingCodeET.setFocusable(false);
+                            validatingCodeET.setClickable(false);
+
+                            // 避免发送验证码/激活邮件之后,修改手机号/邮箱. 虽然不会有影响.
+                            regPhoneOrEmailET.setFocusable(false);
+                            regPhoneOrEmailET.setClickable(false);
+                            listener.onFetchCodeBtnClick(flag, phoneOrEmail);
+                            break;
+                        default:
+                            Snackbar.make(view, "验证出现问题", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+                            return;
+                    }
+
+                    fetchCodeBtn.setText("已发送");
+                    fetchCodeBtn.setClickable(false);
                 }
-
-                fetchCodeBtn.setText("已发送");
-                fetchCodeBtn.setClickable(false);
+            });
+        } else {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.READ_PHONE_STATE)) {
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.READ_PHONE_STATE},
+                        111);
+            } else {
+                Snackbar.make(view, "你拒绝了手机状态信息权限申请", Snackbar.LENGTH_LONG)
+                        .setAction("授予权限", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+                                intent.setData(uri);
+                                startActivityForResult(intent, 123);
+                            }
+                        }).show();
             }
-        });
+
+            if (isNotAskAgain) {
+                Snackbar.make(view, "你拒绝了手机状态信息权限申请", Snackbar.LENGTH_LONG)
+                        .setAction("授予权限", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+                                intent.setData(uri);
+                                startActivityForResult(intent, 123);
+                            }
+                        }).show();
+            }
+        }
 
         //---------------------------------------------------------------------
         // 验证完成手机号/邮箱，下一步
@@ -132,6 +170,46 @@ public class RegisterOneFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        for (int i = 0, len = permissions.length; i < len; i++) {
+            String permission = permissions[i];
+            if (grantResults[i] == PackageManager.PERMISSION_DENIED &&
+                    android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                boolean showRationale = shouldShowRequestPermissionRationale(permission);
+                if (!showRationale) {
+                    // 用户拒绝了带有“不再询问”的权限申请
+                    isNotAskAgain = true;
+                } else if (Manifest.permission.READ_PHONE_STATE.equals(permission)) {
+                    // 用户第一次拒绝了权限申请
+                    // 向用户解释我们为什么要申请这个权限
+                    showRationale(permission, R.string.permission_denied_phone_state);
+                }
+            }
+        }
+    }
+
+    private void showRationale(String permission, int permissionDenied) {
+
+        new AlertDialog.Builder(getActivity())
+                .setCancelable(false)
+                .setTitle(permission)
+                .setMessage(getString(permissionDenied) + "。请重新授权！")
+                .setPositiveButton("重新授权", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.READ_PHONE_STATE},
+                                12321);
+                    }
+                })
+                .setNegativeButton("仍然拒绝", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                }).show();
+    }
 
     /**
      * 识别输入的是手机号还是邮箱地址
@@ -165,7 +243,6 @@ public class RegisterOneFragment extends Fragment {
             }
         }
     }
-
 
     /**
      * 发送短信验证码
@@ -227,6 +304,12 @@ public class RegisterOneFragment extends Fragment {
      */
     private void snackBarTips(String content) {
         Snackbar.make(layoutView, content, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+    }
+
+    public interface NextStepListener {
+        void onNextBtnClick(int flag);
+
+        void onFetchCodeBtnClick(int flag, String phoneOrEmail);
     }
 
 }

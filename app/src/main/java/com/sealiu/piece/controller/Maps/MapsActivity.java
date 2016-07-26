@@ -109,6 +109,7 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int PERMISSIONS_REQUEST_FINE_COARSE_LOCATION = 2;
     private static final int WRITE_PIECE_REQUEST_CODE = 3;
     private static final int ERROR = 4;
+    private static final int REQUEST_PERMISSION_SETTING = 5;
 
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
@@ -136,6 +137,7 @@ public class MapsActivity extends AppCompatActivity implements
         return new Intent(context, MapsActivity.class);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
@@ -680,6 +682,7 @@ public class MapsActivity extends AppCompatActivity implements
         });
     }
 
+    //首次启动，引导动画
     private void firstLaunch() {
 
         RelativeLayout.LayoutParams lps = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
