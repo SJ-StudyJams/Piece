@@ -39,8 +39,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         loginUser = UserInfoSync.getLoginInfo(SplashScreenActivity.this);
         String username = loginUser.getUsername();
         String pwd = loginUser.getPassword();
-        Log.i(TAG, "" + pwd);
-        Log.i(TAG, "LOGIN" + loginUser.isAutoLogin());
+        Log.i(TAG, "LOGIN:" + loginUser.isAutoLogin());
 
 
         if (!isOutOfDate()
@@ -168,7 +167,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         long timeNow = System.currentTimeMillis();
         Log.i(TAG, "now:" + timeNow);
         //获取用户上次登录时间
-        //long timePre = SPUtils.getLong(this, Constants.SP_FILE_NAME, Constants.SP_LOGIN_TIME, 0);
         long timePre = loginUser.getLoginTime();
         Log.i(TAG, "pre:" + timePre);
         //当用户本次登陆时间大于上次登录时间一个月
