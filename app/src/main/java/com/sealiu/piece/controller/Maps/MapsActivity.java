@@ -529,16 +529,25 @@ public class MapsActivity extends AppCompatActivity implements
                     int pr = 0;
                     switch (p.getVisibility()) {
                         case 0:
-                            pr = 5000;
+                            pr = 50;
                             break;
                         case 1:
-                            pr = 20000;
+                            pr = 100;
                             break;
                         case 2:
-                            pr = 60000;
+                            pr = 500;
                             break;
                         case 3:
-                            pr = 100000;
+                            pr = 2000;
+                            break;
+                        case 4:
+                            pr = 5000;
+                            break;
+                        case 5:
+                            pr = 20000;
+                            break;
+                        case 6:
+                            pr = 60000;
                             break;
                         default:
                     }
@@ -658,19 +667,31 @@ public class MapsActivity extends AppCompatActivity implements
 
                     switch (visibility) {
                         case 0:
-                            if (distance <= 5000)
+                            if (distance <= 50)
                                 flag = true;
                             break;
                         case 1:
-                            if (distance <= 20000)
+                            if (distance <= 100)
                                 flag = true;
                             break;
                         case 2:
-                            if (distance <= 60000)
+                            if (distance <= 500)
                                 flag = true;
                             break;
                         case 3:
-                            if (distance <= 100000)
+                            if (distance <= 2000)
+                                flag = true;
+                            break;
+                        case 4:
+                            if (distance <= 5000)
+                                flag = true;
+                            break;
+                        case 5:
+                            if (distance <= 20000)
+                                flag = true;
+                            break;
+                        case 6:
+                            if (distance <= 60000)
                                 flag = true;
                             break;
                     }

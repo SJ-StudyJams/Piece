@@ -162,10 +162,13 @@
     <string name="negative_btn">取消</string>
 
     <string-array name="visibility_arrays">
+        <item>50m</item>
+        <item>100m</item>
+        <item>500m</item>
+        <item>2km</item>
         <item>5km</item>
         <item>20km</item>
         <item>60km</item>
-        <item>100km</item>
     </string-array>
 
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>

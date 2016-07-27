@@ -101,16 +101,25 @@ public class PiecesActivity extends AppCompatActivity {
                     int pr = 0;
                     switch (p.getVisibility()) {
                         case 0:
-                            pr = 5000;
+                            pr = 50;
                             break;
                         case 1:
-                            pr = 20000;
+                            pr = 100;
                             break;
                         case 2:
-                            pr = 60000;
+                            pr = 500;
                             break;
                         case 3:
-                            pr = 100000;
+                            pr = 2000;
+                            break;
+                        case 4:
+                            pr = 5000;
+                            break;
+                        case 5:
+                            pr = 20000;
+                            break;
+                        case 6:
+                            pr = 60000;
                             break;
                         default:
                     }
