@@ -84,22 +84,24 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     return;
                 }
 
+                loginUser = new LoginUser();
+                BmobService bmobService = new BmobService(getContext(), loginUser);
+                loginUser = bmobService.login(username, pwd);
+
                 // ProgressDialog
                 progress = new ProgressDialog(getActivity());
                 progress.setMessage("正在登录中...");
                 progress.setCanceledOnTouchOutside(false);
                 progress.show();
 
-                loginUser = new LoginUser();
-                BmobService bmobService = new BmobService(getContext(), loginUser);
-                loginUser = bmobService.login(username, pwd);
-
                 //延时1秒执行判断是否登录成功
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        if (loginUser.isLogin()) {
+                        Log.i(TAG, "run");
+                        boolean flag = SPUtils.getBoolean(getActivity(), Constants.SP_FILE_NAME, "login", false);
+                        if (flag) {
                             progress.dismiss();
                             Listener listener = (Listener) getActivity();
                             listener.onSubmitLoginBtnClick();
@@ -113,7 +115,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                             Log.e(TAG, "登录失败" + loginUser.getErrorMsg());
                         }
                     }
-                }, 3000);
+                }, 4000);
 
                 break;
             case R.id.find_pwd:
