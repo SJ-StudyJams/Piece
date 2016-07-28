@@ -23,6 +23,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "4g" // 2g should be also OK
+    }
 }
 
 dependencies {
