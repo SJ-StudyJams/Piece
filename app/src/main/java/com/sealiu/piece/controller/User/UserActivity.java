@@ -83,7 +83,7 @@ public class UserActivity extends AppCompatActivity {
 
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
         Set<String> piecesSet = SP.getStringSet("pref_piece_nearby_key", null);
-        if (piecesSet != null && piecesSet.contains("5")) {
+        if (piecesSet == null || piecesSet.contains("5")) {
             // 广告
             AdView mAdView = (AdView) findViewById(R.id.adView);
             mAdView.setVisibility(View.VISIBLE);
