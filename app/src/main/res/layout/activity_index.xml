@@ -1,0 +1,69 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context="com.sealiu.piece.controller.LoginRegister.IndexActivity">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/fullscreen_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:keepScreenOn="true"
+            android:paddingBottom="16dp"
+            android:text="@string/app_name"
+            android:textColor="@color/colorPrimary"
+            android:textSize="50sp"
+            android:textStyle="bold" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/google_sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:drawableLeft="@mipmap/google_96"
+            android:text="@string/sign_in_with_google_account"
+            android:textAllCaps="false" />
+
+        <!--<com.google.android.gms.common.SignInButton-->
+        <!--android:id="@+id/google_sign_in"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/facebook_sign_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:drawableLeft="@mipmap/facebook_96"
+            android:text="@string/sign_in_with_facebook_account"
+            android:textAllCaps="false" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/or"
+            android:textColor="@color/textOrIcon" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/anonymous_sign_in"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@mipmap/anonymous_96"
+            android:text="@string/anonymous"
+            android:textAllCaps="false"
+            android:textColor="@color/disabledText" />
+    </LinearLayout>
+
+</FrameLayout>

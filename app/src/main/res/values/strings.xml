@@ -101,7 +101,7 @@
         <item>60km</item>
     </string-array>
 
-    <string name="banner_ad_unit_id">ca-app-pub-5043396164425122/7605429697</string>
+    <string name="banner_ad_unit_id">ca-app-pub-6993844563211839/7210642908</string>
     <string name="pieces_detail">Piece 详情</string>
     <string name="location">定位</string>
     <string name="location_info">点击这里，进行定位</string>
@@ -115,4 +115,30 @@
     <string name="permission_denied_location">但这是一个基于位置信息的通讯APP，所以你将无法正常使用本软件</string>
     <string name="permission_denied_storage">APP无法读写存储空间，这样你将无法自定义头像，无法发送带附件的Piece信息</string>
     <string name="permission_denied_phone_state">APP无法读取手机状态，这样你可能无法和服务器链接，无法注册和登录</string>
+
+    <string name="title_activity_index">IndexActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="anonymous">游客身份登录</string>
+    <string name="sign_in_with_google_account"> 使用Google账户登录</string>
+    <string name="sign_in_with_facebook_account"> 使用Facebook账户登录</string>
+    <string name="or">或</string>
+    <string name="something_cannot_use">一些功能可能无法使用</string>
+    <string name="loading">加载中</string>
+    <string name="server_client_id">262104224218-dhaa52csnlpt8s5botkn8pmct23tk886.apps.googleusercontent.com</string>
 </resources>
+
+    <!--
+    <resources>
+        <string name="app_name">Piece</string>
+        <string name="anonymous">Anonymous</string>
+        <string name="album_choose">Choose From Album</string>
+        <string name="banner_ad_unit_id">ca-app-pub-6993844563211839/7210642908</string>
+        <string name="capture_photo">Camera</string>
+        <string name="sign_in_with_facebook_account">" Sign In With Facebook"</string>
+        <string name="sign_in_with_google_account">" Sign In With Google"</string>
+        <string name="or">OR</string>
+        <string name="loading">Loading</string>
+        <string name="server_client_id">262104224218-dhaa52csnlpt8s5botkn8pmct23tk886.apps.googleusercontent.com</string>
+    </resources>
+    -->
