@@ -1,27 +1,35 @@
 {
   "project_info": {
-    "project_number": "262104224218",
-    "firebase_url": "https://sapient-biplane-135123.firebaseio.com",
-    "project_id": "sapient-biplane-135123",
-    "storage_bucket": "sapient-biplane-135123.appspot.com"
+    "project_number": "186170206321",
+    "firebase_url": "https://piece-727bd.firebaseio.com",
+    "project_id": "piece-727bd",
+    "storage_bucket": "piece-727bd.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:262104224218:android:5ffa2a2f0a6d9da8",
+        "mobilesdk_app_id": "1:186170206321:android:5ffa2a2f0a6d9da8",
         "android_client_info": {
           "package_name": "com.sealiu.piece"
         }
       },
       "oauth_client": [
         {
-          "client_id": "262104224218-dhaa52csnlpt8s5botkn8pmct23tk886.apps.googleusercontent.com",
+          "client_id": "186170206321-8h4l450tftg6mr3fr170ob9ugickf8pf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sealiu.piece",
+            "certificate_hash": "FB351385E323F859930173FB8966D673EE8DD797"
+          }
+        },
+        {
+          "client_id": "186170206321-njl8hdg6givht5udtlo7flhkpet2k6n2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAzRAbc6t3bj8Q9CqtFrfzGVxtUG1CrcEQ"
+          "current_key": "AIzaSyBJpcfbNTnxGWwkhbiWN35_SGbN5F3oilg"
         }
       ],
       "services": {
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "186170206321-njl8hdg6givht5udtlo7flhkpet2k6n2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
