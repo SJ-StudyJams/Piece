@@ -21,6 +21,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,21 +31,31 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sealiu.piece.R;
+import com.sealiu.piece.model.Piece;
+import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WritePieceActivity extends AppCompatActivity implements
         UrlFragment.UrlListener, View.OnClickListener {
 
     private static final String TAG = "WritePieceActivity";
-    private static final int ERROR = 4;
-    private static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 111;
+    private static final String REQUIRED = "Required";
+
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 222;
     ImageButton addLinkBtn;
     ImageButton addImageBtn;
@@ -56,16 +67,20 @@ public class WritePieceActivity extends AppCompatActivity implements
     ImageView imagePreview;
     TextView imagePath;
     Uri previewUri;
-    private String realPath;
-    private Double mLatitude, mLongitude;
-    private String mLocationName;
+
     private TextView myLocationTV;
     private ImageView headPictureIV;
     private TextView nickNameTV;
-    private Spinner visibilitySpinner;
     private EditText pieceContentET;
     private NestedScrollView snackBarHolderView;
+    private Spinner visibilitySpinner;
+
+    private Double mLatitude;
+    private Double mLongitude;
+
     private FirebaseUser user;
+    private DatabaseReference mDatabase;
+
     private boolean isNotAskAgain = false;
 
     @Override
@@ -74,6 +89,7 @@ public class WritePieceActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_write_piece);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         snackBarHolderView = (NestedScrollView) findViewById(R.id.layout_holder);
 
@@ -105,7 +121,28 @@ public class WritePieceActivity extends AppCompatActivity implements
         linkDeleteBtn.setOnClickListener(this);
         imageDeleteBtn.setOnClickListener(this);
         initUI();
+    }
 
+    /**
+     * 初始化界面显示（头像，昵称，位置信息）
+     */
+    private void initUI() {
+
+        mLatitude = getIntent().getDoubleExtra("LAT", 0);
+        mLongitude = getIntent().getDoubleExtra("LNG", 0);
+        String mLocationName = getIntent().getStringExtra("LOC");
+
+        String detailPosition = mLocationName + " (" + mLatitude + " ," + mLongitude + ")";
+        myLocationTV.setText(detailPosition);
+
+
+        nickNameTV.setText(user.getDisplayName());
+        BitmapUtils bitmapUtils = new BitmapUtils();
+        if (user.getPhotoUrl() == null) {
+            headPictureIV.setVisibility(View.GONE);
+        } else {
+            bitmapUtils.disPlay(headPictureIV, user.getPhotoUrl().toString());
+        }
     }
 
     @Override
@@ -118,6 +155,7 @@ public class WritePieceActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_send_piece:
+                submitPiece();
                 // 发送编写的Piece
 
 //                String objectId = loginUser.getObjectId();
@@ -175,6 +213,53 @@ public class WritePieceActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    private void submitPiece() {
+        final String content = pieceContentET.getText().toString();
+
+        // content is required
+        if (TextUtils.isEmpty(content)) {
+            pieceContentET.setError(REQUIRED);
+            return;
+        }
+        final int visibility = visibilitySpinner.getSelectedItemPosition();
+
+        final String userId = user.getUid();
+        mDatabase.child("users").child(userId).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        User user = dataSnapshot.getValue(User.class);
+
+                        if (user == null) {
+                            Log.e(TAG, "User " + userId + " is unexpectedly null");
+                            Toast.makeText(WritePieceActivity.this,
+                                    "Error: could not fetch user.",
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            writeNewPiece(userId, user.username, content, visibility);
+                        }
+
+                        finish();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w(TAG, "getUser:onCancelled", databaseError.toException());
+                    }
+                }
+        );
+    }
+
+    private void writeNewPiece(String userId, String username, String content, int visibility) {
+        String key = mDatabase.child("pieces").push().getKey();
+        Piece piece = new Piece(username, userId, content, mLatitude, mLongitude, visibility, 1);
+        Map<String, Object> pieceValues = piece.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/pieces/" + key, pieceValues);
+        childUpdates.put("/user-pieces/" + userId + "/" + key, pieceValues);
+        mDatabase.updateChildren(childUpdates);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         for (int i = 0, len = permissions.length; i < len; i++) {
@@ -193,24 +278,6 @@ public class WritePieceActivity extends AppCompatActivity implements
                 }
             }
         }
-    }
-
-    /**
-     * 初始化界面显示（头像，昵称，位置信息）
-     */
-    private void initUI() {
-
-        mLatitude = getIntent().getDoubleExtra("LAT", 0);
-        mLongitude = getIntent().getDoubleExtra("LNG", 0);
-        mLocationName = getIntent().getStringExtra("LOC");
-
-        String detailPosition = mLocationName + " (" + mLatitude + " ," + mLongitude + ")";
-        myLocationTV.setText(detailPosition);
-
-
-        nickNameTV.setText(user.getDisplayName());
-        BitmapUtils bitmapUtils = new BitmapUtils();
-        bitmapUtils.disPlay(headPictureIV, user.getPhotoUrl().toString());
     }
 
     @Override
