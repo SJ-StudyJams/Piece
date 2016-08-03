@@ -16,8 +16,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -26,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.Maps.MapsActivity;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -78,6 +77,8 @@ public class IndexActivity extends AppCompatActivity implements
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    finish();
+                    startActivity(new Intent(IndexActivity.this, MapsActivity.class));
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -149,20 +150,21 @@ public class IndexActivity extends AppCompatActivity implements
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-
-    private void googleSignOut() {
-        // Firebase sign out
-        mAuth.signOut();
-
-        // Google sign out
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
+    private void anonymousSignIn() {
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onResult(@NonNull Status status) {
-
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInAnonymously", task.getException());
+                            Toast.makeText(IndexActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-        );
+                });
     }
 
 
@@ -193,6 +195,11 @@ public class IndexActivity extends AppCompatActivity implements
         switch (view.getId()) {
             case R.id.google_sign_in:
                 googleSignIn();
+                break;
+            case R.id.facebook_sign_in:
+                break;
+            case R.id.anonymous_sign_in:
+                anonymousSignIn();
                 break;
         }
     }

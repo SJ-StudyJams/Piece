@@ -47,8 +47,12 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.SimpleShowcaseEventListener;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -61,33 +65,23 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.sealiu.piece.R;
-import com.sealiu.piece.controller.LoginRegister.LoginActivity;
+import com.sealiu.piece.controller.LoginRegister.IndexActivity;
 import com.sealiu.piece.controller.Piece.PieceDetailActivity;
 import com.sealiu.piece.controller.Piece.PiecesActivity;
 import com.sealiu.piece.controller.Piece.WritePieceActivity;
 import com.sealiu.piece.controller.Settings.MyPreferenceActivity;
 import com.sealiu.piece.controller.User.UserActivity;
-import com.sealiu.piece.controller.User.UserInfoSync;
 import com.sealiu.piece.model.Constants;
-import com.sealiu.piece.model.Piece;
-import com.sealiu.piece.model.User;
 import com.sealiu.piece.utils.SPUtils;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
-
-import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.BmobRealTimeData;
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.ValueEventListener;
 
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -109,7 +103,6 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int PERMISSIONS_REQUEST_FINE_COARSE_LOCATION = 2;
     private static final int WRITE_PIECE_REQUEST_CODE = 3;
     private static final int ERROR = 4;
-    private static final int REQUEST_PERMISSION_SETTING = 5;
 
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
@@ -122,7 +115,6 @@ public class MapsActivity extends AppCompatActivity implements
     Button seeAllBtn;
     FloatingActionButton writePieceBtn;
     SharedPreferences SP;
-    BmobRealTimeData data = new BmobRealTimeData();
     private RelativeLayout snackBarHolderView;
     private GoogleMap mMap;
     private Double mCurrentLatitude, mCurrentLongitude;
@@ -132,6 +124,10 @@ public class MapsActivity extends AppCompatActivity implements
 
     private ShowcaseView showcaseView;
     private int counter = 0;
+
+    private FirebaseUser user;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, MapsActivity.class);
@@ -144,39 +140,61 @@ public class MapsActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 从bmob后台同步用户信息到sp文件中存储
-        try {
-            UserInfoSync.getUserInfo(this, Constants.SP_FILE_NAME, SPUtils.getString(this, Constants.SP_FILE_NAME, Constants.SP_USER_OBJECT_ID, null));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        mGoogleApiClient = new Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
 
         snackBarHolderView = (RelativeLayout) findViewById(R.id.content_holder);
         displayCurrentPosition = (TextView) findViewById(R.id.position_info);
         pieceNumberNear = (TextView) findViewById(R.id.piece_number_nearby);
         moreInfoLayout = (LinearLayout) findViewById(R.id.more_info_panel);
-
         writePieceBtn = (FloatingActionButton) findViewById(R.id.write_piece_fab);
         findMyLocationBtn = (ImageButton) findViewById(R.id.find_my_location);
         hideShowMoreInfoBtn = (ImageButton) findViewById(R.id.hide_show);
         seeAllBtn = (Button) findViewById(R.id.see_all_btn);
-
 
         writePieceBtn.setOnClickListener(this);
         findMyLocationBtn.setOnClickListener(this);
         hideShowMoreInfoBtn.setOnClickListener(this);
         seeAllBtn.setOnClickListener(this);
 
-        initRealTimeData();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // User is signed in
+            Log.d(TAG, user.getDisplayName() + "\n" +
+                    user.getEmail() + "\n" +
+                    user.getPhotoUrl() + "\n" +
+                    user.getUid() + "\n" +
+                    user.getProviderId() + "\n" +
+                    user.getProviderData()
+            );
+        }
+
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser u = firebaseAuth.getCurrentUser();
+                if (u == null) {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                    startActivity(new Intent(MapsActivity.this, IndexActivity.class));
+                }
+                // ...
+            }
+        };
     }
 
     @Override
@@ -200,6 +218,7 @@ public class MapsActivity extends AppCompatActivity implements
     protected void onStart() {
         Log.i(TAG, "onStart");
         super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
         mGoogleApiClient.connect();
     }
 
@@ -350,11 +369,16 @@ public class MapsActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+            case R.id.user_menu_title:
+                if (user.getDisplayName() != null) {
+                    startActivity(new Intent(MapsActivity.this, UserActivity.class));
+                } else {
+                    // anonymous sign in
+                    anonymousLimit();
+                }
+                break;
             case R.id.settings_menu_title:
                 startActivity(new Intent(MapsActivity.this, MyPreferenceActivity.class));
-                break;
-            case R.id.user_menu_title:
-                startActivity(new Intent(MapsActivity.this, UserActivity.class));
                 break;
             case R.id.switch_menu_title:
                 new AlertDialog.Builder(this)
@@ -363,10 +387,7 @@ public class MapsActivity extends AppCompatActivity implements
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                BmobUser.logOut();
-                                SPUtils.clear(MapsActivity.this, Constants.SP_FILE_NAME);
-                                startActivity(new Intent(MapsActivity.this, LoginActivity.class));
-                                finish();
+
                             }
                         })
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -383,6 +404,28 @@ public class MapsActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    private void anonymousLimit() {
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.anonymous_limit))
+                .setMessage(getString(R.string.anonymous_limit_message))
+                .show();
+    }
+
+    private void googleSignOut() {
+        // Firebase sign out
+        mAuth.signOut();
+
+        // Google sign out
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+
+                    }
+                }
+        );
+    }
+
     @Override
     protected void onStop() {
         Log.i(TAG, "onStop");
@@ -396,7 +439,9 @@ public class MapsActivity extends AppCompatActivity implements
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.write_piece_fab:
-                if (mCurrentLatitude != null && mCurrentLongitude != null && mCurrentLocationName != null) {
+                if (user.getDisplayName() == null) {
+                    anonymousLimit();
+                } else if (mCurrentLatitude != null && mCurrentLongitude != null && mCurrentLocationName != null) {
                     Intent intent = new Intent(MapsActivity.this, WritePieceActivity.class);
                     intent.putExtra("LAT", mCurrentLatitude);
                     intent.putExtra("LNG", mCurrentLongitude);
@@ -511,8 +556,9 @@ public class MapsActivity extends AppCompatActivity implements
         clusterManager.setRenderer(new MyIconRender(this, mMap, clusterManager));
 
         //因为纸条的可见范围最大为100km，所以默认为100km
-        double[] llRange = Common.GetAround(mCurrentLatitude, mCurrentLongitude, 100000);
+        //double[] llRange = Common.GetAround(mCurrentLatitude, mCurrentLongitude, 100000);
 
+        /*
         BmobQuery<Piece> query = new BmobQuery<>();
         query.addWhereGreaterThanOrEqualTo("latitude", llRange[0])
                 .addWhereLessThanOrEqualTo("latitude", llRange[2])
@@ -577,6 +623,7 @@ public class MapsActivity extends AppCompatActivity implements
                 pieceNumberNear.setText(info);
             }//done
         });
+        */
     }
 
     @Override
@@ -641,66 +688,6 @@ public class MapsActivity extends AppCompatActivity implements
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         notificationManager.notify(0, notification);
-    }
-
-    private void initRealTimeData() {
-        data.start(new ValueEventListener() {
-            @Override
-            public void onConnectCompleted(Exception e) {
-                Log.d(TAG, "连接成功:" + data.isConnected());
-                if (data.isConnected())
-                    data.subTableUpdate("Piece");
-            }
-
-            @Override
-            public void onDataChange(JSONObject jsonObject) {
-                Log.i(TAG, "(" + jsonObject.optString("action") + ")" + "数据：" + jsonObject);
-                JSONObject jsonData = jsonObject.optJSONObject("data");
-                String authorID = jsonData.optString("authorID");
-                if (!User.getCurrentUser().getObjectId().equals(authorID)) {
-                    boolean flag = false;
-                    String pieceContent = jsonData.optString("content");
-                    Double pieceLat = jsonData.optDouble("latitude");
-                    Double pieceLng = jsonData.optDouble("longitude");
-                    Integer visibility = jsonData.optInt("visibility");
-                    Double distance = Common.GetDistance(pieceLat, pieceLng, mCurrentLatitude, mCurrentLongitude);
-
-                    switch (visibility) {
-                        case 0:
-                            if (distance <= 50)
-                                flag = true;
-                            break;
-                        case 1:
-                            if (distance <= 100)
-                                flag = true;
-                            break;
-                        case 2:
-                            if (distance <= 500)
-                                flag = true;
-                            break;
-                        case 3:
-                            if (distance <= 2000)
-                                flag = true;
-                            break;
-                        case 4:
-                            if (distance <= 5000)
-                                flag = true;
-                            break;
-                        case 5:
-                            if (distance <= 20000)
-                                flag = true;
-                            break;
-                        case 6:
-                            if (distance <= 60000)
-                                flag = true;
-                            break;
-                    }
-
-                    if (flag)
-                        showNotification("附近有新的 Piece", pieceContent);
-                }
-            }
-        });
     }
 
     //首次启动，引导动画
@@ -787,7 +774,7 @@ public class MapsActivity extends AppCompatActivity implements
     private class ShakeButtonListener extends SimpleShowcaseEventListener {
         private final Button button;
 
-        public ShakeButtonListener(Button button) {
+        ShakeButtonListener(Button button) {
             this.button = button;
         }
 
@@ -805,7 +792,7 @@ public class MapsActivity extends AppCompatActivity implements
         private final double CONVERT_TO_RADS = 2 * Math.PI;
         private final int cycles;
 
-        public WobblyInterpolator(int cycles) {
+        WobblyInterpolator(int cycles) {
             this.cycles = cycles;
         }
 
@@ -819,7 +806,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     public class MyIconRender extends DefaultClusterRenderer<ClusterMarkerLocation> {
 
-        public MyIconRender(Context context, GoogleMap map, ClusterManager<ClusterMarkerLocation> clusterManager) {
+        MyIconRender(Context context, GoogleMap map, ClusterManager<ClusterMarkerLocation> clusterManager) {
             super(context, map, clusterManager);
         }
 

@@ -1,25 +1,14 @@
 package com.sealiu.piece.controller.Piece;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.model.Piece;
-import com.sealiu.piece.model.User;
-import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 
-import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.QueryListener;
-import cn.bmob.v3.listener.UpdateListener;
 
 public class PieceDetailActivity extends AppCompatActivity {
 
@@ -60,6 +49,7 @@ public class PieceDetailActivity extends AppCompatActivity {
         pieceCreatedAt = snippets[1];
         pieceObjectId = snippets[2];
 
+        /*
         Log.i(TAG, pieceObjectId);
         if (!pieceObjectId.equals("") && pieceObjectId != null) {
             final BmobQuery<Piece> bmobQuery = new BmobQuery<>();
@@ -139,11 +129,13 @@ public class PieceDetailActivity extends AppCompatActivity {
                 }
             });
         }
+        */
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        /*
         Piece p = new Piece();
         p.setViewCount(hotCount);
         p.update(pieceObjectId, new UpdateListener() {
@@ -156,5 +148,6 @@ public class PieceDetailActivity extends AppCompatActivity {
                 }
             }
         });
+        */
     }
 }

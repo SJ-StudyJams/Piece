@@ -1,14 +1,10 @@
 package com.sealiu.piece.model;
 
-import android.util.Log;
-
-import cn.bmob.v3.BmobUser;
-
 /**
  * Created by liuyang
  * on 2016/7/1.
  */
-public class User extends BmobUser {
+public class User {
 
     //第三方登录qq返回值
     private String qq;
@@ -32,11 +28,6 @@ public class User extends BmobUser {
     private String nickname;
     //自动登陆
     private boolean autoLogin;
-
-    @Override
-    public String getObjectId() {
-        return super.getObjectId();
-    }
 
     public String getQq() {
         return qq;

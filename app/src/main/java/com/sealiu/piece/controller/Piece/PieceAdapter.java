@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Piece;
-import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -63,23 +62,23 @@ public class PieceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         switch (holder.getItemViewType()) {
             case 1:
                 ViewHolder holder1 = (ViewHolder) holder;
-                holder1.mContentTextView.setText(mDataset.get(position).getContent());
-                holder1.mCreatedAtTextView.setText(mDataset.get(position).getCreatedAt());
+                //holder1.mContentTextView.setText(mDataset.get(position).getContent());
+                //holder1.mCreatedAtTextView.setText(mDataset.get(position).getCreatedAt());
                 break;
             case 2:
                 ViewHolder2 holder2 = (ViewHolder2) holder;
-                holder2.mContentTextView.setText(mDataset.get(position).getContent());
-                holder2.mCreatedAtTextView.setText(mDataset.get(position).getCreatedAt());
-                holder2.mUrlTextView.setText(mDataset.get(position).getUrl());
+                //holder2.mContentTextView.setText(mDataset.get(position).getContent());
+                //holder2.mCreatedAtTextView.setText(mDataset.get(position).getCreatedAt());
+                //holder2.mUrlTextView.setText(mDataset.get(position).getUrl());
                 break;
             case 3:
                 ViewHolder3 holder3 = (ViewHolder3) holder;
-                holder3.mContentTextView.setText(mDataset.get(position).getContent());
-                holder3.mCreatedAtTextView.setText(mDataset.get(position).getCreatedAt());
-                if (mDataset.get(position).getImage() != null) {
-                    BitmapUtils bitmapUtils = new BitmapUtils();
-                    bitmapUtils.disPlay(holder3.mImageView, mDataset.get(position).getImage());
-                }
+//                holder3.mContentTextView.setText(mDataset.get(position).getContent());
+//                holder3.mCreatedAtTextView.setText(mDataset.get(position).getCreatedAt());
+//                if (mDataset.get(position).getImage() != null) {
+//                    BitmapUtils bitmapUtils = new BitmapUtils();
+//                    bitmapUtils.disPlay(holder3.mImageView, mDataset.get(position).getImage());
+//                }
                 break;
         }
     }

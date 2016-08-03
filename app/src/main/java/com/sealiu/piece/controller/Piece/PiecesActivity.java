@@ -25,10 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.FindListener;
-
 public class PiecesActivity extends AppCompatActivity {
 
     private static final String TAG = "PiecesActivity";
@@ -86,6 +82,7 @@ public class PiecesActivity extends AppCompatActivity {
     private void setAdapter() {
         double[] llRange = Common.GetAround(mLat, mLng, 100000);
 
+        /*
         BmobQuery<Piece> query = new BmobQuery<>();
         query.addWhereGreaterThanOrEqualTo("latitude", llRange[0])
                 .addWhereLessThanOrEqualTo("latitude", llRange[2])
@@ -133,6 +130,7 @@ public class PiecesActivity extends AppCompatActivity {
                 mRecyclerView.setAdapter(mAdapter);
             }//done
         });
+        */
     }
 
     @Override

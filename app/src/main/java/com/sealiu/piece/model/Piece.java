@@ -1,12 +1,10 @@
 package com.sealiu.piece.model;
 
-import cn.bmob.v3.BmobObject;
-
 /**
  * Created by liuyang
  * on 2016/7/1.
  */
-public class Piece extends BmobObject {
+public class Piece {
     //作者(外键，用户的objectId)
     private String authorID;
     //内容

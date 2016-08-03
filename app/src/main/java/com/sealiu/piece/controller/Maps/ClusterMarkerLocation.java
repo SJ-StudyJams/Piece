@@ -7,7 +7,7 @@ import com.google.maps.android.clustering.ClusterItem;
  * Created by liuyang
  * on 2016/7/15.
  */
-public class ClusterMarkerLocation implements ClusterItem {
+class ClusterMarkerLocation implements ClusterItem {
 
     private LatLng position;
     private String title;
@@ -28,7 +28,7 @@ public class ClusterMarkerLocation implements ClusterItem {
         return title;
     }
 
-    public String getSnippet() {
+    String getSnippet() {
         return snippet;
     }
 }

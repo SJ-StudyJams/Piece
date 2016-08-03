@@ -38,7 +38,7 @@ public class Common {
     }
 
     /**
-     * 用haversine公式计算球面两点间的距离
+     * 用 haversine 公式计算球面两点间的距离
      */
 
     public static double GetDistance(double lat1, double lng1, double lat2, double lng2) {

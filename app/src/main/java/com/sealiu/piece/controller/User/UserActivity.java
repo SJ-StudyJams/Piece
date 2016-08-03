@@ -1,57 +1,30 @@
 package com.sealiu.piece.controller.User;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.sealiu.piece.R;
-import com.sealiu.piece.controller.Piece.PieceAdapter;
-import com.sealiu.piece.model.LoginUser;
-import com.sealiu.piece.model.Piece;
+import com.sealiu.piece.controller.LoginRegister.IndexActivity;
+import com.sealiu.piece.model.Constants;
+import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
+import com.sealiu.piece.utils.SPUtils;
 
-import java.util.List;
-import java.util.Set;
-
-import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.FindListener;
-
-/**
- * 展示用户发送过的小纸条（类似朋友圈）
- * 点击用户头像进入查看页面
- */
 public class UserActivity extends AppCompatActivity {
 
     private static final String TAG = "UserActivity";
-    private static final String LAYOUT_MANAGER_FLAG = "LayoutManager";
-    Menu menu;
-    int[] drawableArray = new int[]{
-            R.drawable.ic_view_stream_white_24dp,
-            R.drawable.ic_view_module_white_24dp,
-            R.drawable.ic_view_quilt_white_24dp
-    };
-    int index;
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
 
-    private LoginUser loginUser;
+    private RecyclerView mRecyclerView;
+
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,83 +33,47 @@ public class UserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
         mRecyclerView = (RecyclerView) findViewById(R.id.my_piece_recycler_view);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(UserActivity.this, EditActivity.class));
-            }
-        });
+        TextView displayName = (TextView) findViewById(R.id.display_name);
+        ImageView userPhoto = (ImageView) findViewById(R.id.user_photo);
 
-        // set RecyclerView
         mRecyclerView.setHasFixedSize(true);
-        // set LayoutManager
-        index = savedInstanceState != null ? savedInstanceState.getInt(LAYOUT_MANAGER_FLAG) : 0;
-
-        initUI();
-
-        // fetch data, and set adapter
         setAdapter();
 
-        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
-        Set<String> piecesSet = SP.getStringSet("pref_piece_nearby_key", null);
-        if (piecesSet == null || piecesSet.contains("5")) {
-            // 广告
-            AdView mAdView = (AdView) findViewById(R.id.adView);
-            mAdView.setVisibility(View.VISIBLE);
-            AdRequest adRequest = new AdRequest.Builder().build();
-            mAdView.loadAd(adRequest);
+        // Get the currently signed-in user
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            displayName.setText(user.getDisplayName());
+            BitmapUtils bitmapUtils = new BitmapUtils();
+            bitmapUtils.disPlay(userPhoto, user.getPhotoUrl().toString());
         }
-    }
 
-    @Override
-    protected void onPause() {
-        Log.i(TAG, "onPause");
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        Log.i(TAG, "onResume");
-        super.onResume();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.i(TAG, "onStop");
-        super.onStop();
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.i(TAG, "onRestart");
-        initUI();
-        super.onRestart();
-    }
-
-    /**
-     * 初始化界面显示
-     */
-    private void initUI() {
-        //获取用户信息
-        loginUser = UserInfoSync.getLoginInfo(UserActivity.this);
-        String nickName = loginUser.getNickname();
-        Log.i(TAG, "" + nickName);
-        CollapsingToolbarLayout collapsingToolbarLayout =
-                (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        if (nickName != null) {
-            collapsingToolbarLayout.setTitle(nickName);
-        } else {
-            collapsingToolbarLayout.setTitle(loginUser.getUsername());
-        }
+        // AuthStateChange Listener
+        new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser u = firebaseAuth.getCurrentUser();
+                if (u == null) {
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                    SPUtils.clear(UserActivity.this, Constants.SP_FILE_NAME);
+                    startActivity(new Intent(UserActivity.this, IndexActivity.class));
+                    finish();
+                }
+            }
+        };
     }
 
     private void setAdapter() {
-        String userObjectId = loginUser.getObjectId();
-        if (userObjectId != null) {
+        if (user != null) {
+            String UID = user.getUid();
+            /*
             BmobQuery<Piece> query = new BmobQuery<>();
             query.addWhereEqualTo("authorID", userObjectId);
             query.setLimit(1000);
@@ -148,54 +85,7 @@ public class UserActivity extends AppCompatActivity {
                     mRecyclerView.setAdapter(mAdapter);
                 }//done
             });
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(LAYOUT_MANAGER_FLAG, index);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_pieces, menu);
-        this.menu = menu;
-        setLayoutManager();
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_layout:
-                index = (index + 1) % 3;
-                setLayoutManager();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void setLayoutManager() {
-        menu.findItem(R.id.menu_layout).setIcon(drawableArray[index]);
-        switch (index) {
-            case 0:
-                mLayoutManager = new LinearLayoutManager(this);
-                mRecyclerView.setLayoutManager(mLayoutManager);
-                break;
-            case 1:
-                mLayoutManager = new GridLayoutManager(this, 2);
-                mRecyclerView.setLayoutManager(mLayoutManager);
-                break;
-            case 2:
-                int orientation = this.getResources().getConfiguration().orientation;
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    mLayoutManager = new StaggeredGridLayoutManager(3, 1);
-                } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    mLayoutManager = new StaggeredGridLayoutManager(2, 1);
-                }
-                mRecyclerView.setLayoutManager(mLayoutManager);
-                break;
+            */
         }
     }
 }

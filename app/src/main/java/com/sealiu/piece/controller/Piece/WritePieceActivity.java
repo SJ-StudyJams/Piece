@@ -31,19 +31,13 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.sealiu.piece.R;
-import com.sealiu.piece.controller.User.UserInfoSync;
-import com.sealiu.piece.model.LoginUser;
-import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-
-import cn.bmob.v3.datatype.BmobFile;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
-import cn.bmob.v3.listener.UploadFileListener;
 
 public class WritePieceActivity extends AppCompatActivity implements
         UrlFragment.UrlListener, View.OnClickListener {
@@ -71,7 +65,7 @@ public class WritePieceActivity extends AppCompatActivity implements
     private Spinner visibilitySpinner;
     private EditText pieceContentET;
     private NestedScrollView snackBarHolderView;
-    private LoginUser loginUser;
+    private FirebaseUser user;
     private boolean isNotAskAgain = false;
 
     @Override
@@ -79,7 +73,7 @@ public class WritePieceActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_piece);
 
-        loginUser = UserInfoSync.getLoginInfo(WritePieceActivity.this);
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
         snackBarHolderView = (NestedScrollView) findViewById(R.id.layout_holder);
 
@@ -126,38 +120,39 @@ public class WritePieceActivity extends AppCompatActivity implements
             case R.id.menu_send_piece:
                 // 发送编写的Piece
 
-                String objectId = loginUser.getObjectId();
-                String pieceContent = pieceContentET.getText().toString();
-                int visibilityPosition = visibilitySpinner.getSelectedItemPosition();
-
-                if (pieceContent.equals("")) {
-                    Snackbar.make(snackBarHolderView, "请填写内容", Snackbar.LENGTH_LONG).show();
-                    break;
-                }
-
-                final Piece piece = new Piece(objectId, pieceContent, mLatitude, mLongitude, visibilityPosition);
-                piece.setType(1);
+//                String objectId = loginUser.getObjectId();
+//                String pieceContent = pieceContentET.getText().toString();
+//                int visibilityPosition = visibilitySpinner.getSelectedItemPosition();
+//
+//                if (pieceContent.equals("")) {
+//                    Snackbar.make(snackBarHolderView, "请填写内容", Snackbar.LENGTH_LONG).show();
+//                    break;
+//                }
+//
+//                final Piece piece = new Piece(objectId, pieceContent, mLatitude, mLongitude, visibilityPosition);
+//                piece.setType(1);
 
                 //设置分享链接
-                if (linkCard.getVisibility() == View.VISIBLE) {
-                    piece.setUrl(linkContent.getText().toString());
-                    piece.setType(2);
-                }
+//                if (linkCard.getVisibility() == View.VISIBLE) {
+//                    piece.setUrl(linkContent.getText().toString());
+//                    piece.setType(2);
+//                }
 
                 //设置分享图片
-                if (imageCard.getVisibility() == View.VISIBLE) {
-                    piece.setImage(realPath);
-                    piece.setType(3);
-                }
+//                if (imageCard.getVisibility() == View.VISIBLE) {
+//                    piece.setImage(realPath);
+//                    piece.setType(3);
+//                }
 
-                Log.i(TAG, "用户ID：" + piece.getAuthorID() +
-                        "; 可见范围：" + piece.getVisibility() +
-                        "; 纸条内容：" + piece.getContent() +
-                        "; url：" + piece.getUrl() +
-                        "; image：" + piece.getImage()
-                );
+//                Log.i(TAG, "用户ID：" + piece.getAuthorID() +
+//                        "; 可见范围：" + piece.getVisibility() +
+//                        "; 纸条内容：" + piece.getContent() +
+//                        "; url：" + piece.getUrl() +
+//                        "; image：" + piece.getImage()
+//                );
 
                 //保存到bmob后台
+                /*
                 piece.save(new SaveListener<String>() {
                     @Override
                     public void done(String s, BmobException e) {
@@ -172,7 +167,7 @@ public class WritePieceActivity extends AppCompatActivity implements
                         finish();
                     }
                 });
-
+                */
                 break;
             default:
                 break;
@@ -212,25 +207,10 @@ public class WritePieceActivity extends AppCompatActivity implements
         String detailPosition = mLocationName + " (" + mLatitude + " ," + mLongitude + ")";
         myLocationTV.setText(detailPosition);
 
-        String nickName = loginUser.getNickname();
-        String headPicture = loginUser.getAvatar();
-        String username = loginUser.getUsername();
 
-
-        if (nickName != null && !nickName.equals("")) {
-            nickNameTV.setText(nickName);
-        } else {
-            nickNameTV.setText(username);
-        }
-
-        try {
-            if (headPicture != null) {
-                BitmapUtils bitmapUtils = new BitmapUtils();
-                bitmapUtils.disPlay(headPictureIV, headPicture);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        nickNameTV.setText(user.getDisplayName());
+        BitmapUtils bitmapUtils = new BitmapUtils();
+        bitmapUtils.disPlay(headPictureIV, user.getPhotoUrl().toString());
     }
 
     @Override
@@ -357,6 +337,7 @@ public class WritePieceActivity extends AppCompatActivity implements
         progressDialog.setMax(100);
         progressDialog.show();
 
+        /*
         final BmobFile bmobFile = new BmobFile(new File(path));
 
         bmobFile.uploadblock(new UploadFileListener() {
@@ -373,6 +354,7 @@ public class WritePieceActivity extends AppCompatActivity implements
                 progressDialog.setProgress(value);
             }
         });
+        */
     }
 
     private void showRationale(String permission, int permissionDenied) {

@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MultiEventListener implements OnShowcaseEventListener {
+class MultiEventListener implements OnShowcaseEventListener {
 
     private final List<OnShowcaseEventListener> listeners;
 
-    public MultiEventListener(OnShowcaseEventListener... listeners) {
+    MultiEventListener(OnShowcaseEventListener... listeners) {
         this.listeners = new ArrayList<>();
         this.listeners.addAll(Arrays.asList(listeners));
     }

@@ -6,13 +6,12 @@ import android.content.SharedPreferences;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.sealiu.piece.utils.SPUtils;
 
 /**
  * Created by liuyang
  * on 2016/7/11.
  */
-public class MapStateManager {
+class MapStateManager {
     private static final String LNG = "longitude";
     private static final String LAT = "latitude";
     private static final String ZOOM = "zoom";
@@ -24,11 +23,11 @@ public class MapStateManager {
 
     private SharedPreferences mapStatePrefs;
 
-    public MapStateManager(Context context) {
+    MapStateManager(Context context) {
         mapStatePrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    public void saveMapState(GoogleMap map) {
+    void saveMapState(GoogleMap map) {
         SharedPreferences.Editor editor = mapStatePrefs.edit();
         CameraPosition position = map.getCameraPosition();
 
@@ -42,7 +41,7 @@ public class MapStateManager {
         editor.apply();
     }
 
-    public CameraPosition getSavedCameraPosition() {
+    CameraPosition getSavedCameraPosition() {
         double latitude = mapStatePrefs.getFloat(LAT, 0);
         if (latitude == 0) {
             return null;
