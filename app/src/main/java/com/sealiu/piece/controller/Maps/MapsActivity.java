@@ -382,18 +382,17 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
             case R.id.switch_menu_title:
                 new AlertDialog.Builder(this)
-                        .setTitle("退出账户")
-                        .setMessage("执行该操作后你需要重新登录")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        .setTitle(getString(R.string.sign_out))
+                        .setMessage(getString(R.string.sign_out_message))
+                        .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
 
                             }
                         })
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-
                             }
                         }).show();
                 break;

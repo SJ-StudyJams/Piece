@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'piece'
             keyPassword 'sealiu'
-            storeFile file('C:/Users/liuyang/.android/key.jks')
+            storeFile file('C:/Users/liuyang/.android/piece.jks')
             storePassword 'sealiu'
         }
     }
@@ -31,6 +31,10 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:24.1.1'
@@ -51,6 +55,8 @@ dependencies {
     compile 'com.google.firebase:firebase-crash:9.4.0'
     compile 'com.google.firebase:firebase-messaging:9.4.0'
     compile 'com.google.firebase:firebase-ads:9.4.0'
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha1'
     testCompile 'junit:junit:4.12'
 }
 

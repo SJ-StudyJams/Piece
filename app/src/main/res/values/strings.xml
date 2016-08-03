@@ -129,6 +129,9 @@
     <string name="anonymous_limit_message">当前登录身份为游客，您将无法查看个人资料和发送piece消息。\n\n欲使用完整功能请使用Google或Facebook账户登录。</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
+    <string name="sign_out">退出账户</string>
+    <string name="sign_out_message">执行该操作后你需要重新登录</string>
+    <string name="facebook_app_id">1744292729121233</string>
 </resources>
 
     <!--
