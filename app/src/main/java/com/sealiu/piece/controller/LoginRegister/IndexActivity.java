@@ -31,8 +31,11 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Maps.MapsActivity;
+import com.sealiu.piece.model.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,11 +55,15 @@ public class IndexActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
+    private DatabaseReference mDatabase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_index);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         AppCompatButton googleSignIn = (AppCompatButton) findViewById(R.id.google_sign_in);
         AppCompatButton facebookSignIn = (AppCompatButton) findViewById(R.id.facebook_sign_in);
@@ -170,6 +177,10 @@ public class IndexActivity extends AppCompatActivity implements
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(IndexActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                        } else {
+                            FirebaseUser user = task.getResult().getUser();
+                            String username = usernameFromEmail(user.getEmail());
+                            writeNewUser(user.getUid(), username, user.getEmail(), user.getPhotoUrl().toString(), 1);
                         }
 
                         hideProgressDialog();
@@ -201,6 +212,20 @@ public class IndexActivity extends AppCompatActivity implements
                         hideProgressDialog();
                     }
                 });
+    }
+
+    private String usernameFromEmail(String email) {
+        if (email.contains("@")) {
+            return email.split("@")[0];
+        } else {
+            return email;
+        }
+    }
+
+    private void writeNewUser(String userId, String name, String email, String photo, int type) {
+        User user = new User(name, email, photo, type);
+
+        mDatabase.child("users").child(userId).setValue(user);
     }
 
     private void googleSignIn() {

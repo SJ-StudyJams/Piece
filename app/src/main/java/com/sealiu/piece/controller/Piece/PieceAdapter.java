@@ -91,9 +91,10 @@ public class PieceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        int type = mDataset.get(position).getType();
-        if (type == 1 || type == 2 || type == 3) return type;
-        else return 1;
+//        int type = mDataset.get(position).getType();
+//        if (type == 1 || type == 2 || type == 3) return type;
+//        else return 1;
+        return 1;
     }
 
     private Bitmap downloadPic(final String imageUrl) {
