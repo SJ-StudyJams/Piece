@@ -1,19 +1,14 @@
 package com.sealiu.piece.controller.Piece;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.viewholder.PieceViewHolderText;
 import com.sealiu.piece.model.Piece;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -35,52 +30,20 @@ public class PieceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         switch (viewType) {
             case 1:
-                // create a new view
+                // piece_words
                 View v1 = inflater.inflate(R.layout.piece_words, parent, false);
-                viewHolder = new ViewHolder(v1);
-                break;
-            case 2:
-                View v2 = inflater.inflate(R.layout.piece_url, parent, false);
-                viewHolder = new ViewHolder2(v2);
-                break;
-            case 3:
-                View v3 = inflater.inflate(R.layout.piece_images, parent, false);
-                viewHolder = new ViewHolder3(v3);
+                viewHolder = new PieceViewHolderText(v1);
                 break;
             default:
                 View v = inflater.inflate(R.layout.piece_words, parent, false);
-                viewHolder = new ViewHolder(v);
+                viewHolder = new PieceViewHolderText(v);
                 break;
         }
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        switch (holder.getItemViewType()) {
-            case 1:
-                ViewHolder holder1 = (ViewHolder) holder;
-                //holder1.mContentTextView.setText(mDataset.get(position).getContent());
-                //holder1.mCreatedAtTextView.setText(mDataset.get(position).getCreatedAt());
-                break;
-            case 2:
-                ViewHolder2 holder2 = (ViewHolder2) holder;
-                //holder2.mContentTextView.setText(mDataset.get(position).getContent());
-                //holder2.mCreatedAtTextView.setText(mDataset.get(position).getCreatedAt());
-                //holder2.mUrlTextView.setText(mDataset.get(position).getUrl());
-                break;
-            case 3:
-                ViewHolder3 holder3 = (ViewHolder3) holder;
-//                holder3.mContentTextView.setText(mDataset.get(position).getContent());
-//                holder3.mCreatedAtTextView.setText(mDataset.get(position).getCreatedAt());
-//                if (mDataset.get(position).getImage() != null) {
-//                    BitmapUtils bitmapUtils = new BitmapUtils();
-//                    bitmapUtils.disPlay(holder3.mImageView, mDataset.get(position).getImage());
-//                }
-                break;
-        }
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -91,75 +54,9 @@ public class PieceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-//        int type = mDataset.get(position).getType();
-//        if (type == 1 || type == 2 || type == 3) return type;
-//        else return 1;
-        return 1;
+        int type = mDataset.get(position).type;
+        if (type == 1 || type == 2 || type == 3) return type;
+        else return 1;
     }
 
-    private Bitmap downloadPic(final String imageUrl) {
-
-        final Bitmap[] bitmap = new Bitmap[1];
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                try {
-                    URL url = new URL(imageUrl);
-                    //打开URL对应的资源输入流
-                    InputStream inputStream = url.openStream();
-                    //从InputStream流中解析出图片
-                    bitmap[0] = BitmapFactory.decodeStream(inputStream);
-                    inputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }.start();
-
-        return bitmap[0];
-    }
-
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        public TextView mContentTextView;
-        public TextView mCreatedAtTextView;
-
-        public ViewHolder(View v) {
-            super(v);
-            mContentTextView = (TextView) v.findViewById(R.id.piece_content);
-            mCreatedAtTextView = (TextView) v.findViewById(R.id.piece_createdAt);
-        }
-    }
-
-    // Another type view holder
-    public static class ViewHolder2 extends RecyclerView.ViewHolder {
-        public TextView mContentTextView;
-        public TextView mCreatedAtTextView;
-        public TextView mUrlTextView;
-
-        public ViewHolder2(View v) {
-            super(v);
-            mContentTextView = (TextView) v.findViewById(R.id.piece_content);
-            mCreatedAtTextView = (TextView) v.findViewById(R.id.piece_createdAt);
-            mUrlTextView = (TextView) v.findViewById(R.id.piece_url);
-        }
-    }
-
-    public static class ViewHolder3 extends RecyclerView.ViewHolder {
-        public TextView mContentTextView;
-        public TextView mCreatedAtTextView;
-        public ImageView mImageView;
-
-        public ViewHolder3(View v) {
-            super(v);
-            mContentTextView = (TextView) v.findViewById(R.id.piece_content);
-            mCreatedAtTextView = (TextView) v.findViewById(R.id.piece_createdAt);
-            mImageView = (ImageView) v.findViewById(R.id.piece_image);
-        }
-    }
 }

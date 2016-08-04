@@ -109,7 +109,6 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private static final int PERMISSIONS_REQUEST_FINE_COARSE_LOCATION = 2;
     private static final int WRITE_PIECE_REQUEST_CODE = 3;
-    private static final int ERROR = 4;
 
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
@@ -550,36 +549,6 @@ public class MapsActivity extends AppCompatActivity implements
         mMap.setOnInfoWindowClickListener(clusterManager);
 
         clusterManager.setRenderer(new MyIconRender(this, mMap, clusterManager));
-
-        /*
-        long number = dataSnapshot.getChildrenCount();
-
-                                Log.d(TAG, "pieces count:" + number);
-
-                                if (number != 0) {
-                                    seeAllBtn.setClickable(true);
-
-                                    String string = dataSnapshot.getValue().toString();
-
-                                    Log.d(TAG, string);
-
-                                    String[] array = string.split(Pattern.quote("}, "));
-                                    int length = array.length;
-
-                                    array[0] = array[0].substring(1, array[0].length());
-                                    array[length - 1] = array[length - 1].substring(0, array[length - 1].length() - 2);
-
-                                    for (String s : array) {
-                                        s += "}";
-                                        Log.d(TAG, s);
-                                    }
-
-
-                                }
-                                String info = getString(R.string.nearby) + " " + number + " " +
-                                        getString(R.string.pieces);
-                                pieceNumberNear.setText(info);
-         */
 
         //因为纸条的可见范围最大为60km，所以默认为60km
         double[] llRange = Common.GetAround(mCurrentLatitude, mCurrentLongitude, 60000);

@@ -15,6 +15,7 @@ import java.util.Map;
  */
 @IgnoreExtraProperties
 public class Piece {
+    public String pid;
     //username
     public String author;
     //user_id
@@ -49,6 +50,20 @@ public class Piece {
     public Piece(String au, String ui, String co, Double la, Double ln, int vi, int ty) {
         this.author = au;
         this.uid = ui;
+        this.content = co;
+        this.latitude = la;
+        this.longitude = ln;
+        this.visibility = vi;
+        this.type = ty;
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        this.date = df.format(new Date());
+    }
+
+    public Piece(String au, String ui, String pi, String co, Double la, Double ln, int vi, int ty) {
+        this.author = au;
+        this.uid = ui;
+        this.pid = pi;
         this.content = co;
         this.latitude = la;
         this.longitude = ln;

@@ -10,8 +10,7 @@
         android:layout_height="wrap_content"
         android:padding="10dp">
 
-        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
+        <TextView
             android:id="@+id/piece_author"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
