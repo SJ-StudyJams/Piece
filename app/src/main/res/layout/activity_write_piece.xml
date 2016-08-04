@@ -44,15 +44,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
-                    android:padding="16dp">
+                    android:padding="10dp">
 
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user_head_picture"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:layout_margin="2dp"
                         android:background="@drawable/face_background"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_face_black_24dp" />
+                        android:elevation="2dp"
+                        app:civ_border_color="#FFFFFFFF"
+                        app:civ_border_width="2dp" />
 
                     <TextView
                         android:id="@+id/user_nickname"
@@ -62,20 +64,29 @@
                         android:layout_marginLeft="16dp"
                         android:layout_toEndOf="@+id/user_head_picture"
                         android:layout_toRightOf="@+id/user_head_picture"
+                        android:text="@string/accept"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
-                    <Spinner
-                        android:id="@+id/visibility"
-                        android:layout_width="100dp"
+                    <TextView
+                        android:id="@+id/visibility_title"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignBottom="@+id/user_head_picture"
-                        android:layout_below="@+id/user_nickname"
+                        android:layout_alignTop="@+id/visibility"
                         android:layout_marginLeft="16dp"
-                        android:layout_toEndOf="@+id/user_head_picture"
                         android:layout_toRightOf="@+id/user_head_picture"
-                        android:entries="@array/visibility_arrays" />
+                        android:gravity="center_vertical"
+                        android:text="@string/visibility_title" />
 
+                    <Spinner
+                        android:id="@+id/visibility"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/user_head_picture"
+                        android:layout_marginLeft="4dp"
+                        android:layout_toRightOf="@+id/visibility_title"
+                        android:entries="@array/visibility_arrays" />
                 </RelativeLayout>
 
                 <LinearLayout

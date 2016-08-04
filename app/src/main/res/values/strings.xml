@@ -135,6 +135,7 @@
     <string name="sign_out">退出账户</string>
     <string name="sign_out_message">执行该操作后你需要重新登录</string>
     <string name="facebook_app_id">1744292729121233</string>
+    <string name="visibility_title">可见范围:</string>
 </resources>
 
     <!--
