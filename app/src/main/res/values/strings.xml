@@ -3,8 +3,7 @@
     <string name="title_activity_maps">Map</string>
     <string name="see_all">查看全部</string>
     <string name="nearby">附近有</string>
-    <string name="pieces_km">Pieces (km)</string>
-    <string name="pieces_num">99+</string>
+    <string name="pieces">Pieces</string>
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
@@ -68,6 +67,10 @@
     <string name="licenses">
         "ShowcaseView (SCV)\n\n"
         "Copyright Alex Curran (@amlcurran) © 2012-2014. All rights reserved.\n"
+        "This library is distributed under an Apache 2.0 License."
+
+        "CircleImageView\n\n"
+        "Copyright Henning Dodenhof (@hdodenhof) © 2014-2016. All rights reserved.\n"
         "This library is distributed under an Apache 2.0 License."
     </string>
 

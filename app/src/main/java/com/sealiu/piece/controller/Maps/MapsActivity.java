@@ -67,6 +67,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
@@ -81,7 +86,9 @@ import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -128,6 +135,7 @@ public class MapsActivity extends AppCompatActivity implements
     private FirebaseUser user;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, MapsActivity.class);
@@ -151,6 +159,7 @@ public class MapsActivity extends AppCompatActivity implements
         findMyLocationBtn = (ImageButton) findViewById(R.id.find_my_location);
         hideShowMoreInfoBtn = (ImageButton) findViewById(R.id.hide_show);
         seeAllBtn = (Button) findViewById(R.id.see_all_btn);
+        seeAllBtn.setClickable(false);
 
         writePieceBtn.setOnClickListener(this);
         findMyLocationBtn.setOnClickListener(this);
@@ -171,6 +180,7 @@ public class MapsActivity extends AppCompatActivity implements
                 .build();
 
         user = FirebaseAuth.getInstance().getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -496,10 +506,9 @@ public class MapsActivity extends AppCompatActivity implements
         switch (requestCode) {
             case WRITE_PIECE_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
-                    Snackbar.make(snackBarHolderView, "发送成功", Snackbar.LENGTH_LONG).show();
-                } else if (resultCode == ERROR) {
-                    int errorCode = data.getIntExtra("errorCode", 0);
-                    Snackbar.make(snackBarHolderView, "发送失败 错误码：" + Constants.createErrorInfo(errorCode), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(snackBarHolderView, "发送成功", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    Snackbar.make(snackBarHolderView, "未发送", Snackbar.LENGTH_SHORT).show();
                 }
                 break;
             default:
@@ -542,75 +551,106 @@ public class MapsActivity extends AppCompatActivity implements
 
         clusterManager.setRenderer(new MyIconRender(this, mMap, clusterManager));
 
-        //因为纸条的可见范围最大为100km，所以默认为100km
-        //double[] llRange = Common.GetAround(mCurrentLatitude, mCurrentLongitude, 100000);
-
         /*
-        BmobQuery<Piece> query = new BmobQuery<>();
-        query.addWhereGreaterThanOrEqualTo("latitude", llRange[0])
-                .addWhereLessThanOrEqualTo("latitude", llRange[2])
-                .addWhereGreaterThanOrEqualTo("longitude", llRange[1])
-                .addWhereLessThanOrEqualTo("longitude", llRange[3]);
-        query.setLimit(100);
-        query.order("-createdAt,-updatedAt");
-        query.findObjects(new FindListener<Piece>() {
-            @Override
-            public void done(List<Piece> list, BmobException e) {
-                Log.i(TAG, list.size() + "");
-                int number = 0;
-                for (final Piece p : list) {
-                    int pr = 0;
-                    switch (p.getVisibility()) {
-                        case 0:
-                            pr = 50;
-                            break;
-                        case 1:
-                            pr = 100;
-                            break;
-                        case 2:
-                            pr = 500;
-                            break;
-                        case 3:
-                            pr = 2000;
-                            break;
-                        case 4:
-                            pr = 5000;
-                            break;
-                        case 5:
-                            pr = 20000;
-                            break;
-                        case 6:
-                            pr = 60000;
-                            break;
-                        default:
-                    }
-                    double distance = Common.GetDistance(mCurrentLatitude, mCurrentLongitude, p.getLatitude(), p.getLongitude());
+        long number = dataSnapshot.getChildrenCount();
 
-                    if (distance <= pr) {
-                        number++;
+                                Log.d(TAG, "pieces count:" + number);
 
-                        BmobQuery<User> query = new BmobQuery<>();
-                        query.addWhereEqualTo("objectId", p.getAuthorID());
-                        query.findObjects(new FindListener<User>() {
-                            @Override
-                            public void done(List<User> list, BmobException e) {
-                                if (e == null) {
-                                    LatLng ll = new LatLng(p.getLatitude(), p.getLongitude());
-                                    ClusterMarkerLocation item = new ClusterMarkerLocation(ll,
-                                            list.get(0).getNickname(),
-                                            p.getContent() + "::" + p.getCreatedAt() + "::" + p.getObjectId());
-                                    clusterManager.addItem(item);
+                                if (number != 0) {
+                                    seeAllBtn.setClickable(true);
+
+                                    String string = dataSnapshot.getValue().toString();
+
+                                    Log.d(TAG, string);
+
+                                    String[] array = string.split(Pattern.quote("}, "));
+                                    int length = array.length;
+
+                                    array[0] = array[0].substring(1, array[0].length());
+                                    array[length - 1] = array[length - 1].substring(0, array[length - 1].length() - 2);
+
+                                    for (String s : array) {
+                                        s += "}";
+                                        Log.d(TAG, s);
+                                    }
+
+
                                 }
+                                String info = getString(R.string.nearby) + " " + number + " " +
+                                        getString(R.string.pieces);
+                                pieceNumberNear.setText(info);
+         */
+
+        //因为纸条的可见范围最大为60km，所以默认为60km
+        double[] llRange = Common.GetAround(mCurrentLatitude, mCurrentLongitude, 60000);
+
+        mDatabase.child("pieces").addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        HashMap<String, Object> dataSnapshotValue = (HashMap<String, Object>) dataSnapshot.getValue();
+                        Set<String> set = dataSnapshotValue.keySet();
+
+                        int number = 0;
+
+                        for (String key : set) {
+                            Log.i(TAG, key);
+                            HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshotValue.get(key);
+                            Log.d(TAG, "author: " + map.get("author"));
+                            Double lat = (Double) map.get("latitude");
+                            Double lng = (Double) map.get("longitude");
+
+                            int pr = 0;
+
+                            switch (Integer.valueOf(map.get("visibility").toString())) {
+                                case 0:
+                                    pr = 50;
+                                    break;
+                                case 1:
+                                    pr = 100;
+                                    break;
+                                case 2:
+                                    pr = 500;
+                                    break;
+                                case 3:
+                                    pr = 2000;
+                                    break;
+                                case 4:
+                                    pr = 5000;
+                                    break;
+                                case 5:
+                                    pr = 20000;
+                                    break;
+                                case 6:
+                                    pr = 60000;
+                                    break;
+                                default:
                             }
-                        });
+
+                            double distance = Common.GetDistance(mCurrentLatitude, mCurrentLongitude, lat, lng);
+                            if (distance <= pr) {
+                                number++;
+                                LatLng ll = new LatLng(lat, lng);
+                                ClusterMarkerLocation item = new ClusterMarkerLocation(ll,
+                                        map.get("author").toString(),
+                                        map.get("content") + "::" + map.get("date") + "::" + key);
+                                clusterManager.addItem(item);
+                            }
+                        }
+
+                        String info = getString(R.string.nearby) + " " + number + " " +
+                                getString(R.string.pieces);
+                        pieceNumberNear.setText(info);
+
+                        seeAllBtn.setClickable(number != 0);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
                     }
-                }//for
-                String info = "附近有 " + number + " Pieces";
-                pieceNumberNear.setText(info);
-            }//done
-        });
-        */
+                }
+        );
     }
 
     @Override

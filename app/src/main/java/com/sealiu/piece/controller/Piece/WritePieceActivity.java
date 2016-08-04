@@ -239,6 +239,8 @@ public class WritePieceActivity extends AppCompatActivity implements
                             writeNewPiece(userId, user.username, content, visibility);
                         }
 
+                        Intent intent = new Intent();
+                        setResult(RESULT_OK, intent);
                         finish();
                     }
 
