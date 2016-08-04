@@ -78,7 +78,7 @@ public abstract class PieceListFragment extends Fragment {
                     public void onClick(View view) {
                         // launch PieceDetailActivity
                         Intent intent = new Intent(getActivity(), PieceDetailActivity.class);
-                        intent.putExtra(PieceDetailActivity.EXTRA_POST_KEY, pieceKey);
+                        intent.putExtra(PieceDetailActivity.EXTRA_PIECE_KEY, pieceKey);
                         startActivity(intent);
                     }
                 });

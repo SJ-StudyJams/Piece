@@ -630,11 +630,11 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onClusterItemInfoWindowClick(ClusterMarkerLocation item) {
-        //Snackbar.make(snackBarHolderView, item.getTitle() + item.getSnippet(), Snackbar.LENGTH_LONG).show();
+        String[] snippets = item.getSnippet().split("::");
+
         //打开纸条的详情页
         Intent intent = new Intent(this, PieceDetailActivity.class);
-        intent.putExtra("authorName", item.getTitle());
-        intent.putExtra("snippet", item.getSnippet());
+        intent.putExtra(PieceDetailActivity.EXTRA_PIECE_KEY, snippets[2]);
         startActivity(intent);
     }
 

@@ -142,7 +142,7 @@ public class NearPiecesFragment extends Fragment {
                                             public void onClick(View view) {
                                                 // launch PieceDetailActivity
                                                 Intent intent = new Intent(getActivity(), PieceDetailActivity.class);
-                                                intent.putExtra(PieceDetailActivity.EXTRA_POST_KEY, mDataset.get(position).pid);
+                                                intent.putExtra(PieceDetailActivity.EXTRA_PIECE_KEY, mDataset.get(position).pid);
                                                 startActivity(intent);
                                             }
                                         });

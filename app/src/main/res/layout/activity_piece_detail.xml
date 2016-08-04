@@ -31,8 +31,7 @@
             android:id="@+id/piece_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/view"
-            android:layout_margin="@dimen/activity_vertical_margin">
+            android:layout_below="@+id/view">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -51,37 +50,44 @@
                     android:layout_height="wrap_content"
                     android:padding="8dp">
 
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/head_picture"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:layout_margin="2dp"
                         android:background="@drawable/face_background"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_face_black_24dp" />
+                        android:elevation="2dp"
+                        app:civ_border_color="#FFFFFFFF"
+                        app:civ_border_width="2dp" />
 
                     <TextView
-                        android:id="@+id/piece_info"
+                        android:id="@+id/piece_author"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="8dp"
-                        android:layout_toEndOf="@+id/head_picture"
+                        android:layout_toRightOf="@+id/head_picture"
+                        android:textAppearance="?android:textAppearanceMedium" />
+
+                    <TextView
+                        android:id="@+id/piece_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/piece_author"
+                        android:layout_marginLeft="8dp"
                         android:layout_toRightOf="@+id/head_picture"
                         android:textAppearance="?android:textAppearanceSmall" />
 
-                    <TextView
-                        android:id="@+id/piece_content"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/piece_info"
-                        android:layout_marginLeft="8dp"
-                        android:layout_toEndOf="@+id/head_picture"
-                        android:layout_toRightOf="@+id/head_picture"
-                        android:paddingTop="8dp"
-                        android:textAppearance="?android:textAppearanceMedium"
-                        android:textColor="@color/primaryText" />
-
                 </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/piece_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:padding="8dp"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textColor="@color/primaryText" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -96,7 +102,7 @@
                         android:src="@drawable/ic_whatshot_24dp" />
 
                     <TextView
-                        android:id="@+id/hot_count"
+                        android:id="@+id/piece_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical" />
@@ -126,6 +132,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/piece_detail"
+            android:layout_marginTop="16dp"
             android:gravity="center_horizontal"
             android:text=":(\n\n点赞，评论暂未开放"
             android:textColor="@color/disabledText" />
