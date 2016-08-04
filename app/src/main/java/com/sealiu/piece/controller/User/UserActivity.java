@@ -8,8 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -18,6 +16,8 @@ import com.sealiu.piece.controller.LoginRegister.IndexActivity;
 import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 import com.sealiu.piece.utils.SPUtils;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserActivity extends AppCompatActivity {
 
@@ -37,14 +37,12 @@ public class UserActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        TextView displayName = (TextView) findViewById(R.id.display_name);
-        ImageView userPhoto = (ImageView) findViewById(R.id.user_photo);
+        CircleImageView userPhoto = (CircleImageView) findViewById(R.id.user_photo);
 
 
         // Get the currently signed-in user
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            displayName.setText(user.getDisplayName());
             BitmapUtils bitmapUtils = new BitmapUtils();
             bitmapUtils.disPlay(userPhoto, user.getPhotoUrl().toString());
         }

@@ -13,7 +13,7 @@
         <android.support.v7.widget.CardView
             android:id="@+id/profile"
             android:layout_width="match_parent"
-            android:layout_height="230dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="16dp">
 
             <RelativeLayout
@@ -27,35 +27,25 @@
                     android:scaleType="centerCrop"
                     android:src="@mipmap/user_profile_bg" />
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/user_photo"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="120dp"
+                    android:layout_centerInParent="true"
                     android:background="@drawable/face_background"
-                    android:scaleType="centerCrop" />
-
-                <TextView
-                    android:id="@+id/display_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/user_photo"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_horizontal"
-                    android:textColor="@color/primaryText"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:elevation="8dp"
+                    app:civ_border_color="#FFFFFFFF"
+                    app:civ_border_width="2dp" />
             </RelativeLayout>
         </android.support.v7.widget.CardView>
 
+        <FrameLayout
+            android:id="@+id/my_pieces_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/profile" />
     </RelativeLayout>
 
-    <FrameLayout
-        android:id="@+id/my_pieces_fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="250dp" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
