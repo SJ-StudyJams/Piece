@@ -3,8 +3,9 @@ package com.sealiu.piece.controller.User;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ImageView;
@@ -22,8 +23,6 @@ public class UserActivity extends AppCompatActivity {
 
     private static final String TAG = "UserActivity";
 
-    private RecyclerView mRecyclerView;
-
     private FirebaseUser user;
 
     @Override
@@ -38,14 +37,9 @@ public class UserActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.my_piece_recycler_view);
-
         TextView displayName = (TextView) findViewById(R.id.display_name);
         ImageView userPhoto = (ImageView) findViewById(R.id.user_photo);
 
-        mRecyclerView.setHasFixedSize(true);
-        setAdapter();
 
         // Get the currently signed-in user
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -68,24 +62,15 @@ public class UserActivity extends AppCompatActivity {
                 }
             }
         };
-    }
 
-    private void setAdapter() {
-        if (user != null) {
-            String UID = user.getUid();
-            /*
-            BmobQuery<Piece> query = new BmobQuery<>();
-            query.addWhereEqualTo("authorID", userObjectId);
-            query.setLimit(1000);
-            query.order("-createdAt,-updatedAt");
-            query.findObjects(new FindListener<Piece>() {
-                @Override
-                public void done(List<Piece> list, BmobException e) {
-                    mAdapter = new PieceAdapter(list);
-                    mRecyclerView.setAdapter(mAdapter);
-                }//done
-            });
-            */
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.my_pieces_fragment_container);
+
+        if (fragment == null) {
+            fragment = new MyPiecesFragment();
+            fm.beginTransaction()
+                    .add(R.id.my_pieces_fragment_container, fragment)
+                    .commit();
         }
     }
 }

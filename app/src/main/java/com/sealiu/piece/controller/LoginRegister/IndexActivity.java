@@ -179,8 +179,7 @@ public class IndexActivity extends AppCompatActivity implements
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             FirebaseUser user = task.getResult().getUser();
-                            String username = usernameFromEmail(user.getEmail());
-                            writeNewUser(user.getUid(), username, user.getEmail(), user.getPhotoUrl().toString(), 1);
+                            writeNewUser(user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString(), 1);
                         }
 
                         hideProgressDialog();
@@ -212,14 +211,6 @@ public class IndexActivity extends AppCompatActivity implements
                         hideProgressDialog();
                     }
                 });
-    }
-
-    private String usernameFromEmail(String email) {
-        if (email.contains("@")) {
-            return email.split("@")[0];
-        } else {
-            return email;
-        }
     }
 
     private void writeNewUser(String userId, String name, String email, String photo, int type) {

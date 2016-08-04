@@ -171,16 +171,6 @@ public class MapsActivity extends AppCompatActivity implements
                 .build();
 
         user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            // User is signed in
-            Log.d(TAG, user.getDisplayName() + "\n" +
-                    user.getEmail() + "\n" +
-                    user.getPhotoUrl() + "\n" +
-                    user.getUid() + "\n" +
-                    user.getProviderId() + "\n" +
-                    user.getProviderData()
-            );
-        }
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -190,6 +180,7 @@ public class MapsActivity extends AppCompatActivity implements
                 if (u == null) {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
+                    finish();
                     startActivity(new Intent(MapsActivity.this, IndexActivity.class));
                 }
                 // ...
@@ -362,7 +353,7 @@ public class MapsActivity extends AppCompatActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(TAG, "onCreateOptionsMenu");
         getMenuInflater().inflate(R.menu.menu_map, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
@@ -376,10 +367,10 @@ public class MapsActivity extends AppCompatActivity implements
                     // anonymous sign in
                     anonymousLimit();
                 }
-                break;
+                return true;
             case R.id.settings_menu_title:
                 startActivity(new Intent(MapsActivity.this, MyPreferenceActivity.class));
-                break;
+                return true;
             case R.id.switch_menu_title:
                 new AlertDialog.Builder(this)
                         .setTitle(getString(R.string.sign_out))
@@ -387,7 +378,7 @@ public class MapsActivity extends AppCompatActivity implements
                         .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-
+                                googleSignOut();
                             }
                         })
                         .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -395,12 +386,10 @@ public class MapsActivity extends AppCompatActivity implements
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
                         }).show();
-                break;
+                return true;
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void anonymousLimit() {
@@ -419,7 +408,6 @@ public class MapsActivity extends AppCompatActivity implements
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(@NonNull Status status) {
-
                     }
                 }
         );

@@ -12,6 +12,7 @@ import com.sealiu.piece.R;
 
 public class PieceDetailActivity extends AppCompatActivity {
 
+    public static final String EXTRA_POST_KEY = "post_key";
     private final static String TAG = "PieceDetailActivity";
     TextView pieceContentTV;
     TextView pieceInfo;

@@ -3,6 +3,9 @@ package com.sealiu.piece.model;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +37,8 @@ public class Piece {
     public Double latitude;
     //浏览次数
     public int viewCount = 0;
-
+    //时间
+    public String date;
     //可见性
     //5km, 20km, 60km, 100km (分别为：0，1，2，3)
     public int visibility;
@@ -50,6 +54,9 @@ public class Piece {
         this.longitude = ln;
         this.visibility = vi;
         this.type = ty;
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        this.date = df.format(new Date());
     }
 
     public Piece(String au, String ui, String co, Double la, Double ln, int vi, int ty, String ur, String im, String aud, String vid) {
@@ -64,6 +71,9 @@ public class Piece {
         this.image = im;
         this.audio = aud;
         this.video = vid;
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        this.date = df.format(new Date());
     }
 
     @Exclude
@@ -81,7 +91,7 @@ public class Piece {
         result.put("audio", audio);
         result.put("video", video);
         result.put("viewCount", viewCount);
-
+        result.put("date", date);
         return result;
     }
 }

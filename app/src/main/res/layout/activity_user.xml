@@ -6,62 +6,56 @@
     android:layout_height="match_parent"
     tools:context="com.sealiu.piece.controller.User.UserActivity">
 
-    <android.support.v4.widget.NestedScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
+            android:id="@+id/profile"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="230dp"
+            android:layout_marginBottom="16dp">
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/profile"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="230dp"
-                android:layout_marginBottom="16dp">
+                android:layout_height="match_parent">
 
-                <RelativeLayout
+                <ImageView
+                    android:id="@+id/profile_bg"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="150dp"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/user_profile_bg" />
 
-                    <ImageView
-                        android:id="@+id/profile_bg"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:scaleType="centerCrop"
-                        android:src="@mipmap/user_profile_bg" />
+                <ImageView
+                    android:id="@+id/user_photo"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="120dp"
+                    android:background="@drawable/face_background"
+                    android:scaleType="centerCrop" />
 
-                    <ImageView
-                        android:id="@+id/user_photo"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="120dp"
-                        android:background="@drawable/face_background"
-                        android:scaleType="centerCrop" />
+                <TextView
+                    android:id="@+id/display_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/user_photo"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/primaryText"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
 
-                    <TextView
-                        android:id="@+id/display_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/user_photo"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center_horizontal"
-                        android:textColor="@color/primaryText"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-                </RelativeLayout>
-            </android.support.v7.widget.CardView>
+    </RelativeLayout>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/my_piece_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="50dp"
-                android:scrollbars="vertical" />
-        </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    <FrameLayout
+        android:id="@+id/my_pieces_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="250dp" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
