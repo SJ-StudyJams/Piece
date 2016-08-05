@@ -15,7 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.sealiu.piece.R;
-import com.sealiu.piece.controller.viewholder.PieceViewHolderText;
+import com.sealiu.piece.controller.viewholder.PieceViewHolderW;
 import com.sealiu.piece.model.Piece;
 
 /**
@@ -30,7 +30,7 @@ public abstract class PieceListFragment extends Fragment {
     private DatabaseReference mDatabase;
     // [END define_database_reference]
 
-    private FirebaseRecyclerAdapter<Piece, PieceViewHolderText> mAdapter;
+    private FirebaseRecyclerAdapter<Piece, PieceViewHolderW> mAdapter;
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
 
@@ -65,10 +65,10 @@ public abstract class PieceListFragment extends Fragment {
 
         // Set up FirebaseRecyclerAdapter with the Query
         Query piecesQuery = getQuery(mDatabase);
-        mAdapter = new FirebaseRecyclerAdapter<Piece, PieceViewHolderText>(Piece.class, R.layout.piece_words,
-                PieceViewHolderText.class, piecesQuery) {
+        mAdapter = new FirebaseRecyclerAdapter<Piece, PieceViewHolderW>(Piece.class, R.layout.piece_w,
+                PieceViewHolderW.class, piecesQuery) {
             @Override
-            protected void populateViewHolder(final PieceViewHolderText viewHolder, Piece model, int position) {
+            protected void populateViewHolder(final PieceViewHolderW viewHolder, Piece model, int position) {
                 final DatabaseReference pieceRef = getRef(position);
 
                 // set click listener for the whole piece view

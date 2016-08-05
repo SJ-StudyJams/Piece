@@ -17,7 +17,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Maps.Common;
-import com.sealiu.piece.controller.viewholder.PieceViewHolderText;
+import com.sealiu.piece.controller.viewholder.PieceViewHolderW;
+import com.sealiu.piece.controller.viewholder.PieceViewHolderWL;
+import com.sealiu.piece.controller.viewholder.PieceViewHolderWP;
+import com.sealiu.piece.controller.viewholder.PieceViewHolderWPL;
 import com.sealiu.piece.model.Piece;
 
 import java.util.ArrayList;
@@ -125,6 +128,13 @@ public class NearPiecesFragment extends Fragment {
                                         Integer.valueOf(map.get("type").toString())
                                 );
 
+                                Set<String> pk = map.keySet();
+                                if (pk.contains("url"))
+                                    piece.url = map.get("url").toString();
+
+                                if (pk.contains("image"))
+                                    piece.image = map.get("image").toString();
+
                                 mDataset.add(piece);
                             }
                         }
@@ -132,27 +142,37 @@ public class NearPiecesFragment extends Fragment {
                         mAdapter = new PieceAdapter(mDataset) {
                             @Override
                             public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+
                                 // - get element from your dataset at this position
                                 // - replace the contents of the view with that element
                                 switch (holder.getItemViewType()) {
+                                    case 0:
+                                        PieceViewHolderW holderW = (PieceViewHolderW) holder;
+                                        holderW.bindToPiece(mDataset.get(position));
+                                        break;
                                     case 1:
-                                        PieceViewHolderText holderText = (PieceViewHolderText) holder;
-                                        holderText.itemView.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                // launch PieceDetailActivity
-                                                Intent intent = new Intent(getActivity(), PieceDetailActivity.class);
-                                                intent.putExtra(PieceDetailActivity.EXTRA_PIECE_KEY, mDataset.get(position).pid);
-                                                startActivity(intent);
-                                            }
-                                        });
-                                        holderText.bindToPiece(mDataset.get(position));
+                                        PieceViewHolderWL holderWL = (PieceViewHolderWL) holder;
+                                        holderWL.bindToPiece(mDataset.get(position));
                                         break;
                                     case 2:
+                                        PieceViewHolderWP holderWP = (PieceViewHolderWP) holder;
+                                        holderWP.bindToPiece(mDataset.get(position));
                                         break;
                                     case 3:
+                                        PieceViewHolderWPL holderWPL = (PieceViewHolderWPL) holder;
+                                        holderWPL.bindToPiece(mDataset.get(position));
                                         break;
                                 }
+
+                                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        // launch PieceDetailActivity
+                                        Intent intent = new Intent(getActivity(), PieceDetailActivity.class);
+                                        intent.putExtra(PieceDetailActivity.EXTRA_PIECE_KEY, mDataset.get(position).pid);
+                                        startActivity(intent);
+                                    }
+                                });
                             }
                         };
                         mRecycler.setAdapter(mAdapter);

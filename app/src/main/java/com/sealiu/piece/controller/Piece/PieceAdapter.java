@@ -6,7 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sealiu.piece.R;
-import com.sealiu.piece.controller.viewholder.PieceViewHolderText;
+import com.sealiu.piece.controller.viewholder.PieceViewHolderW;
+import com.sealiu.piece.controller.viewholder.PieceViewHolderWL;
+import com.sealiu.piece.controller.viewholder.PieceViewHolderWP;
+import com.sealiu.piece.controller.viewholder.PieceViewHolderWPL;
 import com.sealiu.piece.model.Piece;
 
 import java.util.List;
@@ -29,14 +32,26 @@ public class PieceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         switch (viewType) {
+            case 0:
+                // piece_w
+                View w = inflater.inflate(R.layout.piece_w, parent, false);
+                viewHolder = new PieceViewHolderW(w);
+                break;
             case 1:
-                // piece_words
-                View v1 = inflater.inflate(R.layout.piece_words, parent, false);
-                viewHolder = new PieceViewHolderText(v1);
+                View wl = inflater.inflate(R.layout.piece_wl, parent, false);
+                viewHolder = new PieceViewHolderWL(wl);
+                break;
+            case 2:
+                View wp = inflater.inflate(R.layout.piece_wp, parent, false);
+                viewHolder = new PieceViewHolderWP(wp);
+                break;
+            case 3:
+                View wpl = inflater.inflate(R.layout.piece_wpl, parent, false);
+                viewHolder = new PieceViewHolderWPL(wpl);
                 break;
             default:
-                View v = inflater.inflate(R.layout.piece_words, parent, false);
-                viewHolder = new PieceViewHolderText(v);
+                View v = inflater.inflate(R.layout.piece_w, parent, false);
+                viewHolder = new PieceViewHolderW(v);
                 break;
         }
         return viewHolder;
@@ -54,9 +69,7 @@ public class PieceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        int type = mDataset.get(position).type;
-        if (type == 1 || type == 2 || type == 3) return type;
-        else return 1;
+        return mDataset.get(position).type;
     }
 
 }
