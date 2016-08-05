@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Piece;
+import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 
 
 public class PieceDetailActivity extends AppCompatActivity {
@@ -22,9 +23,7 @@ public class PieceDetailActivity extends AppCompatActivity {
     public static final String EXTRA_PIECE_KEY = "piece_key";
     private final static String TAG = "PieceDetailActivity";
 
-    TextView mContent, mAuthor, mDate, mViewCount;
-
-    TextView pieceLinkTV;
+    TextView mContent, mAuthor, mDate, mViewCount, pieceLinkTV;
     ImageView headPicture, pieceImageIV;
     View divider;
 
@@ -50,10 +49,9 @@ public class PieceDetailActivity extends AppCompatActivity {
         mAuthor = (TextView) findViewById(R.id.piece_author);
         mDate = (TextView) findViewById(R.id.piece_date);
         mViewCount = (TextView) findViewById(R.id.piece_count);
+        pieceLinkTV = (TextView) findViewById(R.id.piece_link);
 
         headPicture = (ImageView) findViewById(R.id.head_picture);
-
-        pieceLinkTV = (TextView) findViewById(R.id.piece_link);
         pieceImageIV = (ImageView) findViewById(R.id.piece_image);
 
         divider = findViewById(R.id.divider);
@@ -72,6 +70,15 @@ public class PieceDetailActivity extends AppCompatActivity {
                 mDate.setText(piece.date);
                 mViewCount.setText(String.valueOf(piece.viewCount));
                 mContent.setText(piece.content);
+                if (piece.url != null) {
+                    pieceLinkTV.setText(piece.url);
+                    pieceLinkTV.setVisibility(View.VISIBLE);
+                }
+                if (piece.image != null) {
+                    BitmapUtils bitmapUtils = new BitmapUtils();
+                    bitmapUtils.disPlay(pieceImageIV, piece.image);
+                    pieceImageIV.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
