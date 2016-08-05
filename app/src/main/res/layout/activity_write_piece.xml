@@ -199,7 +199,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:padding="10dp">
 
                     <TextView
                         android:id="@+id/link_content"
@@ -207,13 +207,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/colorPrimaryDark" />
+                        android:textColor="@color/colorAccent" />
 
                     <ImageButton
                         android:id="@+id/delete_link"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginRight="6dp"
                         android:src="@drawable/ic_clear_black_24dp" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -222,7 +223,7 @@
             <android.support.v7.widget.CardView
                 android:id="@+id/image_card"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 android:layout_margin="16dp"
                 android:visibility="gone">
 
@@ -241,7 +242,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
-                        android:background="@color/colorPrimaryDark"
+                        android:background="@color/colorAccent"
                         android:padding="8dp"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="@color/textOrIcon" />

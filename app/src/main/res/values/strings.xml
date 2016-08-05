@@ -74,8 +74,8 @@
         "This library is distributed under an Apache 2.0 License."
     </string>
 
-    <string name="capture_photo">相机拍摄</string>
-    <string name="album_choose">从相册选择</string>
+    <string name="camera">相机</string>
+    <string name="album">相册</string>
     <string name="find_pwd">忘记密码？点击找回</string>
     <string name="fetching_location">定位中</string>
     <string name="write_piece">写纸条</string>
@@ -136,6 +136,11 @@
     <string name="sign_out_message">执行该操作后你需要重新登录</string>
     <string name="facebook_app_id">1744292729121233</string>
     <string name="visibility_title">可见范围:</string>
+    <string name="rationale_storage">Piece 需要读取内存空间的文件进行上传</string>
+    <string name="crop_pic_intent_error">没有裁剪应用</string>
+    <string name="uploading">上载中</string>
+    <string name="take_pic_intent_error">没有相机应用</string>
+    <string name="album_intent_error">没有相册应用</string>
 </resources>
 
     <!--

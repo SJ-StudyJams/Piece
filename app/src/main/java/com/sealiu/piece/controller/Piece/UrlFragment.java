@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,20 +26,19 @@ import java.net.URL;
  */
 public class UrlFragment extends DialogFragment {
 
+    private static final String REQUIRED = "Required";
+    private static final String INVALID = "Invalid URL";
+
     EditText urlEditText;
     ImageButton clearBtn;
     UrlListener uListener;
 
-    // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        // Verify that the host activity implements the callback interface
         try {
-            // Instantiate the NoticeDialogListener so we can send events to the host
             uListener = (UrlListener) context;
         } catch (ClassCastException e) {
-            // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(context.toString()
                     + " must implement UrlListener");
         }
@@ -82,17 +82,25 @@ public class UrlFragment extends DialogFragment {
 
 
         final UrlListener listener = (UrlListener) getActivity();
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                String url = urlEditText.getText().toString();
+                String content = urlEditText.getText().toString();
 
-                if (!url.equals("Http://") && isValidURL(url)) {
-                    listener.onUrlPositiveClick(url);
-                    dismiss();
+                if (content.equals("Http://") || TextUtils.isEmpty(content)) {
+                    urlEditText.setError(REQUIRED);
+                    return;
                 }
+
+                if (!isValidURL(content)) {
+                    urlEditText.setError(INVALID);
+                    return;
+                }
+
+                listener.onUrlPositiveClick(content);
+                dismiss();
             }
-        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+        }).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 listener.onUrlNegativeClick();
@@ -105,7 +113,7 @@ public class UrlFragment extends DialogFragment {
 
     private boolean isValidURL(String urlStr) {
         try {
-            URL url = new URL(urlStr);
+            new URL(urlStr);
             return true;
         } catch (MalformedURLException e) {
             e.printStackTrace();

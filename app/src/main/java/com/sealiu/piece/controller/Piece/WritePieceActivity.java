@@ -1,22 +1,17 @@
 package com.sealiu.piece.controller.Piece;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -27,12 +22,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +36,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.sealiu.piece.R;
 import com.sealiu.piece.model.Piece;
 import com.sealiu.piece.model.User;
@@ -47,41 +47,54 @@ import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class WritePieceActivity extends AppCompatActivity implements
+        PickPicFragment.PickPicListener,
         UrlFragment.UrlListener, View.OnClickListener {
 
     private static final String TAG = "WritePieceActivity";
     private static final String REQUIRED = "Required";
 
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 222;
-    ImageButton addLinkBtn;
-    ImageButton addImageBtn;
-    ImageButton linkDeleteBtn;
-    CardView linkCard;
-    TextView linkContent;
-    ImageButton imageDeleteBtn;
-    CardView imageCard;
-    ImageView imagePreview;
-    TextView imagePath;
-    Uri previewUri;
+    private static final int STORAGE_PERMS = 101;
+    private static final int TAKE_PICTURE = 102;
+    private static final int ALBUM_CHOOSE = 103;
+    private static final int CROP_PIC = 104;
 
-    private TextView myLocationTV;
-    private ImageView headPictureIV;
-    private TextView nickNameTV;
+    private static final int W = 0;     //文字
+    private static final int WL = 1;    //文字+Link
+    private static final int WP = 2;    //文字+图片
+    private static final int WPL = 3;   //文字+图片+Link
+
+    private static final String KEY_FILE_URI = "key_file_uri";
+    private static final String KEY_DOWNLOAD_URL = "key_download_url";
+    private static final String KEY_LINK = "key_link";
+
+    private TextView imagePath, linkContent, myLocationTV, nickNameTV;
+    private CardView imageCard, linkCard;
+    private ImageView headPictureIV, imagePreview;
     private EditText pieceContentET;
-    private NestedScrollView snackBarHolderView;
     private Spinner visibilitySpinner;
+    private ProgressDialog mProgressDialog;
+    private NestedScrollView snackBarHolderView;
 
-    private Double mLatitude;
-    private Double mLongitude;
+    private Double mLatitude, mLongitude;
 
     private FirebaseUser user;
     private DatabaseReference mDatabase;
+    private StorageReference mStorageRef;
 
-    private boolean isNotAskAgain = false;
+    private Uri mFileUri = null;
+    private String mFileName;
+    private Uri mDownloadUrl;
+
+    private String mShareLink = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,12 +103,13 @@ public class WritePieceActivity extends AppCompatActivity implements
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        snackBarHolderView = (NestedScrollView) findViewById(R.id.layout_holder);
+        mStorageRef = FirebaseStorage.getInstance().getReference();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.write_piece);
+
+        snackBarHolderView = (NestedScrollView) findViewById(R.id.layout_holder);
 
         myLocationTV = (TextView) findViewById(R.id.my_location_name);
         nickNameTV = (TextView) findViewById(R.id.user_nickname);
@@ -105,28 +119,26 @@ public class WritePieceActivity extends AppCompatActivity implements
 
         linkCard = (CardView) findViewById(R.id.link_card);
         linkContent = (TextView) findViewById(R.id.link_content);
-        linkDeleteBtn = (ImageButton) findViewById(R.id.delete_link);
 
         imageCard = (CardView) findViewById(R.id.image_card);
         imagePreview = (ImageView) findViewById(R.id.image_preview);
         imagePath = (TextView) findViewById(R.id.image_path);
-        imageDeleteBtn = (ImageButton) findViewById(R.id.delete_image);
 
-        addImageBtn = (ImageButton) findViewById(R.id.add_image_btn);
-        addLinkBtn = (ImageButton) findViewById(R.id.add_link_btn);
+        findViewById(R.id.add_image_btn).setOnClickListener(this);
+        findViewById(R.id.add_link_btn).setOnClickListener(this);
+        findViewById(R.id.delete_link).setOnClickListener(this);
+        findViewById(R.id.delete_image).setOnClickListener(this);
 
-        addImageBtn.setOnClickListener(this);
-        addLinkBtn.setOnClickListener(this);
-
-        linkDeleteBtn.setOnClickListener(this);
-        imageDeleteBtn.setOnClickListener(this);
-        initUI();
+        if (savedInstanceState != null) {
+            mFileUri = savedInstanceState.getParcelable(KEY_FILE_URI);
+            mDownloadUrl = savedInstanceState.getParcelable(KEY_DOWNLOAD_URL);
+            mShareLink = savedInstanceState.getString(KEY_LINK);
+        }
     }
 
-    /**
-     * 初始化界面显示（头像，昵称，位置信息）
-     */
-    private void initUI() {
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         mLatitude = getIntent().getDoubleExtra("LAT", 0);
         mLongitude = getIntent().getDoubleExtra("LNG", 0);
@@ -135,13 +147,259 @@ public class WritePieceActivity extends AppCompatActivity implements
         String detailPosition = mLocationName + " (" + mLatitude + " ," + mLongitude + ")";
         myLocationTV.setText(detailPosition);
 
-
         nickNameTV.setText(user.getDisplayName());
         BitmapUtils bitmapUtils = new BitmapUtils();
         if (user.getPhotoUrl() == null) {
             headPictureIV.setVisibility(View.GONE);
         } else {
             bitmapUtils.disPlay(headPictureIV, user.getPhotoUrl().toString());
+        }
+
+        updateUI();
+    }
+
+    private void updateUI() {
+        if (mDownloadUrl != null) {
+            imagePath.setText(mFileName);
+
+            try {
+                Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(mFileUri));
+                imagePreview.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            BitmapUtils bitmapUtils = new BitmapUtils();
+            bitmapUtils.disPlay(imagePreview, mDownloadUrl.toString());
+            imageCard.setVisibility(View.VISIBLE);
+
+        } else {
+            mFileName = null;
+            imageCard.setVisibility(View.GONE);
+        }
+
+        if (mShareLink != null) {
+            linkContent.setText(mShareLink);
+            linkCard.setVisibility(View.VISIBLE);
+        } else {
+            linkCard.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_FILE_URI, mFileUri);
+        outState.putParcelable(KEY_DOWNLOAD_URL, mDownloadUrl);
+        outState.putString(KEY_LINK, mShareLink);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.add_image_btn:
+                PickPicFragment pickPicFragment = new PickPicFragment();
+                pickPicFragment.show(getSupportFragmentManager(), "PICK_PIC");
+                break;
+            case R.id.add_link_btn:
+                new UrlFragment().show(getSupportFragmentManager(), "url");
+                break;
+            case R.id.delete_link:
+                mShareLink = null;
+                updateUI();
+                break;
+            case R.id.delete_image:
+                mFileName = null;
+                mDownloadUrl = null;
+                updateUI();
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case TAKE_PICTURE:
+                Log.d(TAG, "mFileUri:" + mFileUri);
+                uploadFromUri(mFileUri);
+                break;
+            case ALBUM_CHOOSE:
+                if (resultCode == RESULT_OK && mFileUri != null) {
+                    Log.d(TAG, "mFileUri:" + mFileUri);
+
+                    uploadFromUri(data.getData());
+                    /*
+                    Intent cropPicIntent = new Intent("com.android.camera.action.CROP");
+                    cropPicIntent.setDataAndType(data.getData(), "image/*");
+                    cropPicIntent.putExtra("scale", true);
+                    cropPicIntent.putExtra("crop", true);
+
+                    cropPicIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
+
+                    if (cropPicIntent.resolveActivity(getPackageManager()) != null) {
+                        startActivityForResult(cropPicIntent, CROP_PIC);
+                    } else {
+                        Snackbar.make(snackBarHolderView,
+                                getString(R.string.crop_pic_intent_error),
+                                Snackbar.LENGTH_LONG).show();
+                    }
+                    */
+                }
+                break;
+            case CROP_PIC:
+                if (resultCode == RESULT_OK && mFileUri != null) {
+                    // uploadFromUri(mFileUri);
+                }
+                break;
+            default:
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void uploadFromUri(Uri fileUri) {
+        // Get a reference to store file at photos/<FILENAME>.jpg
+        final StorageReference photoRef = mStorageRef.child(user.getUid())
+                .child(fileUri.getLastPathSegment());
+
+        showProgressDialog(getString(R.string.uploading));
+
+        // Upload file to Firebase Storage
+        photoRef.putFile(fileUri)
+                .addOnProgressListener(this, new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        String format = taskSnapshot.getBytesTransferred() + "/" + taskSnapshot.getTotalByteCount();
+                        mProgressDialog.setProgressNumberFormat(format);
+                    }
+                })
+                .addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        hideProgressDialog();
+                        mFileName = taskSnapshot.getMetadata().getName();
+                        mDownloadUrl = taskSnapshot.getMetadata().getDownloadUrl();
+                        updateUI();
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        hideProgressDialog();
+                        mFileName = null;
+                        mDownloadUrl = null;
+                        updateUI();
+                    }
+                });
+    }
+
+    @AfterPermissionGranted(STORAGE_PERMS)
+    @Override
+    public void onCameraClick() {
+        // Check that we have permission to read images from external storage.
+        String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        if (!EasyPermissions.hasPermissions(this, perm)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale_storage),
+                    STORAGE_PERMS, perm);
+            return;
+        }
+        // Choose file storage location, must be listed in res/xml/file_paths.xml
+        File dir = new File(Environment.getExternalStorageDirectory() + "/photos");
+        File file = new File(dir, UUID.randomUUID().toString() + ".jpg");
+        try {
+            // Create directory if it does not exist.
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            boolean created = file.createNewFile();
+            Log.d(TAG, "file.createNewFile:" + file.getAbsolutePath() + ":" + created);
+        } catch (IOException e) {
+            Log.e(TAG, "file.createNewFile" + file.getAbsolutePath() + ":FAILED", e);
+        }
+
+        // Create content:// URI for file, required since Android N
+        // See: https://developer.android.com/reference/android/support/v4/content/FileProvider.html
+
+        mFileUri = FileProvider.getUriForFile(this, "com.sealiu.piece.fileprovider", file);
+
+        // Create and launch the intent
+        Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePicIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
+
+        if (takePicIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePicIntent, TAKE_PICTURE);
+        } else {
+            Snackbar.make(snackBarHolderView,
+                    getString(R.string.take_pic_intent_error),
+                    Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    @AfterPermissionGranted(STORAGE_PERMS)
+    @Override
+    public void onAlbumClick() {
+        // Check that we have permission to read images from external storage.
+        String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        if (!EasyPermissions.hasPermissions(this, perm)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale_storage),
+                    STORAGE_PERMS, perm);
+            return;
+        }
+
+        // Choose file storage location, must be listed in res/xml/file_paths.xml
+        File dir = new File(Environment.getExternalStorageDirectory() + "/photos");
+        File file = new File(dir, UUID.randomUUID().toString() + ".jpg");
+        try {
+            // Create directory if it does not exist.
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            boolean created = file.createNewFile();
+            Log.d(TAG, "file.createNewFile:" + file.getAbsolutePath() + ":" + created);
+        } catch (IOException e) {
+            Log.e(TAG, "file.createNewFile" + file.getAbsolutePath() + ":FAILED", e);
+        }
+
+        mFileUri = FileProvider.getUriForFile(this, "com.sealiu.piece.fileprovider", file);
+
+        Intent albumIntent = new Intent(Intent.ACTION_PICK);
+        albumIntent.setType("image/*");
+        albumIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
+
+        if (albumIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(albumIntent, ALBUM_CHOOSE);
+        } else {
+            Snackbar.make(snackBarHolderView,
+                    getString(R.string.album_intent_error),
+                    Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onUrlPositiveClick(String url) {
+        Log.i(TAG, "onUrlPositiveClick" + url);
+        mShareLink = url;
+        updateUI();
+    }
+
+    @Override
+    public void onUrlNegativeClick() {
+        Log.i(TAG, "onUrlNegativeClick");
+    }
+
+    private void showProgressDialog(String content) {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage(content);
+            mProgressDialog.setIndeterminate(true);
+        }
+
+        mProgressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.hide();
         }
     }
 
@@ -155,57 +413,10 @@ public class WritePieceActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_send_piece:
-                submitPiece();
-                // 发送编写的Piece
+                String lFlag = linkCard.getVisibility() == View.VISIBLE ? "1" : "0";
+                String pFlag = imageCard.getVisibility() == View.VISIBLE ? "1" : "0";
 
-//                String objectId = loginUser.getObjectId();
-//                String pieceContent = pieceContentET.getText().toString();
-//                int visibilityPosition = visibilitySpinner.getSelectedItemPosition();
-//
-//                if (pieceContent.equals("")) {
-//                    Snackbar.make(snackBarHolderView, "请填写内容", Snackbar.LENGTH_LONG).show();
-//                    break;
-//                }
-//
-//                final Piece piece = new Piece(objectId, pieceContent, mLatitude, mLongitude, visibilityPosition);
-//                piece.setType(1);
-
-                //设置分享链接
-//                if (linkCard.getVisibility() == View.VISIBLE) {
-//                    piece.setUrl(linkContent.getText().toString());
-//                    piece.setType(2);
-//                }
-
-                //设置分享图片
-//                if (imageCard.getVisibility() == View.VISIBLE) {
-//                    piece.setImage(realPath);
-//                    piece.setType(3);
-//                }
-
-//                Log.i(TAG, "用户ID：" + piece.getAuthorID() +
-//                        "; 可见范围：" + piece.getVisibility() +
-//                        "; 纸条内容：" + piece.getContent() +
-//                        "; url：" + piece.getUrl() +
-//                        "; image：" + piece.getImage()
-//                );
-
-                //保存到bmob后台
-                /*
-                piece.save(new SaveListener<String>() {
-                    @Override
-                    public void done(String s, BmobException e) {
-                        if (e == null) {
-                            Intent intent = new Intent();
-                            setResult(RESULT_OK, intent);
-                        } else {
-                            Intent intent = new Intent();
-                            intent.putExtra("errorCode", e.getErrorCode());
-                            setResult(ERROR, intent);
-                        }
-                        finish();
-                    }
-                });
-                */
+                submitPiece(Integer.valueOf(pFlag + lFlag, 2));
                 break;
             default:
                 break;
@@ -213,7 +424,7 @@ public class WritePieceActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void submitPiece() {
+    private void submitPiece(final int type) {
         final String content = pieceContentET.getText().toString();
 
         // content is required
@@ -236,7 +447,7 @@ public class WritePieceActivity extends AppCompatActivity implements
                                     "Error: could not fetch user.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
-                            writeNewPiece(userId, user.username, content, visibility);
+                            writeNewPiece(userId, user.username, content, visibility, type);
                         }
 
                         Intent intent = new Intent();
@@ -252,199 +463,30 @@ public class WritePieceActivity extends AppCompatActivity implements
         );
     }
 
-    private void writeNewPiece(String userId, String username, String content, int visibility) {
+    private void writeNewPiece(String userId, String username, String content, int visibility, int type) {
         String key = mDatabase.child("pieces").push().getKey();
-        Piece piece = new Piece(username, userId, content, mLatitude, mLongitude, visibility, 1);
+
+        Piece piece = new Piece(username, userId, content, mLatitude, mLongitude, visibility, type);
+
+        switch (type) {
+            case 1:
+                piece.url = mShareLink;
+                break;
+            case 2:
+                piece.image = mDownloadUrl.toString();
+                break;
+            case 3:
+                piece.url = mShareLink;
+                piece.image = mDownloadUrl.toString();
+                break;
+            default:
+                break;
+        }
+
         Map<String, Object> pieceValues = piece.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/pieces/" + key, pieceValues);
         childUpdates.put("/user-pieces/" + userId + "/" + key, pieceValues);
         mDatabase.updateChildren(childUpdates);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        for (int i = 0, len = permissions.length; i < len; i++) {
-            String permission = permissions[i];
-            if (grantResults[i] == PackageManager.PERMISSION_DENIED &&
-                    android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                boolean showRationale = shouldShowRequestPermissionRationale(permission);
-                if (!showRationale) {
-                    // 用户拒绝了带有“不再询问”的权限申请
-                    // ...
-                    isNotAskAgain = true;
-                } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permission)) {
-                    // 用户第一次拒绝了权限申请
-                    // 向用户解释我们为什么要申请这个权限
-                    showRationale(permission, R.string.permission_denied_storage);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onUrlPositiveClick(String url) {
-        Log.i(TAG, url);
-        linkCard.setVisibility(View.VISIBLE);
-        linkContent.setText(url);
-    }
-
-    @Override
-    public void onUrlNegativeClick() {
-
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.add_image_btn:
-                //启动相册
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-
-                    File outputImage = new File(Environment.getExternalStorageDirectory(), "chooseImage.jpg");
-
-                    previewUri = Uri.fromFile(outputImage);
-
-                    Intent intent = new Intent(Intent.ACTION_PICK);
-                    intent.setType("image/*");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, previewUri);
-                    if (intent.resolveActivity(getPackageManager()) != null)
-                        startActivityForResult(intent, 1);
-                    else
-                        Snackbar.make(snackBarHolderView, "没有相册程序", Snackbar.LENGTH_LONG).show();
-                } else {
-                    if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
-                    } else {
-                        Snackbar.make(snackBarHolderView, "你拒绝了存储空间权限申请", Snackbar.LENGTH_LONG)
-                                .setAction("授予权限", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                                        intent.setData(uri);
-                                        startActivityForResult(intent, 123);
-                                    }
-                                }).show();
-                    }
-                    if (isNotAskAgain) {
-                        Snackbar.make(snackBarHolderView, "你拒绝了存储空间权限申请", Snackbar.LENGTH_LONG)
-                                .setAction("授予权限", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                                        intent.setData(uri);
-                                        startActivityForResult(intent, 123);
-                                    }
-                                }).show();
-                    }
-                }
-                break;
-            case R.id.add_link_btn:
-                new UrlFragment().show(getSupportFragmentManager(), "url");
-                break;
-            case R.id.delete_link:
-                linkCard.setVisibility(View.GONE);
-                break;
-            case R.id.delete_image:
-                imageCard.setVisibility(View.GONE);
-                break;
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case 1:
-                if (resultCode == RESULT_OK) {
-                    Intent intent = new Intent("com.android.camera.action.CROP");
-                    intent.setDataAndType(data.getData(), "image/*");
-                    intent.putExtra("scale", true);
-                    intent.putExtra("crop", true);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, previewUri);
-                    if (intent.resolveActivity(getPackageManager()) != null) {
-                        startActivityForResult(intent, 2);
-                    } else {
-                        Snackbar.make(snackBarHolderView, "没有裁剪图片程序", Snackbar.LENGTH_LONG).show();
-                    }
-                }
-                break;
-            case 2:
-                if (resultCode == RESULT_OK) {
-                    String path = previewUri.toString();
-
-                    imagePath.setText(path.substring(7, path.length()));
-                    try {
-                        uploadPicture(imagePath.getText().toString());
-                        Bitmap bitmap = BitmapFactory
-                                .decodeStream(getContentResolver().openInputStream(previewUri));
-                        imagePreview.setImageBitmap(bitmap);
-                        imageCard.setVisibility(View.VISIBLE);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-
-    public void uploadPicture(String path) {
-        final ProgressDialog progressDialog = new ProgressDialog(snackBarHolderView.getContext());
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("图片上传中");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setProgress(0);
-        progressDialog.setMax(100);
-        progressDialog.show();
-
-        /*
-        final BmobFile bmobFile = new BmobFile(new File(path));
-
-        bmobFile.uploadblock(new UploadFileListener() {
-            @Override
-            public void done(BmobException e) {
-                realPath = bmobFile.getFileUrl();
-                progressDialog.dismiss();
-                Snackbar.make(snackBarHolderView, "上传成功 ", Snackbar.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onProgress(Integer value) {
-                // TODO Auto-generated method stub
-                progressDialog.setProgress(value);
-            }
-        });
-        */
-    }
-
-    private void showRationale(String permission, int permissionDenied) {
-
-        new AlertDialog.Builder(this)
-                .setCancelable(false)
-                .setTitle(permission)
-                .setMessage(getString(permissionDenied) + "。请重新授权！")
-                .setPositiveButton("重新授权", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ActivityCompat.requestPermissions(WritePieceActivity.this,
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
-                    }
-                })
-                .setNegativeButton("仍然拒绝", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                }).show();
     }
 }

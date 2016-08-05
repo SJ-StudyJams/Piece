@@ -74,23 +74,6 @@ public class Piece {
         this.date = df.format(new Date());
     }
 
-    public Piece(String au, String ui, String co, Double la, Double ln, int vi, int ty, String ur, String im, String aud, String vid) {
-        this.author = au;
-        this.uid = ui;
-        this.content = co;
-        this.latitude = la;
-        this.longitude = ln;
-        this.visibility = vi;
-        this.type = ty;
-        this.url = ur;
-        this.image = im;
-        this.audio = aud;
-        this.video = vid;
-
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        this.date = df.format(new Date());
-    }
-
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
