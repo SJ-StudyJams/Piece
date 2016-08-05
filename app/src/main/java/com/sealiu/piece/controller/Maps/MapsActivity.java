@@ -158,7 +158,6 @@ public class MapsActivity extends AppCompatActivity implements
         findMyLocationBtn = (ImageButton) findViewById(R.id.find_my_location);
         hideShowMoreInfoBtn = (ImageButton) findViewById(R.id.hide_show);
         seeAllBtn = (Button) findViewById(R.id.see_all_btn);
-        seeAllBtn.setClickable(false);
 
         writePieceBtn.setOnClickListener(this);
         findMyLocationBtn.setOnClickListener(this);
@@ -550,76 +549,77 @@ public class MapsActivity extends AppCompatActivity implements
 
         clusterManager.setRenderer(new MyIconRender(this, mMap, clusterManager));
 
-        //因为纸条的可见范围最大为60km，所以默认为60km
-        double[] llRange = Common.GetAround(mCurrentLatitude, mCurrentLongitude, 60000);
+        mDatabase.child("pieces").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int number = 0;
 
-        mDatabase.child("pieces").addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        HashMap<String, Object> dataSnapshotValue = (HashMap<String, Object>) dataSnapshot.getValue();
+                if (dataSnapshot != null) {
+                    HashMap<String, Object> dataSnapshotValue = (HashMap<String, Object>) dataSnapshot.getValue();
+                    if (dataSnapshotValue != null) {
                         Set<String> set = dataSnapshotValue.keySet();
 
-                        int number = 0;
+                        if (set != null) {
+                            for (String key : set) {
+                                Log.i(TAG, key);
+                                HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshotValue.get(key);
+                                Log.d(TAG, "author: " + map.get("author"));
+                                Double lat = (Double) map.get("latitude");
+                                Double lng = (Double) map.get("longitude");
 
-                        for (String key : set) {
-                            Log.i(TAG, key);
-                            HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshotValue.get(key);
-                            Log.d(TAG, "author: " + map.get("author"));
-                            Double lat = (Double) map.get("latitude");
-                            Double lng = (Double) map.get("longitude");
+                                int pr = 0;
 
-                            int pr = 0;
+                                switch (Integer.valueOf(map.get("visibility").toString())) {
+                                    case 0:
+                                        pr = 50;
+                                        break;
+                                    case 1:
+                                        pr = 100;
+                                        break;
+                                    case 2:
+                                        pr = 500;
+                                        break;
+                                    case 3:
+                                        pr = 2000;
+                                        break;
+                                    case 4:
+                                        pr = 5000;
+                                        break;
+                                    case 5:
+                                        pr = 20000;
+                                        break;
+                                    case 6:
+                                        pr = 60000;
+                                        break;
+                                    default:
+                                }
 
-                            switch (Integer.valueOf(map.get("visibility").toString())) {
-                                case 0:
-                                    pr = 50;
-                                    break;
-                                case 1:
-                                    pr = 100;
-                                    break;
-                                case 2:
-                                    pr = 500;
-                                    break;
-                                case 3:
-                                    pr = 2000;
-                                    break;
-                                case 4:
-                                    pr = 5000;
-                                    break;
-                                case 5:
-                                    pr = 20000;
-                                    break;
-                                case 6:
-                                    pr = 60000;
-                                    break;
-                                default:
-                            }
-
-                            double distance = Common.GetDistance(mCurrentLatitude, mCurrentLongitude, lat, lng);
-                            if (distance <= pr) {
-                                number++;
-                                LatLng ll = new LatLng(lat, lng);
-                                ClusterMarkerLocation item = new ClusterMarkerLocation(ll,
-                                        map.get("author").toString(),
-                                        map.get("content") + "::" + map.get("date") + "::" + key);
-                                clusterManager.addItem(item);
+                                double distance = Common.GetDistance(mCurrentLatitude, mCurrentLongitude, lat, lng);
+                                if (distance <= pr) {
+                                    number++;
+                                    LatLng ll = new LatLng(lat, lng);
+                                    ClusterMarkerLocation item = new ClusterMarkerLocation(ll,
+                                            map.get("author").toString(),
+                                            map.get("content") + "::" + map.get("date") + "::" + key);
+                                    clusterManager.addItem(item);
+                                }
                             }
                         }
-
-                        String info = getString(R.string.nearby) + " " + number + " " +
-                                getString(R.string.pieces);
-                        pieceNumberNear.setText(info);
-
-                        seeAllBtn.setClickable(number != 0);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
                     }
                 }
-        );
+
+                String info = getString(R.string.nearby) + " " + number + " " +
+                        getString(R.string.pieces);
+                pieceNumberNear.setText(info);
+
+                seeAllBtn.setClickable(number != 0);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override

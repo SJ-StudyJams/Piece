@@ -14,7 +14,7 @@ import com.sealiu.piece.model.Piece;
 
 public class PieceViewHolderWL extends RecyclerView.ViewHolder {
     public TextView authorView;
-    public TextView numView;
+    public TextView likeView;
     public TextView bodyView;
     public TextView dateView;
     public TextView linkView;
@@ -23,17 +23,19 @@ public class PieceViewHolderWL extends RecyclerView.ViewHolder {
         super(itemView);
 
         authorView = (TextView) itemView.findViewById(R.id.piece_author);
-        numView = (TextView) itemView.findViewById(R.id.piece_num_view);
+        likeView = (TextView) itemView.findViewById(R.id.piece_like);
         bodyView = (TextView) itemView.findViewById(R.id.piece_body);
         dateView = (TextView) itemView.findViewById(R.id.piece_date);
         linkView = (TextView) itemView.findViewById(R.id.piece_link);
     }
 
-    public void bindToPiece(Piece piece) {
+    public void bindToPiece(Piece piece, View.OnClickListener likeClickListener) {
         authorView.setText(piece.author);
-        numView.setText(String.valueOf(piece.viewCount));
+        likeView.setText(String.valueOf(piece.likeCount));
         bodyView.setText(piece.content);
         dateView.setText(piece.date);
         linkView.setText(piece.url);
+
+        likeView.setOnClickListener(likeClickListener);
     }
 }

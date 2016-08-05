@@ -3,9 +3,6 @@ package com.sealiu.piece.model;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,13 +33,15 @@ public class Piece {
     public Double longitude;
     //维度
     public Double latitude;
-    //浏览次数
-    public int viewCount = 0;
+    //喜欢次数
+    public int likeCount = 0;
     //时间
     public String date;
     //可见性
     //5km, 20km, 60km, 100km (分别为：0，1，2，3)
     public int visibility;
+
+    public Map<String, Boolean> likes = new HashMap<>();
 
     public Piece() {
     }
@@ -55,12 +54,9 @@ public class Piece {
         this.longitude = ln;
         this.visibility = vi;
         this.type = ty;
-
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        this.date = df.format(new Date());
     }
 
-    public Piece(String au, String ui, String pi, String co, Double la, Double ln, int vi, int ty) {
+    public Piece(String au, String ui, String pi, String co, Double la, Double ln, int vi, int ty, String da) {
         this.author = au;
         this.uid = ui;
         this.pid = pi;
@@ -69,9 +65,7 @@ public class Piece {
         this.longitude = ln;
         this.visibility = vi;
         this.type = ty;
-
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        this.date = df.format(new Date());
+        this.date = da;
     }
 
     @Exclude
@@ -88,8 +82,9 @@ public class Piece {
         result.put("image", image);
         result.put("audio", audio);
         result.put("video", video);
-        result.put("viewCount", viewCount);
+        result.put("likeCount", likeCount);
         result.put("date", date);
+        result.put("likes", likes);
         return result;
     }
 }

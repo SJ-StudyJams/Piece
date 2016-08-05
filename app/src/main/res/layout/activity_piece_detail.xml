@@ -78,24 +78,14 @@
                         android:layout_toRightOf="@+id/head_picture"
                         android:textAppearance="?android:textAppearanceSmall" />
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/piece_like"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
-                        android:layout_marginRight="8dp">
-
-                        <ImageButton
-                            style="?attr/borderlessButtonStyle"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_whatshot_24dp" />
-
-                        <TextView
-                            android:id="@+id/piece_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical" />
-                    </LinearLayout>
+                        android:drawableLeft="@drawable/ic_thumb_up_24dp"
+                        android:gravity="center_vertical"
+                        android:padding="4dp" />
                 </RelativeLayout>
 
                 <TextView

@@ -43,6 +43,7 @@ public class PiecesActivity extends AppCompatActivity {
         Set<String> piecesSet = SP.getStringSet("pref_piece_nearby_key", null);
         if (piecesSet == null || piecesSet.contains("5")) {
             // 广告
+            Log.d(TAG, "AD!");
             AdView mAdView = (AdView) findViewById(R.id.adView);
             mAdView.setVisibility(View.VISIBLE);
             AdRequest adRequest = new AdRequest.Builder().build();

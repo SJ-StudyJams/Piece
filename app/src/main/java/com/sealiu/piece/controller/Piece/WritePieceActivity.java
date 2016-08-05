@@ -48,6 +48,9 @@ import com.sealiu.piece.utils.ImageLoader.BitmapUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -467,6 +470,8 @@ public class WritePieceActivity extends AppCompatActivity implements
         String key = mDatabase.child("pieces").push().getKey();
 
         Piece piece = new Piece(username, userId, content, mLatitude, mLongitude, visibility, type);
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        piece.date = df.format(new Date());
 
         switch (type) {
             case 1:

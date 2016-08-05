@@ -6,14 +6,19 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Maps.Common;
@@ -34,14 +39,19 @@ import java.util.Set;
  */
 
 public class NearPiecesFragment extends Fragment {
+
+    private static final String TAG = "NearPiecesFragment";
+
     double mLat;
     double mLng;
     List<Piece> mDataset;
 
-    private DatabaseReference mDatabase;
-
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecycler;
+
+    private DatabaseReference mDatabase;
+    private DatabaseReference mPieceRef;
+    private ValueEventListener mPieceListener;
 
     public NearPiecesFragment() {
     }
@@ -54,6 +64,7 @@ public class NearPiecesFragment extends Fragment {
 
         mDataset = new ArrayList<>();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mPieceRef = mDatabase.child("pieces");
 
         mRecycler = (RecyclerView) rootView.findViewById(R.id.messages_list);
         mRecycler.setHasFixedSize(true);
@@ -74,115 +85,196 @@ public class NearPiecesFragment extends Fragment {
         mManager.setStackFromEnd(true);
         mRecycler.setLayoutManager(mManager);
 
-        mDatabase.child("pieces").addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        HashMap<String, Object> dataSnapshotValue = (HashMap<String, Object>) dataSnapshot.getValue();
+        ValueEventListener pieceListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mDataset.clear();
+                if (dataSnapshot != null) {
+                    HashMap<String, Object> dataSnapshotValue = (HashMap<String, Object>) dataSnapshot.getValue();
+                    if (dataSnapshotValue != null) {
                         Set<String> set = dataSnapshotValue.keySet();
 
-                        for (String key : set) {
-                            HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshotValue.get(key);
+                        if (set != null) {
+                            for (String key : set) {
+                                HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshotValue.get(key);
 
-                            Double lat = (Double) map.get("latitude");
-                            Double lng = (Double) map.get("longitude");
-                            int vi = Integer.valueOf(map.get("visibility").toString());
+                                Double lat = (Double) map.get("latitude");
+                                Double lng = (Double) map.get("longitude");
+                                int vi = Integer.valueOf(map.get("visibility").toString());
 
-                            int pr = 0;
+                                int pr = 0;
 
-                            switch (vi) {
-                                case 0:
-                                    pr = 50;
-                                    break;
-                                case 1:
-                                    pr = 100;
-                                    break;
-                                case 2:
-                                    pr = 500;
-                                    break;
-                                case 3:
-                                    pr = 2000;
-                                    break;
-                                case 4:
-                                    pr = 5000;
-                                    break;
-                                case 5:
-                                    pr = 20000;
-                                    break;
-                                case 6:
-                                    pr = 60000;
-                                    break;
-                                default:
-                            }
-
-                            double distance = Common.GetDistance(mLat, mLng, lat, lng);
-                            if (distance <= pr) {
-                                Piece piece = new Piece(
-                                        map.get("author").toString(),
-                                        map.get("uid").toString(),
-                                        key,
-                                        map.get("content").toString(),
-                                        lat,
-                                        lng,
-                                        vi,
-                                        Integer.valueOf(map.get("type").toString())
-                                );
-
-                                Set<String> pk = map.keySet();
-                                if (pk.contains("url"))
-                                    piece.url = map.get("url").toString();
-
-                                if (pk.contains("image"))
-                                    piece.image = map.get("image").toString();
-
-                                mDataset.add(piece);
-                            }
-                        }
-
-                        mAdapter = new PieceAdapter(mDataset) {
-                            @Override
-                            public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-
-                                // - get element from your dataset at this position
-                                // - replace the contents of the view with that element
-                                switch (holder.getItemViewType()) {
+                                switch (vi) {
                                     case 0:
-                                        PieceViewHolderW holderW = (PieceViewHolderW) holder;
-                                        holderW.bindToPiece(mDataset.get(position));
+                                        pr = 50;
                                         break;
                                     case 1:
-                                        PieceViewHolderWL holderWL = (PieceViewHolderWL) holder;
-                                        holderWL.bindToPiece(mDataset.get(position));
+                                        pr = 100;
                                         break;
                                     case 2:
-                                        PieceViewHolderWP holderWP = (PieceViewHolderWP) holder;
-                                        holderWP.bindToPiece(mDataset.get(position));
+                                        pr = 500;
                                         break;
                                     case 3:
-                                        PieceViewHolderWPL holderWPL = (PieceViewHolderWPL) holder;
-                                        holderWPL.bindToPiece(mDataset.get(position));
+                                        pr = 2000;
                                         break;
+                                    case 4:
+                                        pr = 5000;
+                                        break;
+                                    case 5:
+                                        pr = 20000;
+                                        break;
+                                    case 6:
+                                        pr = 60000;
+                                        break;
+                                    default:
                                 }
 
-                                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        // launch PieceDetailActivity
-                                        Intent intent = new Intent(getActivity(), PieceDetailActivity.class);
-                                        intent.putExtra(PieceDetailActivity.EXTRA_PIECE_KEY, mDataset.get(position).pid);
-                                        startActivity(intent);
-                                    }
-                                });
+                                double distance = Common.GetDistance(mLat, mLng, lat, lng);
+                                if (distance <= pr) {
+                                    Piece piece = new Piece(
+                                            map.get("author").toString(),
+                                            map.get("uid").toString(),
+                                            key,
+                                            map.get("content").toString(),
+                                            lat,
+                                            lng,
+                                            vi,
+                                            Integer.valueOf(map.get("type").toString()),
+                                            map.get("date").toString()
+                                    );
+
+                                    Set<String> pk = map.keySet();
+                                    if (pk.contains("url"))
+                                        piece.url = map.get("url").toString();
+
+                                    if (pk.contains("image"))
+                                        piece.image = map.get("image").toString();
+
+                                    mDataset.add(piece);
+                                }
                             }
-                        };
-                        mRecycler.setAdapter(mAdapter);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
+                        }
                     }
                 }
-        );
+
+                mAdapter = new PieceAdapter(mDataset) {
+                    @Override
+                    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+
+                        final Piece piece = mDataset.get(position);
+
+                        final DatabaseReference globalPieceRef = mPieceRef.child(piece.pid);
+                        final DatabaseReference userPieceRef = mDatabase.child("user-pieces")
+                                .child(piece.uid).child(piece.pid);
+
+                        // - get element from your dataset at this position
+                        // - replace the contents of the view with that element
+                        switch (holder.getItemViewType()) {
+                            case 0:
+                                PieceViewHolderW holderW = (PieceViewHolderW) holder;
+                                holderW.bindToPiece(piece, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onLikeClicked(globalPieceRef);
+                                        onLikeClicked(userPieceRef);
+                                    }
+                                });
+                                break;
+                            case 1:
+                                PieceViewHolderWL holderWL = (PieceViewHolderWL) holder;
+                                holderWL.bindToPiece(piece, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onLikeClicked(globalPieceRef);
+                                        onLikeClicked(userPieceRef);
+                                    }
+                                });
+                                break;
+                            case 2:
+                                PieceViewHolderWP holderWP = (PieceViewHolderWP) holder;
+                                holderWP.bindToPiece(piece, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onLikeClicked(globalPieceRef);
+                                        onLikeClicked(userPieceRef);
+                                    }
+                                });
+                                break;
+                            case 3:
+                                PieceViewHolderWPL holderWPL = (PieceViewHolderWPL) holder;
+                                holderWPL.bindToPiece(piece, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onLikeClicked(globalPieceRef);
+                                        onLikeClicked(userPieceRef);
+                                    }
+                                });
+                                break;
+                        }
+
+                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                // launch PieceDetailActivity
+                                Intent intent = new Intent(getActivity(), PieceDetailActivity.class);
+                                intent.putExtra(PieceDetailActivity.EXTRA_PIECE_KEY, piece.pid);
+                                startActivity(intent);
+                            }
+                        });
+                    }
+                };
+                mRecycler.setAdapter(mAdapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        mPieceRef.addValueEventListener(pieceListener);
+        mPieceListener = pieceListener;
+    }
+
+    private void onLikeClicked(DatabaseReference pieceRef) {
+        Log.d(TAG, "onLikeClicked");
+
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        pieceRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Piece p = mutableData.getValue(Piece.class);
+                if (p == null) {
+                    return Transaction.success(mutableData);
+                }
+
+                if (p.likes.containsKey(user.getUid())) {
+                    p.likeCount -= 1;
+                    p.likes.remove(user.getUid());
+                } else {
+                    p.likeCount += 1;
+                    p.likes.put(user.getUid(), true);
+                }
+
+                mutableData.setValue(p);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                // Transaction completed
+                Log.d(TAG, "postTransaction:onComplete:" + databaseError);
+            }
+        });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mPieceListener != null)
+            mPieceRef.removeEventListener(mPieceListener);
     }
 }
