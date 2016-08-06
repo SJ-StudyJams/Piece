@@ -26,7 +26,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -48,7 +47,9 @@ import com.github.amlcurran.showcaseview.SimpleShowcaseEventListener;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -65,8 +66,13 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -76,7 +82,9 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.BaseActivity;
 import com.sealiu.piece.controller.LoginRegister.IndexActivity;
+import com.sealiu.piece.controller.LoginRegister.LinkAccountFragment;
 import com.sealiu.piece.controller.Piece.PieceDetailActivity;
 import com.sealiu.piece.controller.Piece.PiecesActivity;
 import com.sealiu.piece.controller.Piece.WritePieceActivity;
@@ -97,18 +105,21 @@ import static com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import static com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener;
 import static com.google.maps.android.clustering.ClusterManager.OnClusterItemInfoWindowClickListener;
 
-public class MapsActivity extends AppCompatActivity implements
+public class MapsActivity extends BaseActivity implements
         OnMapReadyCallback,
         ConnectionCallbacks,
         OnConnectionFailedListener,
         View.OnClickListener,
         OnClusterItemClickListener<ClusterMarkerLocation>,
-        OnClusterItemInfoWindowClickListener<ClusterMarkerLocation> {
+        OnClusterItemInfoWindowClickListener<ClusterMarkerLocation>,
+        LinkAccountFragment.LinkAccountListener {
 
     private static final String TAG = "MapsActivity";
     private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private static final int PERMISSIONS_REQUEST_FINE_COARSE_LOCATION = 2;
     private static final int WRITE_PIECE_REQUEST_CODE = 3;
+
+    private static final int GOOGLE_LINK = 9001;
 
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
@@ -131,7 +142,7 @@ public class MapsActivity extends AppCompatActivity implements
     private ShowcaseView showcaseView;
     private int counter = 0;
 
-    private FirebaseUser user;
+    private FirebaseUser mUser;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabase;
@@ -177,15 +188,14 @@ public class MapsActivity extends AppCompatActivity implements
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser u = firebaseAuth.getCurrentUser();
-                if (u == null) {
+                if (firebaseAuth.getCurrentUser() == null) {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                     finish();
@@ -369,7 +379,7 @@ public class MapsActivity extends AppCompatActivity implements
 
         switch (item.getItemId()) {
             case R.id.user_menu_title:
-                if (user.getDisplayName() != null) {
+                if (mUser.getDisplayName() != null) {
                     startActivity(new Intent(MapsActivity.this, UserActivity.class));
                 } else {
                     // anonymous sign in
@@ -404,7 +414,13 @@ public class MapsActivity extends AppCompatActivity implements
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.anonymous_limit))
                 .setMessage(getString(R.string.anonymous_limit_message))
-                .show();
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        LinkAccountFragment linkAccountFragment = new LinkAccountFragment();
+                        linkAccountFragment.show(getSupportFragmentManager(), "LINK_ACCOUNT");
+                    }
+                }).show();
     }
 
     private void googleSignOut() {
@@ -422,7 +438,7 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         Log.i(TAG, "onStop");
         super.onStop();
         MapStateManager mgr = new MapStateManager(this);
@@ -434,7 +450,7 @@ public class MapsActivity extends AppCompatActivity implements
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.write_piece_fab:
-                if (user.getDisplayName() == null) {
+                if (mUser.getDisplayName() == null) {
                     anonymousLimit();
                 } else if (mCurrentLatitude != null && mCurrentLongitude != null && mCurrentLocationName != null) {
                     Intent intent = new Intent(MapsActivity.this, WritePieceActivity.class);
@@ -509,8 +525,40 @@ public class MapsActivity extends AppCompatActivity implements
                     Snackbar.make(snackBarHolderView, "未发送", Snackbar.LENGTH_SHORT).show();
                 }
                 break;
+            case GOOGLE_LINK:
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                if (result.isSuccess()) {
+                    GoogleSignInAccount account = result.getSignInAccount();
+                    Log.i(TAG, "google sign in success, idtoken:" + account.getIdToken());
+                    AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+                    linkAccount(credential);
+                } else {
+                    Log.d(TAG, "Google Sign In failed");
+                }
+                break;
             default:
         }
+    }
+
+    private void linkAccount(final AuthCredential credential) {
+        showProgressDialog();
+        mUser.linkWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        hideProgressDialog();
+                        Log.d(TAG, "linkWithCredential:onComplete:" + task.isSuccessful());
+
+                        String linkResult = "";
+                        if (!task.isSuccessful()) {
+                            linkResult = task.getException().getLocalizedMessage();
+                            Log.d(TAG, linkResult);
+                        } else {
+                            linkResult = getString(R.string.link_count_success);
+                        }
+                        Snackbar.make(snackBarHolderView, linkResult, Snackbar.LENGTH_LONG).show();
+                    }
+                });
     }
 
     /**
@@ -735,6 +783,17 @@ public class MapsActivity extends AppCompatActivity implements
                 })
                 .build();
         showcaseView.setButtonPosition(lps);
+    }
+
+    @Override
+    public void onGoogleClick() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, GOOGLE_LINK);
+    }
+
+    @Override
+    public void onFBClick() {
+
     }
 
     class CustomInfoWindowAdapter implements InfoWindowAdapter {

@@ -142,6 +142,8 @@
     <string name="take_pic_intent_error">没有相机应用</string>
     <string name="album_intent_error">没有相册应用</string>
     <string name="comment_not_available">:(\n\n评论暂未开放</string>
+    <string name="link_count">选择Google账户或FaceBook账户，连接到当前匿名账户，我们将同步您的之前的点赞和评论数据。</string>
+    <string name="link_count_success">您已成功连接到账户 </string>
 </resources>
 
     <!--

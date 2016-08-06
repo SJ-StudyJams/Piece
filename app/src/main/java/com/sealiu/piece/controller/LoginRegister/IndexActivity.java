@@ -1,10 +1,8 @@
 package com.sealiu.piece.controller.LoginRegister;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -13,6 +11,8 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -33,6 +33,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.sealiu.piece.R;
+import com.sealiu.piece.controller.BaseActivity;
 import com.sealiu.piece.controller.Maps.MapsActivity;
 import com.sealiu.piece.model.User;
 
@@ -43,14 +44,13 @@ import java.util.Collection;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class IndexActivity extends AppCompatActivity implements
+public class IndexActivity extends BaseActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 
     private static final String TAG = "IndexActivity";
     private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient;
-    private ProgressDialog mProgressDialog;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -61,6 +61,8 @@ public class IndexActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(getApplication());
         setContentView(R.layout.activity_index);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -131,7 +133,7 @@ public class IndexActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
@@ -152,10 +154,12 @@ public class IndexActivity extends AppCompatActivity implements
             } else {
                 Log.d(TAG, "Google Sign In failed");
             }
+        } else {
+            mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+    public void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getDisplayName());
 
         showProgressDialog();
@@ -222,6 +226,7 @@ public class IndexActivity extends AppCompatActivity implements
     }
 
     private void anonymousSignIn() {
+        showProgressDialog();
         mAuth.signInAnonymously()
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -229,6 +234,7 @@ public class IndexActivity extends AppCompatActivity implements
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
+                        hideProgressDialog();
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInAnonymously", task.getException());
                             Toast.makeText(IndexActivity.this, "Authentication failed.",
@@ -243,22 +249,6 @@ public class IndexActivity extends AppCompatActivity implements
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
-    }
-
-    private void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage(getString(R.string.loading));
-            mProgressDialog.setIndeterminate(true);
-        }
-
-        mProgressDialog.show();
-    }
-
-    private void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.hide();
-        }
     }
 
     @Override
