@@ -15,13 +15,13 @@ public class User {
     public String email;
     //头像
     public String photo;
-    //用户类型(google, facebook, visitor)
-    public int type;
+    //用户类型(google, facebook, anonymous)
+    public String type;
 
     public User() {
     }
 
-    public User(String username, String email, String photo, int type) {
+    public User(String username, String email, String photo, String type) {
         this.username = username;
         this.email = email;
         if (photo != null)

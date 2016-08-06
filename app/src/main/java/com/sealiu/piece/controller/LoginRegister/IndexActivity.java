@@ -50,6 +50,10 @@ public class IndexActivity extends BaseActivity implements
 
     private static final String TAG = "IndexActivity";
     private static final int RC_SIGN_IN = 9001;
+    private static final String USER_G = "google";
+    private static final String USER_F = "facebook";
+    private static final String USER_A = "anonymous";
+
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -181,7 +185,7 @@ public class IndexActivity extends BaseActivity implements
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             FirebaseUser user = task.getResult().getUser();
-                            writeNewUser(user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString(), 1);
+                            writeNewUser(user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString(), USER_G);
                         }
 
                         hideProgressDialog();
@@ -208,6 +212,9 @@ public class IndexActivity extends BaseActivity implements
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(IndexActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                        } else {
+                            FirebaseUser user = task.getResult().getUser();
+                            writeNewUser(user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString(), USER_F);
                         }
 
                         hideProgressDialog();
@@ -215,7 +222,7 @@ public class IndexActivity extends BaseActivity implements
                 });
     }
 
-    private void writeNewUser(String userId, String name, String email, String photo, int type) {
+    private void writeNewUser(String userId, String name, String email, String photo, String type) {
         User user = new User(name, email, photo, type);
 
         mDatabase.child("users").child(userId).setValue(user);

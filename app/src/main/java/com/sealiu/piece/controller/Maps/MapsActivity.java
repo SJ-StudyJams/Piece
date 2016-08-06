@@ -42,6 +42,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.SimpleShowcaseEventListener;
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -70,6 +76,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -94,6 +101,8 @@ import com.sealiu.piece.model.Constants;
 import com.sealiu.piece.utils.SPUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -146,6 +155,9 @@ public class MapsActivity extends BaseActivity implements
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabase;
+
+    private CallbackManager mCallbackManager;
+    private LoginManager mLoginManager;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, MapsActivity.class);
@@ -204,6 +216,10 @@ public class MapsActivity extends BaseActivity implements
                 // ...
             }
         };
+
+        // facebook callback manager
+        mCallbackManager = CallbackManager.Factory.create();
+        mLoginManager = LoginManager.getInstance();
     }
 
     @Override
@@ -396,7 +412,7 @@ public class MapsActivity extends BaseActivity implements
                         .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                googleSignOut();
+                                signOut();
                             }
                         })
                         .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -423,9 +439,12 @@ public class MapsActivity extends BaseActivity implements
                 }).show();
     }
 
-    private void googleSignOut() {
+    private void signOut() {
         // Firebase sign out
         mAuth.signOut();
+
+        // FB sign out
+        LoginManager.getInstance().logOut();
 
         // Google sign out
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
@@ -537,6 +556,7 @@ public class MapsActivity extends BaseActivity implements
                 }
                 break;
             default:
+                mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -793,7 +813,31 @@ public class MapsActivity extends BaseActivity implements
 
     @Override
     public void onFBClick() {
+        Collection<String> collection = new ArrayList<>();
+        collection.add("email");
+        collection.add("public_profile");
+        mLoginManager.logInWithReadPermissions(this, collection);
 
+        mLoginManager.registerCallback(mCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        AccessToken token = loginResult.getAccessToken();
+                        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+                        linkAccount(credential);
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+
+                    }
+                }
+        );
     }
 
     class CustomInfoWindowAdapter implements InfoWindowAdapter {
