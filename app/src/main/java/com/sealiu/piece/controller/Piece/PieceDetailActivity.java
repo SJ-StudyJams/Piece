@@ -151,15 +151,6 @@ public class PieceDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (mPieceListener != null) {
-            mPiecesRef.removeEventListener(mPieceListener);
-        }
-    }
-
-    @Override
     public void onClick(View view) {
 
         mUserPieceRef = mDatabaseRef.child("user-pieces").child(pieceUID).child(pieceKey);
@@ -167,6 +158,14 @@ public class PieceDetailActivity extends AppCompatActivity implements View.OnCli
         if (view.getId() == R.id.piece_like_holder) {
             onLikeClick(mPiecesRef, mUser.getUid());
             onLikeClick(mUserPieceRef, mUser.getUid());
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mPieceListener != null) {
+            mPiecesRef.removeEventListener(mPieceListener);
         }
     }
 }

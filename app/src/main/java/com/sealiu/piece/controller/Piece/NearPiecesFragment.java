@@ -271,10 +271,4 @@ public class NearPiecesFragment extends Fragment {
         PieceDetailActivity.onLikeClick(pieceRef, mUser.getUid());
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mPieceListener != null)
-            mPieceRef.removeEventListener(mPieceListener);
-    }
 }
