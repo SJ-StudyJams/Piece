@@ -2,6 +2,8 @@ package com.sealiu.piece.controller.viewholder;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.sealiu.piece.R;
@@ -14,17 +16,21 @@ import com.sealiu.piece.model.Piece;
 
 public class PieceViewHolderW extends RecyclerView.ViewHolder {
     public TextView authorView;
-    public TextView likeView;
     public TextView bodyView;
     public TextView dateView;
+    public TextView likeView;
+    public ImageView likeIcon;
+    public LinearLayout likeViewHolder;
 
     public PieceViewHolderW(View itemView) {
         super(itemView);
 
         authorView = (TextView) itemView.findViewById(R.id.piece_author);
-        likeView = (TextView) itemView.findViewById(R.id.piece_like);
         bodyView = (TextView) itemView.findViewById(R.id.piece_body);
         dateView = (TextView) itemView.findViewById(R.id.piece_date);
+        likeView = (TextView) itemView.findViewById(R.id.piece_like_num);
+        likeIcon = (ImageView) itemView.findViewById(R.id.piece_like_icon);
+        likeViewHolder = (LinearLayout) itemView.findViewById(R.id.piece_like_holder);
     }
 
     public void bindToPiece(Piece piece, View.OnClickListener likeClickListener) {
@@ -33,6 +39,6 @@ public class PieceViewHolderW extends RecyclerView.ViewHolder {
         bodyView.setText(piece.content);
         dateView.setText(piece.date);
 
-        likeView.setOnClickListener(likeClickListener);
+        likeViewHolder.setOnClickListener(likeClickListener);
     }
 }

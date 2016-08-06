@@ -141,6 +141,7 @@
     <string name="uploading">上载中</string>
     <string name="take_pic_intent_error">没有相机应用</string>
     <string name="album_intent_error">没有相册应用</string>
+    <string name="comment_not_available">:(\n\n评论暂未开放</string>
 </resources>
 
     <!--

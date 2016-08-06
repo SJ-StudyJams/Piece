@@ -17,8 +17,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.sealiu.piece.R;
 import com.sealiu.piece.controller.Piece.PieceAdapter;
@@ -32,6 +30,7 @@ import com.sealiu.piece.model.Piece;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,6 +41,8 @@ import java.util.Set;
 public class MyPiecesFragment extends Fragment {
     private static final String TAG = "MyPiecesFragment";
     List<Piece> mDataset;
+
+    private FirebaseUser mUser;
 
     private DatabaseReference mDatabase;
     private DatabaseReference mPieceRef;
@@ -59,11 +60,11 @@ public class MyPiecesFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_all_pieces, container, false);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
 
         mDataset = new ArrayList<>();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mPieceRef = mDatabase.child("user-pieces").child(user.getUid());
+        mPieceRef = mDatabase.child("user-pieces").child(mUser.getUid());
 
         mRecycler = (RecyclerView) rootView.findViewById(R.id.messages_list);
         mRecycler.setHasFixedSize(true);
@@ -106,8 +107,12 @@ public class MyPiecesFragment extends Fragment {
                                         Integer.valueOf(map.get("type").toString()),
                                         map.get("date").toString()
                                 );
+                                piece.likeCount = Integer.valueOf(map.get("likeCount").toString());
 
                                 Set<String> pk = map.keySet();
+                                if (pk.contains("likes"))
+                                    piece.likes = (Map<String, Boolean>) map.get("likes");
+
                                 if (pk.contains("url"))
                                     piece.url = map.get("url").toString();
 
@@ -126,15 +131,19 @@ public class MyPiecesFragment extends Fragment {
 
                         final Piece piece = mDataset.get(position);
 
-                        final DatabaseReference globalPieceRef = mPieceRef.child(piece.pid);
-                        final DatabaseReference userPieceRef = mDatabase.child("user-pieces")
-                                .child(piece.uid).child(piece.pid);
+                        final DatabaseReference globalPieceRef = mDatabase.child("pieces").child(piece.pid);
+                        final DatabaseReference userPieceRef = mPieceRef.child(piece.pid);
 
                         // - get element from your dataset at this position
                         // - replace the contents of the view with that element
                         switch (holder.getItemViewType()) {
                             case 0:
                                 PieceViewHolderW holderW = (PieceViewHolderW) holder;
+                                if (piece.likes.containsKey(mUser.getUid())) {
+                                    holderW.likeIcon.setImageResource(R.drawable.ic_favorite_24dp);
+                                } else {
+                                    holderW.likeIcon.setImageResource(R.drawable.ic_favorite_border_24dp);
+                                }
                                 holderW.bindToPiece(piece, new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -145,6 +154,11 @@ public class MyPiecesFragment extends Fragment {
                                 break;
                             case 1:
                                 PieceViewHolderWL holderWL = (PieceViewHolderWL) holder;
+                                if (piece.likes.containsKey(mUser.getUid())) {
+                                    holderWL.likeIcon.setImageResource(R.drawable.ic_favorite_24dp);
+                                } else {
+                                    holderWL.likeIcon.setImageResource(R.drawable.ic_favorite_border_24dp);
+                                }
                                 holderWL.bindToPiece(piece, new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -155,6 +169,11 @@ public class MyPiecesFragment extends Fragment {
                                 break;
                             case 2:
                                 PieceViewHolderWP holderWP = (PieceViewHolderWP) holder;
+                                if (piece.likes.containsKey(mUser.getUid())) {
+                                    holderWP.likeIcon.setImageResource(R.drawable.ic_favorite_24dp);
+                                } else {
+                                    holderWP.likeIcon.setImageResource(R.drawable.ic_favorite_border_24dp);
+                                }
                                 holderWP.bindToPiece(piece, new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -165,6 +184,11 @@ public class MyPiecesFragment extends Fragment {
                                 break;
                             case 3:
                                 PieceViewHolderWPL holderWPL = (PieceViewHolderWPL) holder;
+                                if (piece.likes.containsKey(mUser.getUid())) {
+                                    holderWPL.likeIcon.setImageResource(R.drawable.ic_favorite_24dp);
+                                } else {
+                                    holderWPL.likeIcon.setImageResource(R.drawable.ic_favorite_border_24dp);
+                                }
                                 holderWPL.bindToPiece(piece, new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -180,7 +204,7 @@ public class MyPiecesFragment extends Fragment {
                             public void onClick(View view) {
                                 // launch PieceDetailActivity
                                 Intent intent = new Intent(getActivity(), PieceDetailActivity.class);
-                                intent.putExtra(PieceDetailActivity.EXTRA_PIECE_KEY, mDataset.get(position).pid);
+                                intent.putExtra(PieceDetailActivity.EXTRA_PIECE_KEY, piece.pid);
                                 startActivity(intent);
                             }
                         });
@@ -200,35 +224,9 @@ public class MyPiecesFragment extends Fragment {
 
     private void onLikeClicked(DatabaseReference pieceRef) {
 
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(TAG, "onLikeClicked");
 
-        pieceRef.runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                Piece p = mutableData.getValue(Piece.class);
-                if (p == null) {
-                    return Transaction.success(mutableData);
-                }
-
-                if (p.likes.containsKey(user.getUid())) {
-                    p.likeCount -= 1;
-                    p.likes.remove(user.getUid());
-                } else {
-                    p.likeCount += 1;
-                    p.likes.put(user.getUid(), true);
-                }
-
-                mutableData.setValue(p);
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(DatabaseError databaseError, boolean b,
-                                   DataSnapshot dataSnapshot) {
-                // Transaction completed
-                Log.d(TAG, "postTransaction:onComplete:" + databaseError);
-            }
-        });
+        PieceDetailActivity.onLikeClick(pieceRef, mUser.getUid());
     }
 
     @Override
