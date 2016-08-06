@@ -110,6 +110,7 @@ public class IndexActivity extends BaseActivity implements
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                Log.d(TAG, "facebook:IdToken:" + loginResult.getAccessToken());
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
