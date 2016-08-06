@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -14,9 +13,9 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -57,21 +56,17 @@ public class IndexActivity extends AppCompatActivity implements
 
     private DatabaseReference mDatabase;
 
+    private CallbackManager mCallbackManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_index);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        AppCompatButton googleSignIn = (AppCompatButton) findViewById(R.id.google_sign_in);
-        AppCompatButton facebookSignIn = (AppCompatButton) findViewById(R.id.facebook_sign_in);
-        AppCompatButton anonymousSignIn = (AppCompatButton) findViewById(R.id.anonymous_sign_in);
-
-        googleSignIn.setOnClickListener(this);
-        facebookSignIn.setOnClickListener(this);
-        anonymousSignIn.setOnClickListener(this);
+        findViewById(R.id.google_sign_in).setOnClickListener(this);
+        findViewById(R.id.anonymous_sign_in).setOnClickListener(this);
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -105,9 +100,11 @@ public class IndexActivity extends AppCompatActivity implements
             }
         };
 
-        // sign in with facebook account
-        CallbackManager mCallbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+        // Initialize Facebook Login button
+        mCallbackManager = CallbackManager.Factory.create();
+        LoginButton facebookSignIn = (LoginButton) findViewById(R.id.facebook_sign_in);
+        facebookSignIn.setReadPermissions("email", "public_profile");
+        facebookSignIn.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
