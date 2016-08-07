@@ -45,7 +45,7 @@
     <string name="pref_privacy_policy_title">隐私政策</string>
     <string name="pref_licenses_title">许可</string>
     <string name="pref_version_title">版本号</string>
-    <string name="pref_version_summary">Version 1.0</string>
+    <string name="pref_version_summary">Version 1.1.0</string>
 
     <string name="terms_of_use">
         "您在使用本服务前需要注册一个账号。账号应当使用手机号码绑定注册或者使用邮箱绑定注册，请您使用尚未与"
