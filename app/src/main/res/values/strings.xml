@@ -1,38 +1,14 @@
 <resources>
     <string name="app_name">Piece</string>
-    <string name="title_activity_maps">Map</string>
     <string name="see_all">查看全部</string>
     <string name="nearby">附近有</string>
     <string name="pieces">Pieces</string>
-    <string name="title_activity_login">Sign in</string>
 
-    <!-- Strings related to login -->
-    <string name="prompt_phone_or_email">邮箱/手机号</string>
-    <string name="prompt_password">密码</string>
-
-    <string name="login_btn">登录</string>
-    <string name="register_btn">注册</string>
-    <string name="reg_next_btn">下一步</string>
-    <string name="validating_code">验证码</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="repeat_pwd">再次输入</string>
-    <string name="complete_register">完成注册</string>
-    <string name="third_part_login">第三方登录</string>
     <string name="setting_menu_title">设置</string>
     <string name="user_menu_title">个人中心</string>
-    <string name="edit_user_info">个人信息</string>
-    <string name="remember_password">记住密码</string>
-    <string name="auto_login">自动登录</string>
-    <string name="logout_menu_title">退出账户</string>
-    <string name="title_activity_settings">Settings</string>
 
-    <string name="change_pwd">更改密码</string>
     <string name="pref_notification">提醒</string>
-    <string name="pref_piece_nearby_title">附近的Piece信息</string>
-    <string name="pref_piece_nearby_summary">选择接受附近的Piece消息的类别</string>
-    <string name="pref_piece_token_title">Piece被拾走提醒</string>
+    <string name="pref_piece_nearby_summary">选择希望收到的通知类别</string>
     <string name="pref_notification_voice">提示音</string>
     <string name="pref_ringtone">铃声</string>
     <string name="pref_vibrate_title">振动</string>
@@ -40,12 +16,11 @@
     <string name="pref_other">其他</string>
     <string name="pref_about_title">关于</string>
     <string name="pref_feedback_title">反馈</string>
-    <string name="pref_logout_title">退出登录</string>
     <string name="pref_terms_of_use_title">使用条款</string>
     <string name="pref_privacy_policy_title">隐私政策</string>
     <string name="pref_licenses_title">许可</string>
     <string name="pref_version_title">版本号</string>
-    <string name="pref_version_summary">Version 1.1.0</string>
+    <string name="pref_version_summary">1.1.0</string>
 
     <string name="terms_of_use">
         "您在使用本服务前需要注册一个账号。账号应当使用手机号码绑定注册或者使用邮箱绑定注册，请您使用尚未与"
@@ -76,23 +51,13 @@
 
     <string name="camera">相机</string>
     <string name="album">相册</string>
-    <string name="find_pwd">忘记密码？点击找回</string>
     <string name="fetching_location">定位中</string>
     <string name="write_piece">写纸条</string>
     <string name="send_piece">发送</string>
     <string name="write_something">写点什么吧</string>
     <string name="pieces_nearby">附近的Pieces</string>
-    <string name="send_reset_mail">发送重置邮件</string>
-    <string name="register_email">注册邮箱</string>
-    <string name="register_phone">注册手机号</string>
-    <string name="sms_code">验证码</string>
-    <string name="send_sms_code">发送验证码</string>
-    <string name="reset_pwd">重置密码</string>
-    <string name="verified_code">获取验证码</string>
-    <string name="layout_chooser">布局选择</string>
+
     <string name="share_url">分享链接</string>
-    <string name="positive_btn">确定</string>
-    <string name="negative_btn">取消</string>
 
     <string-array name="visibility_arrays">
         <item>50m</item>
@@ -114,19 +79,11 @@
     <string name="write_piece_text">点击按钮，立即在当前位置留下一张纸条。并且可以自定义可见范围，图片链接任你发！</string>
     <string name="welcome">尽情使用吧！</string>
     <string name="close">关闭</string>
-    <string name="phone">手机号</string>
-    <string name="permission_denied_location">但这是一个基于位置信息的通讯APP，所以你将无法正常使用本软件</string>
-    <string name="permission_denied_storage">APP无法读写存储空间，这样你将无法自定义头像，无法发送带附件的Piece信息</string>
-    <string name="permission_denied_phone_state">APP无法读取手机状态，这样你可能无法和服务器链接，无法注册和登录</string>
 
-    <string name="title_activity_index">IndexActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="anonymous">游客身份登录</string>
     <string name="sign_in_with_google_account"> 使用Google账户登录</string>
     <string name="sign_in_with_facebook_account"> 使用Facebook账户登录</string>
     <string name="or">或</string>
-    <string name="something_cannot_use">一些功能可能无法使用</string>
     <string name="loading">加载中</string>
     <string name="anonymous_limit">游客止步</string>
     <string name="anonymous_limit_message">当前登录身份为游客，您将无法查看个人资料和发送piece消息。\n\n欲使用完整功能请退出当前账户后使用Google或Facebook账户登录。</string>
@@ -134,7 +91,6 @@
     <string name="cancel">取消</string>
     <string name="sign_out">退出账户</string>
     <string name="sign_out_message">执行该操作后你需要重新登录</string>
-    <string name="facebook_app_id">1032814936816826</string>
     <string name="visibility_title">可见范围:</string>
     <string name="rationale_storage">Piece 需要读取内存空间的文件进行上传</string>
     <string name="crop_pic_intent_error">没有裁剪应用</string>
@@ -142,20 +98,30 @@
     <string name="take_pic_intent_error">没有相机应用</string>
     <string name="album_intent_error">没有相册应用</string>
     <string name="comment_not_available">:(\n\n评论暂未开放</string>
-    <string name="link_count">选择Google账户或FaceBook账户，连接到当前匿名账户，我们将同步您的之前的点赞和评论数据。</string>
-    <string name="link_count_success">您已成功连接到账户 </string>
-</resources>
+    <string name="link_count">选择Google账户或Facebook账户，连接到当前匿名账户，我们将同步您的之前的点赞和评论数据。</string>
+    <string name="link_count_success">成功连接</string>
+    <string name="pref_piece_nearby_title">通知类别</string>
+    <string name="rationale_fine_location">Piece 需要确定您的当前位置。以便于查找附近的Piece消息。另外发送Piece消息也需要您的当前位置。</string>
+    <string name="empty">空空如也</string>
+    <string name="location_error">无法获取您的位置</string>
+    <string name="send_success">发送成功</string>
+    <string name="send_fail">未发送</string>
+    <string name="network_error">连接 Google API 失败，请检查网络连接</string>
+    <string name="facebook_app_id" translatable="false">1032814936816826</string>
 
-    <!--
-    <resources>
-        <string name="app_name">Piece</string>
-        <string name="anonymous">Anonymous</string>
-        <string name="album_choose">Choose From Album</string>
-        <string name="banner_ad_unit_id">ca-app-pub-6993844563211839/7210642908</string>
-        <string name="capture_photo">Camera</string>
-        <string name="sign_in_with_facebook_account">" Sign In With Facebook"</string>
-        <string name="sign_in_with_google_account">" Sign In With Google"</string>
-        <string name="or">OR</string>
-        <string name="loading">Loading</string>
-    </resources>
-    -->
+    <string-array name="pieceCategory">
+        <item>Pieces</item>
+        <item>新闻</item>
+        <item>天气</item>
+        <item>交通信息</item>
+        <item>广告</item>
+    </string-array>
+
+    <string-array name="pieceCategoryValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+</resources>

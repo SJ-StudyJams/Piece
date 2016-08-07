@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,10 +47,10 @@ public class MyPiecesFragment extends Fragment {
 
     private DatabaseReference mDatabase;
     private DatabaseReference mPieceRef;
-    private ValueEventListener mPieceListener;
 
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecycler;
+    private TextView empty;
 
     public MyPiecesFragment() {
     }
@@ -61,6 +62,8 @@ public class MyPiecesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_all_pieces, container, false);
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        empty = (TextView) rootView.findViewById(R.id.empty);
 
         mDataset = new ArrayList<>();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -91,37 +94,36 @@ public class MyPiecesFragment extends Fragment {
                     HashMap<String, Object> dataSnapshotValue = (HashMap<String, Object>) dataSnapshot.getValue();
                     if (dataSnapshotValue != null) {
                         Set<String> set = dataSnapshotValue.keySet();
+                        for (String key : set) {
+                            HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshotValue.get(key);
 
-                        if (set != null) {
-                            for (String key : set) {
-                                HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshotValue.get(key);
+                            Piece piece = new Piece(
+                                    map.get("author").toString(),
+                                    map.get("uid").toString(),
+                                    key,
+                                    map.get("content").toString(),
+                                    Double.valueOf(map.get("latitude").toString()),
+                                    Double.valueOf(map.get("longitude").toString()),
+                                    Integer.valueOf(map.get("visibility").toString()),
+                                    Integer.valueOf(map.get("type").toString()),
+                                    map.get("date").toString()
+                            );
+                            piece.likeCount = Integer.valueOf(map.get("likeCount").toString());
 
-                                Piece piece = new Piece(
-                                        map.get("author").toString(),
-                                        map.get("uid").toString(),
-                                        key,
-                                        map.get("content").toString(),
-                                        Double.valueOf(map.get("latitude").toString()),
-                                        Double.valueOf(map.get("longitude").toString()),
-                                        Integer.valueOf(map.get("visibility").toString()),
-                                        Integer.valueOf(map.get("type").toString()),
-                                        map.get("date").toString()
-                                );
-                                piece.likeCount = Integer.valueOf(map.get("likeCount").toString());
+                            Set<String> pk = map.keySet();
+                            if (pk.contains("likes"))
+                                piece.likes = (Map<String, Boolean>) map.get("likes");
 
-                                Set<String> pk = map.keySet();
-                                if (pk.contains("likes"))
-                                    piece.likes = (Map<String, Boolean>) map.get("likes");
+                            if (pk.contains("url"))
+                                piece.url = map.get("url").toString();
 
-                                if (pk.contains("url"))
-                                    piece.url = map.get("url").toString();
+                            if (pk.contains("image"))
+                                piece.image = map.get("image").toString();
 
-                                if (pk.contains("image"))
-                                    piece.image = map.get("image").toString();
-
-                                mDataset.add(piece);
-                            }
+                            mDataset.add(piece);
                         }
+                    } else {
+                        empty.setVisibility(View.VISIBLE);
                     }
                 }
 
@@ -219,7 +221,6 @@ public class MyPiecesFragment extends Fragment {
             }
         };
         mPieceRef.addValueEventListener(pieceListener);
-        mPieceListener = pieceListener;
     }
 
     private void onLikeClicked(DatabaseReference pieceRef) {

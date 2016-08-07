@@ -24,7 +24,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -107,6 +106,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -124,9 +126,9 @@ public class MapsActivity extends BaseActivity implements
         LinkAccountFragment.LinkAccountListener {
 
     private static final String TAG = "MapsActivity";
-    private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 1;
-    private static final int PERMISSIONS_REQUEST_FINE_COARSE_LOCATION = 2;
     private static final int WRITE_PIECE_REQUEST_CODE = 3;
+
+    private static final int FINE_LOCATION_PERMS = 201;
 
     private static final int GOOGLE_LINK = 9001;
 
@@ -256,128 +258,74 @@ public class MapsActivity extends BaseActivity implements
         mGoogleApiClient.connect();
     }
 
+    @AfterPermissionGranted(FINE_LOCATION_PERMS)
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.i(TAG, "Map Ready");
 
         mMap = googleMap;
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            mMap.getUiSettings().setZoomControlsEnabled(false);
-            mMap.getUiSettings().setMapToolbarEnabled(false);
-            mMap.getUiSettings().setCompassEnabled(false);
-            mMap.getUiSettings().setTiltGesturesEnabled(false);
-
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_FINE_LOCATION);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_FINE_LOCATION:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission was granted!
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        mMap.setMyLocationEnabled(true);
-                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                        mMap.getUiSettings().setZoomControlsEnabled(false);
-                        mMap.getUiSettings().setMapToolbarEnabled(false);
-                        mMap.getUiSettings().setCompassEnabled(false);
-                        mMap.getUiSettings().setTiltGesturesEnabled(false);
-                    }
-                }
-                break;
-            case PERMISSIONS_REQUEST_FINE_COARSE_LOCATION:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission was granted!
-
-                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                            mGoogleApiClient);
-                    if (mLastLocation != null) {
-                        mCurrentLatitude = mLastLocation.getLatitude();
-                        mCurrentLongitude = mLastLocation.getLongitude();
-
-                        initMarker();
-
-                        try {
-                            mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
-                            String detailPosition = mCurrentLocationName + " (" + mCurrentLatitude + " ," + mCurrentLongitude + ")";
-                            displayCurrentPosition.setText(detailPosition);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    MapStateManager mgr = new MapStateManager(this);
-                    CameraPosition position = mgr.getSavedCameraPosition();
-
-                    if (position != null) {
-                        CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-                        mMap.moveCamera(update);
-                    } else {
-                        LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
-                        gotoLocation(latLng, 14, false);
-                    }
-                }
-                break;
-            default:
-                break;
+        String perm = Manifest.permission.ACCESS_FINE_LOCATION;
+        if (!EasyPermissions.hasPermissions(this, perm)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale_fine_location),
+                    FINE_LOCATION_PERMS, perm);
+            return;
         }
 
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(false);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+        mMap.getUiSettings().setCompassEnabled(false);
+        mMap.getUiSettings().setTiltGesturesEnabled(false);
     }
 
+    @AfterPermissionGranted(FINE_LOCATION_PERMS)
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.i(TAG, "Service Connected");
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+        String perm = Manifest.permission.ACCESS_FINE_LOCATION;
+        if (!EasyPermissions.hasPermissions(this, perm)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.rationale_fine_location),
+                    FINE_LOCATION_PERMS, perm);
+            return;
+        }
 
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-            if (mLastLocation != null) {
-                mCurrentLatitude = mLastLocation.getLatitude();
-                mCurrentLongitude = mLastLocation.getLongitude();
 
-                //初始化标记
-                initMarker();
-                clusterManager.getMarkerCollection().setOnInfoWindowAdapter(new CustomInfoWindowAdapter());
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+            mCurrentLatitude = mLastLocation.getLatitude();
+            mCurrentLongitude = mLastLocation.getLongitude();
 
-                try {
-                    mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
-                    String detailPosition = mCurrentLocationName + " (" + mCurrentLatitude + " ," + mCurrentLongitude + ")";
-                    displayCurrentPosition.setText(detailPosition);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            //初始化标记
+            initMarker();
+            clusterManager.getMarkerCollection().setOnInfoWindowAdapter(new CustomInfoWindowAdapter());
+
+            try {
+                mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
+                displayCurrentPosition.setText(mCurrentLocationName);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        }
 
-            MapStateManager mgr = new MapStateManager(this);
-            CameraPosition position = mgr.getSavedCameraPosition();
+        MapStateManager mgr = new MapStateManager(this);
+        CameraPosition position = mgr.getSavedCameraPosition();
 
-            if (position != null) {
-                CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-                mMap.moveCamera(update);
-            } else {
-                LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
-                gotoLocation(latLng, 14, false);
-            }
+        if (position != null) {
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+            mMap.moveCamera(update);
         } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                    }, PERMISSIONS_REQUEST_FINE_COARSE_LOCATION);
+            LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
+            gotoLocation(latLng, 14, false);
         }
     }
 
@@ -388,7 +336,7 @@ public class MapsActivity extends BaseActivity implements
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Snackbar.make(snackBarHolderView, "连接 Google API 失败",
+        Snackbar.make(snackBarHolderView, R.string.network_error,
                 Snackbar.LENGTH_LONG).show();
     }
 
@@ -494,35 +442,37 @@ public class MapsActivity extends BaseActivity implements
                     intent.putExtra("LOC", mCurrentLocationName);
                     startActivityForResult(intent, WRITE_PIECE_REQUEST_CODE);
                 } else {
-                    Snackbar.make(snackBarHolderView, "无法获取你的位置", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(snackBarHolderView, getString(R.string.location_error), Snackbar.LENGTH_LONG)
+                            .setAction(R.string.location, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    findMyLocationBtn.performClick();
+                                }
+                            }).show();
                 }
                 break;
             case R.id.find_my_location:
-                if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                            mGoogleApiClient);
-                    if (mLastLocation != null) {
-                        mCurrentLatitude = mLastLocation.getLatitude();
-                        mCurrentLongitude = mLastLocation.getLongitude();
 
-                        try {
-                            mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
-                            String detailPosition = mCurrentLocationName + " (" + mCurrentLatitude + " ," + mCurrentLongitude + ")";
-                            displayCurrentPosition.setText(detailPosition);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                if (mLastLocation != null) {
+                    mCurrentLatitude = mLastLocation.getLatitude();
+                    mCurrentLongitude = mLastLocation.getLongitude();
 
-                        LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
-                        float currentZoom = mMap.getCameraPosition().zoom;
-                        if (currentZoom > 16 || currentZoom < 12) {
-                            gotoLocation(latLng, 14, true);
-                        } else {
-                            gotoLocation(latLng, currentZoom, true);
-                        }
+                    try {
+                        mCurrentLocationName = getPositionName(mCurrentLatitude, mCurrentLongitude);
+                        displayCurrentPosition.setText(mCurrentLocationName);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    LatLng latLng = new LatLng(mCurrentLatitude, mCurrentLongitude);
+                    float currentZoom = mMap.getCameraPosition().zoom;
+                    if (currentZoom > 16 || currentZoom < 12) {
+                        gotoLocation(latLng, 14, true);
+                    } else {
+                        gotoLocation(latLng, currentZoom, true);
                     }
                 }
+
                 break;
             case R.id.hide_show:
                 Animation expand = AnimationUtils.loadAnimation(getBaseContext(), R.anim.expand_panel);
@@ -542,7 +492,13 @@ public class MapsActivity extends BaseActivity implements
                     intent.putExtra("lng", mCurrentLongitude);
                     startActivity(intent);
                 } else {
-                    Snackbar.make(snackBarHolderView, "无法获取你的位置", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(snackBarHolderView, getString(R.string.location_error), Snackbar.LENGTH_LONG)
+                            .setAction(R.string.location, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    findMyLocationBtn.performClick();
+                                }
+                            }).show();
                 }
                 break;
             default:
@@ -555,9 +511,9 @@ public class MapsActivity extends BaseActivity implements
         switch (requestCode) {
             case WRITE_PIECE_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
-                    Snackbar.make(snackBarHolderView, "发送成功", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(snackBarHolderView, getString(R.string.send_success), Snackbar.LENGTH_SHORT).show();
                 } else {
-                    Snackbar.make(snackBarHolderView, "未发送", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(snackBarHolderView, getString(R.string.send_fail), Snackbar.LENGTH_SHORT).show();
                 }
                 break;
             case GOOGLE_LINK:
@@ -706,8 +662,6 @@ public class MapsActivity extends BaseActivity implements
                 String info = getString(R.string.nearby) + " " + number + " " +
                         getString(R.string.pieces);
                 pieceNumberNear.setText(info);
-
-                seeAllBtn.setClickable(number != 0);
             }
 
             @Override

@@ -70,11 +70,6 @@ public class WritePieceActivity extends AppCompatActivity implements
     private static final int ALBUM_CHOOSE = 103;
     private static final int CROP_PIC = 104;
 
-    private static final int W = 0;     //文字
-    private static final int WL = 1;    //文字+Link
-    private static final int WP = 2;    //文字+图片
-    private static final int WPL = 3;   //文字+图片+Link
-
     private static final String KEY_FILE_URI = "key_file_uri";
     private static final String KEY_DOWNLOAD_URL = "key_download_url";
     private static final String KEY_LINK = "key_link";
@@ -147,8 +142,7 @@ public class WritePieceActivity extends AppCompatActivity implements
         mLongitude = getIntent().getDoubleExtra("LNG", 0);
         String mLocationName = getIntent().getStringExtra("LOC");
 
-        String detailPosition = mLocationName + " (" + mLatitude + " ," + mLongitude + ")";
-        myLocationTV.setText(detailPosition);
+        myLocationTV.setText(mLocationName);
 
         nickNameTV.setText(user.getDisplayName());
         BitmapUtils bitmapUtils = new BitmapUtils();
@@ -223,8 +217,10 @@ public class WritePieceActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case TAKE_PICTURE:
-                Log.d(TAG, "mFileUri:" + mFileUri);
-                uploadFromUri(mFileUri);
+                if (resultCode == RESULT_OK && mFileUri != null) {
+                    Log.d(TAG, "mFileUri:" + mFileUri);
+                    uploadFromUri(mFileUri);
+                }
                 break;
             case ALBUM_CHOOSE:
                 if (resultCode == RESULT_OK && mFileUri != null) {
@@ -470,7 +466,7 @@ public class WritePieceActivity extends AppCompatActivity implements
         String key = mDatabase.child("pieces").push().getKey();
 
         Piece piece = new Piece(username, userId, content, mLatitude, mLongitude, visibility, type);
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        DateFormat df = new SimpleDateFormat("MM-dd HH:mm");
         piece.date = df.format(new Date());
 
         switch (type) {

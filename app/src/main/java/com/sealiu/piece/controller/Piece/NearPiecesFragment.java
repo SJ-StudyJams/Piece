@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,13 +47,11 @@ public class NearPiecesFragment extends Fragment {
     List<Piece> mDataset;
 
     FirebaseUser mUser;
-
+    TextView empty;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecycler;
-
     private DatabaseReference mDatabase;
     private DatabaseReference mPieceRef;
-    private ValueEventListener mPieceListener;
 
     public NearPiecesFragment() {
     }
@@ -64,6 +63,8 @@ public class NearPiecesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_all_pieces, container, false);
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        empty = (TextView) rootView.findViewById(R.id.empty);
 
         mDataset = new ArrayList<>();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -97,70 +98,71 @@ public class NearPiecesFragment extends Fragment {
                     if (dataSnapshotValue != null) {
                         Set<String> set = dataSnapshotValue.keySet();
 
-                        if (set != null) {
-                            for (String key : set) {
-                                HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshotValue.get(key);
 
-                                Double lat = (Double) map.get("latitude");
-                                Double lng = (Double) map.get("longitude");
-                                int vi = Integer.valueOf(map.get("visibility").toString());
+                        for (String key : set) {
+                            HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshotValue.get(key);
 
-                                int pr = 0;
+                            Double lat = (Double) map.get("latitude");
+                            Double lng = (Double) map.get("longitude");
+                            int vi = Integer.valueOf(map.get("visibility").toString());
 
-                                switch (vi) {
-                                    case 0:
-                                        pr = 50;
-                                        break;
-                                    case 1:
-                                        pr = 100;
-                                        break;
-                                    case 2:
-                                        pr = 500;
-                                        break;
-                                    case 3:
-                                        pr = 2000;
-                                        break;
-                                    case 4:
-                                        pr = 5000;
-                                        break;
-                                    case 5:
-                                        pr = 20000;
-                                        break;
-                                    case 6:
-                                        pr = 60000;
-                                        break;
-                                    default:
-                                }
+                            int pr = 0;
 
-                                double distance = Common.GetDistance(mLat, mLng, lat, lng);
-                                if (distance <= pr) {
-                                    Piece piece = new Piece(
-                                            map.get("author").toString(),
-                                            map.get("uid").toString(),
-                                            key,
-                                            map.get("content").toString(),
-                                            lat,
-                                            lng,
-                                            vi,
-                                            Integer.valueOf(map.get("type").toString()),
-                                            map.get("date").toString()
-                                    );
-                                    piece.likeCount = Integer.valueOf(map.get("likeCount").toString());
+                            switch (vi) {
+                                case 0:
+                                    pr = 50;
+                                    break;
+                                case 1:
+                                    pr = 100;
+                                    break;
+                                case 2:
+                                    pr = 500;
+                                    break;
+                                case 3:
+                                    pr = 2000;
+                                    break;
+                                case 4:
+                                    pr = 5000;
+                                    break;
+                                case 5:
+                                    pr = 20000;
+                                    break;
+                                case 6:
+                                    pr = 60000;
+                                    break;
+                                default:
+                            }
 
-                                    Set<String> pk = map.keySet();
-                                    if (pk.contains("likes"))
-                                        piece.likes = (Map<String, Boolean>) map.get("likes");
+                            double distance = Common.GetDistance(mLat, mLng, lat, lng);
+                            if (distance <= pr) {
+                                Piece piece = new Piece(
+                                        map.get("author").toString(),
+                                        map.get("uid").toString(),
+                                        key,
+                                        map.get("content").toString(),
+                                        lat,
+                                        lng,
+                                        vi,
+                                        Integer.valueOf(map.get("type").toString()),
+                                        map.get("date").toString()
+                                );
+                                piece.likeCount = Integer.valueOf(map.get("likeCount").toString());
 
-                                    if (pk.contains("url"))
-                                        piece.url = map.get("url").toString();
+                                Set<String> pk = map.keySet();
+                                if (pk.contains("likes"))
+                                    piece.likes = (Map<String, Boolean>) map.get("likes");
 
-                                    if (pk.contains("image"))
-                                        piece.image = map.get("image").toString();
+                                if (pk.contains("url"))
+                                    piece.url = map.get("url").toString();
 
-                                    mDataset.add(piece);
-                                }
+                                if (pk.contains("image"))
+                                    piece.image = map.get("image").toString();
+
+                                mDataset.add(piece);
                             }
                         }
+                    } else {
+                        empty.setVisibility(View.VISIBLE);
                     }
                 }
 
@@ -263,7 +265,6 @@ public class NearPiecesFragment extends Fragment {
         };
 
         mPieceRef.addValueEventListener(pieceListener);
-        mPieceListener = pieceListener;
     }
 
     private void onLikeClicked(DatabaseReference pieceRef) {

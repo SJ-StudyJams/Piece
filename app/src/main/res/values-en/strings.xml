@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Piece</string>
+    <string name="album">Album</string>
+    <string name="album_intent_error">No photo app in this phone</string>
+    <string name="anonymous">Anonymous</string>
+    <string name="anonymous_limit">Anonymous User</string>
+    <string name="anonymous_limit_message">Anonymous user can neither check personal center nor send piece message. \n\n If you want to use these functions, sign in with your Google or Facebook account.</string>
+    <string name="banner_ad_unit_id">ca-app-pub-6993844563211839/7591772504</string>
+    <string name="camera">Camera</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="comment_not_available">:(\n\nComment not available now!</string>
+    <string name="crop_pic_intent_error">No app can crop photo in this phone</string>
+    <string name="fetching_location">Locating</string>
+    <string name="got_it">Got It</string>
+    <string name="link_count">Choose Google or Facebook account to link to anonymous account, we will sync your data, including likes and comments.</string>
+    <string name="link_count_success">Link Success!</string>
+    <string name="loading">Loading</string>
+    <string name="location">Location</string>
+    <string name="location_info">Click here to locate</string>
+    <string name="more_info">More Infomations</string>
+    <string name="more_info_text">Pull down the panel, find more detail</string>
+    <string name="nearby">Nearby</string>
+    <string name="ok">OK</string>
+    <string name="or">OR</string>
+    <string name="pieces">Pieces</string>
+    <string name="pieces_detail">Piece Detail</string>
+    <string name="pieces_nearby">Pieces Nearby</string>
+    <string name="pref_about_title">About</string>
+    <string name="pref_feedback_title">Feedback</string>
+    <string name="pref_licenses_title">Licenses</string>
+    <string name="pref_notification">Notification</string>
+    <string name="pref_notification_voice">Notification</string>
+    <string name="pref_other">Others</string>
+    <string name="pref_piece_nearby_summary">Choose categories of notifications</string>
+    <string name="pref_piece_nearby_title">Notifications Categories</string>
+    <string name="pref_privacy_policy_title">Privacy Policy</string>
+    <string name="pref_ringtone">Rigntone</string>
+    <string name="pref_terms_of_use_title">Terms of use</string>
+    <string name="pref_version_summary">1.1.0</string>
+    <string name="pref_version_title">Version</string>
+    <string name="pref_vibrate_summary">Notification with vibrating</string>
+    <string name="pref_vibrate_title">Vibrate</string>
+    <string name="rationale_storage">Piece reads images from your camera to demonstrate uploading.</string>
+    <string name="see_all">See All</string>
+    <string name="send_piece">Send</string>
+    <string name="setting_menu_title">Settings</string>
+    <string name="share_url">Share URL</string>
+    <string name="sign_in_with_facebook_account">Sign In With Facebook</string>
+    <string name="sign_in_with_google_account">Sign In With Google</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_message">Are you sure sign out?</string>
+    <string name="take_pic_intent_error">No camera app in this phone</string>
+    <string name="uploading">Uploading</string>
+    <string name="user_menu_title">Profile</string>
+    <string name="visibility_title">Visible Range:</string>
+    <string name="welcome">Welcome!</string>
+    <string name="write_piece">Write Piece</string>
+    <string name="write_piece_text">Click this button, write a piece message attaching your current position, URL and your amazing picture. And you can set the visible range of your piece!</string>
+    <string name="write_something">Write Something</string>
+
+    <string name="terms_of_use">
+        "您在使用本服务前需要注册一个账号。账号应当使用手机号码绑定注册或者使用邮箱绑定注册，请您使用尚未与"
+        "Piece账号绑定的手机号码。Piece软件可以根据需求或产品需要对账号注册和绑定的方式进行变更，而无须事先通知"
+        "您。\n\n"
+        "如果您有被Piece封禁的先例或涉嫌虚假注册及滥用他人名义注册，Piece有权拒绝您的注册申请。\n\n"
+        "鉴于账号的绑定注册方式，您同意在注册时将允许您的手机号码或者邮箱地址，及手机设备识别码等信息用于注册。\n\n"
+        "在您注册及使用本服务后，Piece需要搜集您的地理位置信息以便为您提供更好的使用体验。注册即表示允许Piece"
+        "在隐私条款的规定下使用这些数据。\n\n"
+    </string>
+
+    <string name="privacy_policy">
+        "您注册Piece时，根据要求提供的个人信息。\n\n"
+        "Piece不会向任何人出售或出借您的个人信息，除非事先得到您的许可。\n\n"
+        "Piece可能通过使用您的个人信息，向您提供服务，包括但不限于向您发出活动和服务信息等。\n\n"
+        "承诺：非经法律程序不会泄露您的个人信息。\n\n"
+    </string>
+
+    <string name="licenses">
+        "ShowcaseView (SCV)\n\n"
+        "Copyright Alex Curran (@amlcurran) © 2012-2014. All rights reserved.\n"
+        "This library is distributed under an Apache 2.0 License."
+
+        "CircleImageView\n\n"
+        "Copyright Henning Dodenhof (@hdodenhof) © 2014-2016. All rights reserved.\n"
+        "This library is distributed under an Apache 2.0 License."
+    </string>
+    <string name="rationale_fine_location">Piece locate your current position to search pieces nearby. And sending piece message also need your current position.</string>
+    <string name="empty">Absolutely Empty!</string>
+    <string name="send_fail">Unsent</string>
+    <string name="send_success">Sent Successfully</string>
+    <string name="network_error">Can not link to Google API. Please check your network connection.</string>
+    <string name="location_error">Can not get your current position.</string>
+
+    <string-array name="pieceCategory">
+        <item>Piece</item>
+        <item>News</item>
+        <item>Weather</item>
+        <item>Traffic</item>
+        <item>ADs</item>
+    </string-array>
+
+    <string-array name="pieceCategoryValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="visibility_arrays">
+        <item>50m</item>
+        <item>100m</item>
+        <item>500m</item>
+        <item>2km</item>
+        <item>5km</item>
+        <item>20km</item>
+        <item>60km</item>
+    </string-array>
+</resources>

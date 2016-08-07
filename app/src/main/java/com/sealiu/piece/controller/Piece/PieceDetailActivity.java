@@ -106,7 +106,11 @@ public class PieceDetailActivity extends AppCompatActivity implements View.OnCli
 
         findViewById(R.id.piece_like_holder).setOnClickListener(this);
 
-        mBitmapUtils.disPlay(headPicture, mUser.getPhotoUrl().toString());
+        if (mUser.getPhotoUrl() == null) {
+            headPicture.setVisibility(View.GONE);
+        } else {
+            mBitmapUtils.disPlay(headPicture, mUser.getPhotoUrl().toString());
+        }
     }
 
     @Override
