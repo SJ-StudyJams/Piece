@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,12 +33,14 @@ public class UserActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        CircleImageView userPhoto = (CircleImageView) findViewById(R.id.user_photo);
-
-
         // Get the currently signed-in user
         user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
+
+        CircleImageView userPhoto = (CircleImageView) findViewById(R.id.user_photo);
+
+        if (user.getPhotoUrl() == null) {
+            userPhoto.setVisibility(View.GONE);
+        } else {
             BitmapUtils bitmapUtils = new BitmapUtils();
             bitmapUtils.disPlay(userPhoto, user.getPhotoUrl().toString());
         }

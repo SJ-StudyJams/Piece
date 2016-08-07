@@ -1,6 +1,7 @@
 package com.sealiu.piece.controller.LoginRegister;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -13,7 +14,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -37,9 +37,6 @@ import com.sealiu.piece.controller.BaseActivity;
 import com.sealiu.piece.controller.Maps.MapsActivity;
 import com.sealiu.piece.model.User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
@@ -52,7 +49,6 @@ public class IndexActivity extends BaseActivity implements
     private static final int RC_SIGN_IN = 9001;
     private static final String USER_G = "google";
     private static final String USER_F = "facebook";
-    private static final String USER_A = "anonymous";
 
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
@@ -61,6 +57,25 @@ public class IndexActivity extends BaseActivity implements
     private DatabaseReference mDatabase;
 
     private CallbackManager mCallbackManager;
+    private LoginButton mLoginButton;
+
+    public static void writeNewUser(DatabaseReference databaseRef, String userId, String name, String email, Uri photo, String type) {
+
+        String photoUrl = photo == null ? "" : photo.toString();
+        String username = name == null ? usernameFromEmail(email) : name;
+
+        User user = new User(username, email, photoUrl, type);
+
+        databaseRef.child("users").child(userId).setValue(user);
+    }
+
+    public static String usernameFromEmail(String email) {
+        if (email.contains("@")) {
+            return email.split("@")[0];
+        } else {
+            return email;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +87,7 @@ public class IndexActivity extends BaseActivity implements
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         findViewById(R.id.google_sign_in).setOnClickListener(this);
+        findViewById(R.id.facebook_sign_in_c).setOnClickListener(this);
         findViewById(R.id.anonymous_sign_in).setOnClickListener(this);
 
         // Configure sign-in to request the user's ID, email address, and basic
@@ -108,9 +124,9 @@ public class IndexActivity extends BaseActivity implements
 
         // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
-        LoginButton facebookSignIn = (LoginButton) findViewById(R.id.facebook_sign_in);
-        facebookSignIn.setReadPermissions("email", "public_profile");
-        facebookSignIn.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+        mLoginButton = (LoginButton) findViewById(R.id.facebook_sign_in);
+        mLoginButton.setReadPermissions("email", "public_profile");
+        mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
@@ -185,7 +201,7 @@ public class IndexActivity extends BaseActivity implements
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             FirebaseUser user = task.getResult().getUser();
-                            writeNewUser(user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString(), USER_G);
+                            writeNewUser(mDatabase, user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl(), USER_G);
                         }
 
                         hideProgressDialog();
@@ -214,18 +230,12 @@ public class IndexActivity extends BaseActivity implements
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             FirebaseUser user = task.getResult().getUser();
-                            writeNewUser(user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString(), USER_F);
+                            writeNewUser(mDatabase, user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl(), USER_F);
                         }
 
                         hideProgressDialog();
                     }
                 });
-    }
-
-    private void writeNewUser(String userId, String name, String email, String photo, String type) {
-        User user = new User(name, email, photo, type);
-
-        mDatabase.child("users").child(userId).setValue(user);
     }
 
     private void googleSignIn() {
@@ -265,11 +275,8 @@ public class IndexActivity extends BaseActivity implements
             case R.id.google_sign_in:
                 googleSignIn();
                 break;
-            case R.id.facebook_sign_in:
-                Collection<String> collection = new ArrayList<>();
-                collection.add("email");
-                collection.add("public_profile");
-                LoginManager.getInstance().logInWithReadPermissions(this, collection);
+            case R.id.facebook_sign_in_c:
+                mLoginButton.performClick();
                 break;
             case R.id.anonymous_sign_in:
                 anonymousSignIn();

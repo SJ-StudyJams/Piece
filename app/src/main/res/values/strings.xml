@@ -129,7 +129,7 @@
     <string name="something_cannot_use">一些功能可能无法使用</string>
     <string name="loading">加载中</string>
     <string name="anonymous_limit">游客止步</string>
-    <string name="anonymous_limit_message">当前登录身份为游客，您将无法查看个人资料和发送piece消息。\n\n欲使用完整功能请使用Google或Facebook账户登录。</string>
+    <string name="anonymous_limit_message">当前登录身份为游客，您将无法查看个人资料和发送piece消息。\n\n欲使用完整功能请退出当前账户后使用Google或Facebook账户登录。</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="sign_out">退出账户</string>

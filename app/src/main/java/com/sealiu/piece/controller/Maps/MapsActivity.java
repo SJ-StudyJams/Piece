@@ -201,6 +201,15 @@ public class MapsActivity extends BaseActivity implements
                 .build();
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        Log.d(TAG, "User:" + mUser.getDisplayName() + "\nEmail:" +
+                mUser.getEmail() + "\nUid:" +
+                mUser.getUid() + "\nProviderID:" +
+                mUser.getProviderId() + "\nphotoUrl:" +
+                mUser.getPhotoUrl() + "\nproviders:" +
+                mUser.getProviders()
+        );
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mAuth = FirebaseAuth.getInstance();
@@ -395,7 +404,7 @@ public class MapsActivity extends BaseActivity implements
 
         switch (item.getItemId()) {
             case R.id.user_menu_title:
-                if (mUser.getDisplayName() != null) {
+                if (mUser.getProviders().size() != 0) {
                     startActivity(new Intent(MapsActivity.this, UserActivity.class));
                 } else {
                     // anonymous sign in
@@ -427,16 +436,23 @@ public class MapsActivity extends BaseActivity implements
     }
 
     private void anonymousLimit() {
+        /*
+        匿名登录后连接Google/facebook账户存在问题：
+        连接成功后：
+        - FirebaseUser.getDisplayName = null
+        - FirebaseUser.getPhotoUrl = null
+        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                LinkAccountFragment linkAccountFragment = new LinkAccountFragment();
+                linkAccountFragment.show(getSupportFragmentManager(), "LINK_ACCOUNT");
+            }
+        })
+         */
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.anonymous_limit))
                 .setMessage(getString(R.string.anonymous_limit_message))
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        LinkAccountFragment linkAccountFragment = new LinkAccountFragment();
-                        linkAccountFragment.show(getSupportFragmentManager(), "LINK_ACCOUNT");
-                    }
-                }).show();
+                .show();
     }
 
     private void signOut() {
@@ -469,7 +485,7 @@ public class MapsActivity extends BaseActivity implements
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.write_piece_fab:
-                if (mUser.getDisplayName() == null) {
+                if (mUser.getProviders().size() == 0) {
                     anonymousLimit();
                 } else if (mCurrentLatitude != null && mCurrentLongitude != null && mCurrentLocationName != null) {
                     Intent intent = new Intent(MapsActivity.this, WritePieceActivity.class);
@@ -550,7 +566,7 @@ public class MapsActivity extends BaseActivity implements
                     GoogleSignInAccount account = result.getSignInAccount();
                     Log.i(TAG, "google sign in success, idtoken:" + account.getIdToken());
                     AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-                    linkAccount(credential);
+                    linkAccount(credential, "google");
                 } else {
                     Log.d(TAG, "Google Sign In failed");
                 }
@@ -560,7 +576,7 @@ public class MapsActivity extends BaseActivity implements
         }
     }
 
-    private void linkAccount(final AuthCredential credential) {
+    private void linkAccount(final AuthCredential credential, final String USER_TYPE) {
         showProgressDialog();
         mUser.linkWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -575,6 +591,17 @@ public class MapsActivity extends BaseActivity implements
                             Log.d(TAG, linkResult);
                         } else {
                             linkResult = getString(R.string.link_count_success);
+                            FirebaseUser user = task.getResult().getUser();
+                            Log.d(TAG, "User:" + user.getDisplayName() + "\nEmail:" +
+                                    user.getEmail() + "\nUid:" +
+                                    user.getUid() + "\nProviderID:" +
+                                    user.getProviderId() + "\nphotoUrl:" +
+                                    user.getPhotoUrl() + "\nproviders:" +
+                                    user.getProviders()
+                            );
+
+                            // write database, add user
+                            IndexActivity.writeNewUser(mDatabase, user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl(), USER_TYPE);
                         }
                         Snackbar.make(snackBarHolderView, linkResult, Snackbar.LENGTH_LONG).show();
                     }
@@ -824,7 +851,7 @@ public class MapsActivity extends BaseActivity implements
                     public void onSuccess(LoginResult loginResult) {
                         AccessToken token = loginResult.getAccessToken();
                         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-                        linkAccount(credential);
+                        linkAccount(credential, "facebook");
                     }
 
                     @Override
