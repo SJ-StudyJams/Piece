@@ -107,7 +107,7 @@
     <string name="send_success">发送成功</string>
     <string name="send_fail">未发送</string>
     <string name="network_error">连接 Google API 失败，请检查网络连接</string>
-    <string name="facebook_app_id" translatable="false">1032814936816826</string>
+    <string name="facebook_app_id" translatable="false">1730043443922999</string>
 
     <string-array name="pieceCategory">
         <item>Pieces</item>

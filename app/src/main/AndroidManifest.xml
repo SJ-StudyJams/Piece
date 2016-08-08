@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sealiu.piece">
+    package="com.studyjams.piece">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -22,7 +22,7 @@
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCujq0HvkwjeBIIcS5VhQifLLEee6BJ_DA" />
+            android:value="AIzaSyAzUSdCbttIbHBYh2ermJON_gLRKx_r8QM" />
         <!--sign in with google/facebook account or anonymous -->
         <activity
             android:name=".controller.LoginRegister.IndexActivity"
@@ -86,7 +86,7 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.sealiu.piece.fileprovider"
+            android:authorities="com.studyjams.piece.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

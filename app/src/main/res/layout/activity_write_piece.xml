@@ -5,7 +5,7 @@
     android:id="@+id/layout_holder"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sealiu.piece.controller.Piece.WritePieceActivity">
+    tools:context="com.studyjams.piece.controller.Piece.WritePieceActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
